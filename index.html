@@ -2521,7 +2521,7 @@ function fnData(p){p.fono=p.fono||{};p.fono.n=p.fono.n||{};p.fono.h=p.fono.h||{}
 const fnN=(p,et,k)=>fnData(p).n[et+"|"+k]||0;
 function fnMenuMarkup(p){
  const card=(e,i)=>{const tot=e[0]==="rimas"?FN_B.length:3;let c=0;for(let k=1;k<=tot;k++)if(fnN(p,e[0],k))c++;
-  return `<button class="category" data-fn="${e[0]}" type="button"><strong>${i+1}. ${e[1]} ${e[2]}</strong><div class="progress" style="margin:12px 0 6px"><span style="width:${Math.round(c/tot*100)}%"></span></div><span class="small">${c} de ${tot} ${e[0]==="rimas"?"blocos":"níveis"} jogados • ${e[3]}</span></button>`};
+  return `<button class="category" data-fn="${e[0]}" type="button"><strong>${i+1}. ${e[1]} ${e[2]}</strong><div class="progress" style="margin:12px 0 6px"><span style="width:${Math.round(c/tot*100)}%"></span></div><span class="small">${c} de ${tot} concluídas</span></button>`};
  return `<h2 style="margin-top:22px">🧠 Consciência fonológica</h2><div class="category-grid">${FN_ET.map(card).join("")}</div>`}
 function fnOpen(et){et==="rimas"?fnBlocks():fnLevels(et)}
 const fnTitle="Consciência fonológica";
@@ -2696,7 +2696,7 @@ function fnCard(et,k){const I=["🌱","🌿","🌳","🌲"];
  return[`${I[k-1]} Nível ${k}`,FN_LV[et][k-1][0],FN_LV[et][k-1][1]]}
 function fnMenuMarkup(p){
  const card=(e,i)=>{const ks=fnKeys(e[0]);let c=0;ks.forEach(k=>{if(fnN(p,e[0],k))c++});const un=e[0]==="rimas"?"blocos jogados":(e[0]==="inicial"||e[0]==="ditado")?"atividades jogadas":"níveis jogados";
-  return `<button class="category" data-fn="${e[0]}" type="button"><strong>${i+1}. ${e[1]} ${e[2]}</strong><div class="progress" style="margin:12px 0 6px"><span style="width:${Math.round(c/ks.length*100)}%"></span></div><span class="small">${c} de ${ks.length} ${un} • ${e[3]}</span></button>`};
+  return `<button class="category" data-fn="${e[0]}" type="button"><strong>${i+1}. ${e[1]} ${e[2]}</strong><div class="progress" style="margin:12px 0 6px"><span style="width:${Math.round(c/ks.length*100)}%"></span></div><span class="small">${c} de ${ks.length} concluídas</span></button>`};
  return `<h2 style="margin-top:22px">🧠 Consciência fonológica</h2><div class="category-grid">${FN_ET.map(card).join("")}</div>`}
 function fnLevels(et){
  const p=active();if(!p){renderClassDashboard();return}const E=FN_ET.find(x=>x[0]===et),ord=et==="ditado"?[11,1,12,2,14,4,13,3]:fnKeys(et),big=ord.length>3;
