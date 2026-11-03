@@ -674,6 +674,7 @@ body.game-mode .app-footer p{margin:0}
 .cfg-pace{display:flex;flex-direction:column;gap:8px;padding:6px 4px 12px}
 .cfg-pace label{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-weight:800;color:var(--ink2,#1c2150);cursor:pointer}
 .cfg-pace input[type=radio]{width:20px;height:20px;accent-color:#3b4fd0}
+.cfg-pace select{width:auto;max-width:100%;min-height:38px;border:2px solid #cfd6f0;border-radius:10px;padding:0 8px;font-weight:800;font-size:1rem;background:#fff;color:var(--ink2,#1c2150)}
 .cfg-pace input[type=number]{width:78px;min-height:38px;border:2px solid #cfd6f0;border-radius:10px;padding:0 8px;font-weight:800;font-size:1rem;color:var(--ink2,#1c2150)}
 .lg-board{display:block}
 .lg-wrap{position:relative;height:100%;display:flex;flex-direction:column;gap:clamp(6px,1.4vh,12px);min-height:0}
@@ -729,6 +730,11 @@ body.game-mode .app-footer p{margin:0}
 @media(max-width:640px){.stu-top{flex-direction:column;align-items:stretch}.stu-btns{order:-1;justify-content:center}.stu-btns button{flex:1;white-space:nowrap;font-size:.8rem;padding:0 8px;min-height:48px}}
 
 /* ===== Alfabeto: tipo de letra (Misto / ABC / abc / cursiva) ===== */
+#lgSylBtn{width:auto;min-width:clamp(34px,5.5vh,44px);padding:0 10px;white-space:nowrap;font-size:clamp(.8rem,2.4vh,1rem);font-weight:900}
+#lgSylBtn.on{background:#22b573;color:#fff}
+.lg-w .sy{display:inline-block;opacity:.45;border-radius:.12em;padding:0 .03em;transition:opacity .12s,background .12s}
+.lg-w .sy+.sy{margin-left:.08em}
+.lg-w .sy.on{opacity:1;background:#fff;color:#3b2a00;box-shadow:0 .03em 0 #c98f00}
 #lgPaceBtn{width:auto;min-width:clamp(34px,5.5vh,44px);padding:0 10px;white-space:nowrap;font-size:clamp(.8rem,2.4vh,1rem);font-weight:900}
 #abCase{width:auto;min-width:clamp(34px,5.5vh,44px);padding:0 9px;white-space:nowrap}
 #abCase.cs{min-width:clamp(54px,9vh,68px);padding:0 12px;font-size:1.05rem;line-height:1.5;overflow:visible;font-family:"Playwrite BR","Segoe Script","Lucida Handwriting","Snell Roundhand","Brush Script MT","Bradley Hand",cursive;font-weight:600}
@@ -1850,7 +1856,9 @@ const CFG={
  get skip(){const p=active();return !!(p&&p.cfg&&p.cfg.skip)},
  get letter(){const p=active(),l=p&&p.cfg&&p.cfg.letter;return ["m","u","l","c"].includes(l)?l:"m"},
  get pace(){const p=active(),v=p&&p.cfg&&p.cfg.pace;return ["i","m","a","p"].includes(v)?v:"i"},
- get secs(){const p=active(),v=p&&p.cfg&&+p.cfg.secs;return v>=0.3&&v<=30?v:2},
+ get secs(){const p=active(),v=p&&p.cfg&&+p.cfg.secs;return v>=0.1&&v<=30?v:2},
+ get unit(){const p=active();return p&&p.cfg&&p.cfg.unit==="ms"?"ms":"s"},
+ get syl(){const p=active();return !!(p&&p.cfg&&p.cfg.syl)},
  get delay(){if(CFG._d)return CFG._d;const p=active(),d=p&&p.cfg&&+p.cfg.delay;return [2,4,7].includes(d)?d:4}
 };
 function setCfg(o){const p=active();if(!p)return;p.cfg=Object.assign({},p.cfg,{auto:!!o.auto,skip:!!o.skip,letter:["m","u","l","c"].includes(o.letter)?o.letter:"m",delay:[2,4,7].includes(+o.delay)?+o.delay:4});saveProfiles()}
@@ -2172,7 +2180,7 @@ function abShell(c){
   <div class="hud-menu hidden" id="hudMenu"><button type="button" data-go="student">👤 Menu do participante</button><button type="button" data-go="classes">${fam?"👶 Suas crianças":"🏫 Grupos e participantes"}</button><button type="button" data-go="cfg">⚙️ Configurações do jogo</button><button type="button" data-go="home">⌂ Menu inicial</button><button type="button" data-go="profile">👤 Meu perfil</button><button type="button" data-go="logout">🚪 Sair da conta</button></div>
  </div>
  ${c.ori&&c.single?`<div class="stage-body ab-stage ab-single ab-wori">${c.ori}${c.single}</div>`:c.ori?`<div class="stage-body ab-stage ab-wori">${c.ori}<div class="ab-split${c.cls?" "+c.cls:""}">${c.left+c.right}</div></div>`:`<div class="stage-body ab-stage${c.single?" ab-single":""}${c.cls?" "+c.cls:""}">${c.single||(c.left+c.right)}</div>`}
- <div class="bottom${c.bare?" bare":""}"><button class="round-btn" id="abPrev" type="button" aria-label="Voltar">◀</button><div class="bottom-text"><div class="feedback" id="abFb" aria-live="polite">${c.msg||""}</div></div><button class="round-btn" id="abRestart" type="button" aria-label="Recomeçar" style="${c.onRestart?"":"visibility:hidden"}">↻</button>${c.extra||""}<button class="go-btn" id="abNext" type="button" ${c.next?(c.next.disabled?"disabled":""):'style="visibility:hidden" disabled'}>${c.next?c.next.label:"Próxima ▶"}</button><div class="hud-right"><div class="hud-pill" aria-label="Estrelas desta rodada">⭐ <b id="abStars">${totalStars(active())}</b></div>${c.lgPace?`<button class="hud-btn mini" id="lgPaceBtn" type="button" aria-label="Nível de leitura: tempo por palavra" title="Nível de leitura: tempo por palavra">${lgPaceBtnTxt()}</button>`:""}${c.caseBtn?'<button class="hud-btn mini" id="caseBtn" type="button" aria-label="Tipo de letra: maiúscula, minúscula, cursiva" title="Tipo de letra"></button>':(c.title&&!c.abCase?"":'<button class="hud-btn mini" id="abCase" type="button" aria-label="Tipo de letra: misto, maiúscula, minúscula, cursiva" title="Tipo de letra"></button>')+(c.noSound?"":`<button class="hud-btn" id="soundBtn" type="button" aria-label="Som" title="Som: ligar ou desligar">${(c.sndGet?c.sndGet():abSound)?"🔊":"🔇"}</button>`)}<button class="hud-btn" id="fsBtn" type="button" aria-label="Tela cheia">⛶</button></div></div>
+ <div class="bottom${c.bare?" bare":""}"><button class="round-btn" id="abPrev" type="button" aria-label="Voltar">◀</button><div class="bottom-text"><div class="feedback" id="abFb" aria-live="polite">${c.msg||""}</div></div><button class="round-btn" id="abRestart" type="button" aria-label="Recomeçar" style="${c.onRestart?"":"visibility:hidden"}">↻</button>${c.extra||""}<button class="go-btn" id="abNext" type="button" ${c.next?(c.next.disabled?"disabled":""):'style="visibility:hidden" disabled'}>${c.next?c.next.label:"Próxima ▶"}</button><div class="hud-right"><div class="hud-pill" aria-label="Estrelas desta rodada">⭐ <b id="abStars">${totalStars(active())}</b></div>${c.lgPace?`<button class="hud-btn mini" id="lgPaceBtn" type="button" aria-label="Nível de leitura: tempo por palavra" title="Nível de leitura: tempo por palavra">${lgPaceBtnTxt()}</button><button class="hud-btn mini${CFG.syl?" on":""}" id="lgSylBtn" type="button" aria-pressed="${CFG.syl?"true":"false"}" aria-label="Destacar sílabas divididas" title="Destacar sílabas, uma de cada vez">Sí·la·bas</button>`:""}${c.caseBtn?'<button class="hud-btn mini" id="caseBtn" type="button" aria-label="Tipo de letra: maiúscula, minúscula, cursiva" title="Tipo de letra"></button>':(c.title&&!c.abCase?"":'<button class="hud-btn mini" id="abCase" type="button" aria-label="Tipo de letra: misto, maiúscula, minúscula, cursiva" title="Tipo de letra"></button>')+(c.noSound?"":`<button class="hud-btn" id="soundBtn" type="button" aria-label="Som" title="Som: ligar ou desligar">${(c.sndGet?c.sndGet():abSound)?"🔊":"🔇"}</button>`)}<button class="hud-btn" id="fsBtn" type="button" aria-label="Tela cheia">⛶</button></div></div>
  </section>`;
  const menu=$("#hudMenu");
  $("#menuBtn").onclick=e=>{e.stopPropagation();menu.classList.toggle("hidden")};
@@ -2182,6 +2190,7 @@ function abShell(c){
  $("#fsBtn").onclick=toggleFullscreen;
  if($("#abCase"))$("#abCase").onclick=e=>{e.stopPropagation();abSetCase(AB_CASE_NEXT[abCase])};
  if($("#lgPaceBtn"))$("#lgPaceBtn").onclick=e=>{e.stopPropagation();lgPaceOpen()};
+ if($("#lgSylBtn"))$("#lgSylBtn").onclick=e=>{e.stopPropagation();const p=active();if(!p)return;const nv=!CFG.syl;p.cfg=Object.assign({},p.cfg,{syl:nv});saveProfiles();e.currentTarget.classList.toggle("on",nv);e.currentTarget.setAttribute("aria-pressed",nv?"true":"false")};
  abApplyCase();
  $("#abPrev").onclick=c.onBack;
  if(c.onRestart)$("#abRestart").onclick=c.onRestart;
@@ -2988,7 +2997,8 @@ function flMenuMarkup(p){
    pelo tempo do "Nível de leitura" (Iniciante 3 s, Intermediário 2 s, Avançado 1 s ou Personalizado). */
 const LG_PACE={i:{n:"Iniciante",e:"🐢",s:3},m:{n:"Intermediário",e:"🐇",s:2},a:{n:"Avançado",e:"🚀",s:1},p:{n:"Personalizado",e:"✏️",s:2}};
 function lgPaceInfo(){const b=LG_PACE[CFG.pace]||LG_PACE.i;return{n:b.n,e:b.e,s:CFG.pace==="p"?CFG.secs:b.s}}
-function lgSecTxt(x){return String(x).replace(".",",")+(x===1?" segundo":" segundos")+" por palavra"}
+function lgUseMs(x){return (CFG.pace==="p"&&CFG.unit==="ms")||x<1}
+function lgSecTxt(x){if(lgUseMs(x))return Math.round(x*1000)+" ms por palavra";return String(x).replace(".",",")+(x===1?" segundo":" segundos")+" por palavra"}
 const LG_KINDS={
  ps:{t:"📘 Palavras simples",s:"Listas de 12 palavras, como a cartela do protocolo",kind:"words",cat:"simples"},
  pc:{t:"📗 Palavras complexas",s:"Listas de 12 palavras, como a cartela do protocolo",kind:"words",cat:"complexas"},
@@ -3005,8 +3015,8 @@ function lgGroupOf(k){return Object.keys(LG_GROUPS).find(g=>LG_GROUPS[g].kinds.i
 function lgOpen(key){LG_GROUPS[key]?lgGroup(key):lgMenu(key)}
 function lgBackTo(k,custom){const g=custom?"p":lgGroupOf(k);g?lgGroup(g):renderStudentMenu()}
 let LG=null,LGK=null;const LGCUST={};
-function lgNormSecs(v){const x=Math.round(parseFloat(String(v).replace(",","."))*10)/10;return x>=0.3&&x<=30?x:2}
-function lgPaceBtnTxt(){return "🕒 "+String(lgPaceInfo().s).replace(".",",")+" s"}
+function lgNormSecs(v){const x=Math.round(parseFloat(String(v).replace(",","."))*1000)/1000;return x>=0.1&&x<=30?x:2}
+function lgPaceBtnTxt(){const s=lgPaceInfo().s;return "🕒 "+(lgUseMs(s)?Math.round(s*1000)+" ms":String(s).replace(".",",")+" s")}
 function lgPaceRefresh(){
  const b=$("#lgPaceBtn");if(b)b.textContent=lgPaceBtnTxt();
  const pc=lgPaceInfo(),e=document.querySelector(".lg-pace");
@@ -3017,19 +3027,23 @@ function lgPaceOpen(){
  if(document.getElementById("lgPaceOv"))return;
  const p=active();if(!p)return;
  const L=LG,wasPlay=!!(L&&L.state==="play");if(wasPlay)lgPause();
- const cur=CFG.pace;
+ const cur=CFG.pace,uMs=CFG.unit==="ms";
  const ov=document.createElement("div");ov.className="cfg-ov";ov.id="lgPaceOv";
  ov.innerHTML=`<div class="cfg-box" role="dialog" aria-modal="true" aria-labelledby="lgPT"><h2 id="lgPT">🕒 Nível de leitura</h2><p class="muted small" style="margin:0 0 8px">Tempo que o marcador fica sobre cada palavra. Vale só para a Leitura guiada.</p>
- <div class="cfg-pace">${[["i","🐢 Iniciante — 3 segundos por palavra"],["m","🐇 Intermediário — 2 segundos por palavra"],["a","🚀 Avançado — 1 segundo por palavra"]].map(d=>`<label><input type="radio" name="lgP" value="${d[0]}" ${cur===d[0]?"checked":""}>${d[1]}</label>`).join("")}<label><input type="radio" name="lgP" value="p" ${cur==="p"?"checked":""}>✏️ Personalizado — <input type="number" id="lgSecs" min="0.3" max="30" step="0.1" inputmode="decimal" value="${CFG.secs}" aria-label="Segundos por palavra"> segundos por palavra</label></div>
+ <div class="cfg-pace">${[["i","🐢 Iniciante — 3 segundos por palavra"],["m","🐇 Intermediário — 2 segundos por palavra"],["a","🚀 Avançado — 1 segundo por palavra"]].map(d=>`<label><input type="radio" name="lgP" value="${d[0]}" ${cur===d[0]?"checked":""}>${d[1]}</label>`).join("")}<label><input type="radio" name="lgP" value="p" ${cur==="p"?"checked":""}>✏️ Personalizado — <input type="number" id="lgSecs" min="${uMs?100:0.1}" max="${uMs?30000:30}" step="${uMs?50:0.1}" inputmode="decimal" value="${uMs?Math.round(CFG.secs*1000):CFG.secs}" aria-label="Tempo por palavra"> <select id="lgUnit" aria-label="Unidade de tempo"><option value="s" ${uMs?"":"selected"}>segundos</option><option value="ms" ${uMs?"selected":""}>milissegundos (ms)</option></select> por palavra</label></div>
  <div class="cfg-actions"><button class="primary" id="lgPaceOk" type="button">Aplicar</button></div></div>`;
  document.body.appendChild(ov);
- const sec=ov.querySelector("#lgSecs");sec.onfocus=sec.oninput=()=>{ov.querySelector('input[name=lgP][value=p]').checked=true};
+ const sec=ov.querySelector("#lgSecs"),uSel=ov.querySelector("#lgUnit");sec.onfocus=sec.oninput=uSel.onfocus=()=>{ov.querySelector('input[name=lgP][value=p]').checked=true};
+ uSel.onchange=()=>{const ms=uSel.value==="ms",v=parseFloat(String(sec.value).replace(",","."));
+  sec.min=ms?100:0.1;sec.max=ms?30000:30;sec.step=ms?50:0.1;
+  if(v>0)sec.value=ms?Math.round(v*1000):Math.round(v/10)/100;ov.querySelector('input[name=lgP][value=p]').checked=true};
  const close=()=>{ov.remove();if(wasPlay&&LG===L&&abAlive(L.tok)&&L.state==="pause")lgResume()};
  ov.onclick=e=>{if(e.target===ov)close()};
  ov.addEventListener("keydown",e=>{if(e.key==="Escape")close();else if(e.key==="Enter"){e.preventDefault();ov.querySelector("#lgPaceOk").click()}});
  ov.querySelector("#lgPaceOk").onclick=()=>{
   const v=(ov.querySelector('input[name=lgP]:checked')||{}).value||"i";
-  p.cfg=Object.assign({},p.cfg,{pace:["i","m","a","p"].includes(v)?v:"i",secs:lgNormSecs(sec.value)});saveProfiles();
+  const raw=parseFloat(String(sec.value).replace(",",".")),ms=uSel.value==="ms";
+  p.cfg=Object.assign({},p.cfg,{pace:["i","m","a","p"].includes(v)?v:"i",secs:lgNormSecs(ms?raw/1000:raw),unit:ms?"ms":"s"});saveProfiles();
   lgPaceRefresh();close()};
  ov.querySelector("#lgPaceOk").focus();
 }
@@ -3221,9 +3235,58 @@ function lgResume(){
 }
 function lgPause(){
  const L=LG;clearTimeout(L.timer);clearInterval(L.clk);L.state="pause";
- if(L.isList){if(L.idx>=0)L.idx--}
- else{const els=document.querySelectorAll("#lgText .lg-w");if(L.idx>=0&&els[L.idx]){els[L.idx].classList.remove("cur","done");L.idx--}}
+ if(L.isList){const o=$("#lgOne");if(o&&L.idx>=0&&o.querySelector(".sy"))o.textContent=L.words[L.idx];if(L.idx>=0)L.idx--}
+ else{const els=document.querySelectorAll("#lgText .lg-w");if(L.idx>=0&&els[L.idx]){els[L.idx].classList.remove("cur","done");if(els[L.idx].querySelector(".sy"))els[L.idx].textContent=L.words[L.idx];L.idx--}}
  const b=$("#lgPlay");if(b)b.textContent="▶ Continuar";abMsg("Pausado. Aperte ▶ Continuar quando quiser");
+}
+/* Separador de sílabas (português): usa as sílabas já cadastradas em WORDS e, nas demais palavras, regras gerais */
+let LGSYL_MAP=null;
+function lgSyl(raw){
+ const m=String(raw).match(/^([^\p{L}\p{N}]*)(.*?)([^\p{L}\p{N}]*)$/u),pre=m[1],core=m[2],suf=m[3];
+ let parts=null;
+ if(!LGSYL_MAP){LGSYL_MAP={};try{WORDS.forEach(x=>{if(x&&x.w&&x.s&&x.s.join("")===x.w)LGSYL_MAP[x.w.toUpperCase()]=x.s})}catch(_){}}
+ const known=LGSYL_MAP[core.toUpperCase()];
+ if(known&&known.join("").length===core.length){let p=0;parts=known.map(s=>{const t=core.substr(p,s.length);p+=s.length;return t})}
+ else parts=lgSylRule(core);
+ if(!parts.length)return[raw];
+ parts[0]=pre+parts[0];parts[parts.length-1]+=suf;return parts;
+}
+function lgSylRule(w){
+ const L=w.toLowerCase(),n=L.length,V="aeiouáéíóúâêôãõàü",S="aeoáéóâêô";
+ const isV=i=>{const c=L[i];if(!V.includes(c))return false;
+  if(c==="u"&&i>0&&"qg".includes(L[i-1])&&i+1<n&&"eiéêí".includes(L[i+1]))return false;return true};
+ if(!/[aeiouáéíóúâêôãõàü]/.test(L))return[w];
+ const nuc=[];let i=0;
+ while(i<n){
+  if(!isV(i)){i++;continue}
+  let j=i;while(j+1<n&&isV(j+1)){
+   const a=L[j],b=L[j+1];
+   if((S.includes(a)&&S.includes(b))||("íú".includes(b))||("íú".includes(a)&&false))break;
+   j++}
+  nuc.push([i,j]);i=j+1}
+ const ONS=["ch","lh","nh","qu","gu","bl","cl","fl","gl","pl","tl","br","cr","dr","fr","gr","pr","tr","vr"];
+ const cuts=[];
+ for(let k=0;k+1<nuc.length;k++){
+  const a=nuc[k][1]+1,b=nuc[k+1][0],c=L.slice(a,b);
+  if(c.length===0)cuts.push(b);
+  else if(c.length===1)cuts.push(a);
+  else{let on=1;if(ONS.includes(c.slice(-2)))on=2;
+   if(c.length>=3&&c.slice(-3,-1)==="nh"&&false)on=1;
+   cuts.push(b-on)}
+ }
+ const out=[];let p=0;cuts.forEach(x=>{out.push(w.slice(p,x));p=x});out.push(w.slice(p));
+ return out.filter(Boolean);
+}
+function lgSylRun(el,word,ms){
+ const L=LG,p=lgSyl(word);
+ if(!CFG.syl||p.length<2){L.timer=setTimeout(lgStep,ms);return}
+ el.innerHTML=p.map(s=>`<span class="sy">${esc(s)}</span>`).join("");
+ const sp=el.querySelectorAll(".sy"),dt=ms/p.length;let k=0;
+ const tick=()=>{if(LG!==L||!abAlive(L.tok)||L.state!=="play")return;
+  if(k>0)sp[k-1].classList.remove("on");
+  if(k>=p.length){lgStep();return}
+  sp[k].classList.add("on");k++;L.timer=setTimeout(tick,dt)};
+ tick();
 }
 function lgStep(){
  const L=LG;if(!L||!abAlive(L.tok)||L.state!=="play")return;
@@ -3234,22 +3297,22 @@ function lgStep(){
   if(o){o.textContent=L.words[L.idx];o.classList.remove("idle","pop");void o.offsetWidth;o.classList.add("cur","pop")}
   const f=$("#lgFill");if(f)f.style.width=Math.round((L.idx+1)/L.words.length*100)+"%";
   const n=$("#lgNum");if(n)n.textContent="Palavra "+(L.idx+1)+" de "+L.words.length;
-  L.timer=setTimeout(lgStep,lgPaceInfo().s*1000);return;
+  lgSylRun(o,L.words[L.idx],lgPaceInfo().s*1000);return;
  }
  const els=document.querySelectorAll("#lgText .lg-w");
- if(L.idx>=0&&els[L.idx]){els[L.idx].classList.remove("cur");els[L.idx].classList.add("done")}
+ if(L.idx>=0&&els[L.idx]){els[L.idx].classList.remove("cur");els[L.idx].classList.add("done");if(els[L.idx].querySelector(".sy"))els[L.idx].textContent=L.words[L.idx]}
  L.idx++;
  if(L.idx>=L.words.length){lgFinish(false);return}
  els[L.idx].classList.add("cur");
  const f=$("#lgFill");if(f)f.style.width=Math.round(L.idx/L.words.length*100)+"%";
- L.timer=setTimeout(lgStep,lgPaceInfo().s*1000);
+ lgSylRun(els[L.idx],L.words[L.idx],lgPaceInfo().s*1000);
 }
 function lgFinish(skipped){
  const L=LG;if(!L||L.state==="done")return;
  clearTimeout(L.timer);clearInterval(L.clk);L.state="done";
  const f=$("#lgFill");if(f)f.style.width="100%";
  if(L.isList){const t=$("#lgText");if(t){t.innerHTML='<span class="lg-w done">✅ Muito bem!</span>';lgFit()}const n=$("#lgNum");if(n)n.textContent=L.words.length+" de "+L.words.length+" palavras"}
- else document.querySelectorAll("#lgText .lg-w").forEach(e=>{e.classList.remove("cur");e.classList.add("done")});
+ else document.querySelectorAll("#lgText .lg-w").forEach((e,n)=>{e.classList.remove("cur");e.classList.add("done");if(e.querySelector(".sy"))e.textContent=L.words[n]});
  const b=$("#lgPlay");if(b){b.disabled=false;b.textContent="↻ Ler de novo";b.onclick=()=>lgStart(L.kind,L.id,L.i)}
  const p=active(),total=L.u.items.length,last=L.i>=total-1,now=new Date().toISOString();let lgN=0;
  if(p){const d=lgData(p);
