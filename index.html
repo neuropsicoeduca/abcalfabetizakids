@@ -714,6 +714,12 @@ body.game-mode .app-footer p{margin:0}
 .cfg-sec span{display:block;color:#5b6280;font-size:.9rem;font-weight:700;margin-top:2px}
 .cfg-letter{padding-left:4px}
 .cfg-letter label.cs{font-family:"Playwrite BR","Segoe Script","Lucida Handwriting","Snell Roundhand","Brush Script MT","Bradley Hand",cursive;font-weight:600}
+.gm-top{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.gm-grp{border:2px solid #e3e8f7;border-radius:14px;padding:8px 12px;margin-bottom:8px}
+.gm-grp label{display:flex;align-items:center;gap:8px;padding:5px 0;font-weight:800;color:var(--ink2,#1c2150);cursor:pointer}
+.gm-grp .gm-h{font-weight:900;border-bottom:1px solid #eceffa;margin-bottom:2px}
+.gm-grp .gm-i{padding-left:22px}
+.gm-grp input[type=checkbox]{width:20px;height:20px;accent-color:#3b4fd0;flex:none}
 .cfg-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
 .bottom .hud-right{margin-left:auto;flex:0 0 auto}
 .bottom .hud-btn,.bottom .hud-pill{box-shadow:0 4px 0 #e3d3a8}
@@ -1460,6 +1466,57 @@ function renderProfiles(){
  el.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>{activeId=b.dataset.id;renderStudentMenu()});
  el.querySelectorAll("[data-delete-student]").forEach(b=>b.onclick=ev=>{ev.stopPropagation();const id=b.dataset.deleteStudent;const student=profiles.find(p=>p.id===id);if(!student)return;if(!confirm(`Excluir o participante “${student.name}” e todo o seu progresso? Essa ação não poderá ser desfeita.`))return;profiles=profiles.filter(p=>p.id!==id);allProfiles=allProfiles.filter(p=>!(p.teacherId===activeTeacherId&&p.id===id));if(activeId===id)activeId=null;saveProfiles();renderClassDashboard()})
 }
+/* ===== Jogos liberados por participante: o professor escolhe o que aparece no menu de cada criança =====
+   p.games = lista de chaves liberadas; sem lista (participante antigo) = todos os jogos aparecem. */
+function gmCatalog(){
+ const fn=(typeof FN_ET!=="undefined"?FN_ET:[]).map(e=>["fn:"+e[0],`${e[1]} ${e[2]}`]);
+ return [
+  {t:"🔤 Alfabeto",a:[["ab:teste","🔊 Sons das letras"],["ab:caca","🔍 Caça-Letras"],["ab:inicial","🅰️ Qual letra começa?"]]},
+  {t:"📚 Sílabas e palavras",a:["simples","complexas","simples_montar","complexas_montar"].map(c=>["cat:"+c,catLabel(c)])},
+  {t:"🧠 Consciência fonológica",a:fn},
+  {t:"📖 Treino de Leitura Livre",a:[["fl:1","📘 Palavras simples"],["fl:2","📗 Palavras complexas"]]},
+  {t:"⏱️ Treino de Fluência Leitora",a:[["lg:p","📖 Palavras"],["lg:f","💬 Frases"],["lg:tc","📄 Textos curtos"]]}
+ ];
+}
+function gmAllKeys(){return gmCatalog().flatMap(g=>g.a.map(x=>x[0]))}
+function gmOn(p,k){return !Array.isArray(p.games)||p.games.includes(k)}
+function gmApply(m,p){
+ if(!Array.isArray(p.games))return;
+ m.querySelectorAll("[data-ab],[data-cat],[data-fn],[data-fl],[data-lg]").forEach(b=>{
+  const k=b.dataset.ab!=null?"ab:"+b.dataset.ab:b.dataset.cat!=null?"cat:"+b.dataset.cat:b.dataset.fn!=null?"fn:"+b.dataset.fn:b.dataset.fl!=null?"fl:"+b.dataset.fl:"lg:"+b.dataset.lg;
+  if(!gmOn(p,k))b.remove()});
+ let vis=0;
+ m.querySelectorAll(".category-grid").forEach(g=>{
+  if(g.children.length){vis++;return}
+  let e=g.previousElementSibling;g.remove();
+  while(e&&(e.matches("h2,.pw-inst,.lg-title-row"))){const q=e.previousElementSibling;e.remove();e=q}});
+ if(!vis){const a=m.querySelector(".admin");if(a)a.insertAdjacentHTML("beforebegin",'<p class="muted" style="margin:22px 0;text-align:center">Nenhum jogo liberado para este participante. Use o botão “🎮 Escolher jogos deste participante”, abaixo.</p>')}
+}
+function gmOpen(p){
+ if(document.getElementById("gmOv"))return;
+ const ov=document.createElement("div");ov.className="cfg-ov";ov.id="gmOv";
+ const cat=gmCatalog();
+ ov.innerHTML=`<div class="cfg-box" role="dialog" aria-modal="true" aria-labelledby="gmT"><h2 id="gmT">🎮 Jogos de ${esc(p.name)}</h2><p class="muted small" style="margin:0 0 8px">Marque os jogos que vão aparecer no menu deste participante. Os desmarcados ficam escondidos (o progresso é mantido).</p>
+ <div class="gm-top"><button type="button" class="lg-chip" id="gmAll">Marcar todos</button><button type="button" class="lg-chip" id="gmNone">Desmarcar todos</button></div>
+ ${cat.map((g,gi)=>`<div class="gm-grp"><label class="gm-h"><input type="checkbox" data-gg="${gi}"> ${g.t}</label>${g.a.map(x=>`<label class="gm-i"><input type="checkbox" data-k="${x[0]}" data-g="${gi}" ${gmOn(p,x[0])?"checked":""}> ${x[1]}</label>`).join("")}</div>`).join("")}
+ <div class="cfg-actions"><button class="ghost" id="gmCancel" type="button">Cancelar</button><button class="primary" id="gmOk" type="button">Salvar</button></div></div>`;
+ document.body.appendChild(ov);
+ const ks=()=>[...ov.querySelectorAll("input[data-k]")],gs=()=>[...ov.querySelectorAll("input[data-gg]")];
+ const sync=()=>gs().forEach(h=>{const l=ks().filter(c=>c.dataset.g===h.dataset.gg),n=l.filter(c=>c.checked).length;h.checked=n===l.length;h.indeterminate=n>0&&n<l.length});
+ ks().forEach(c=>c.onchange=sync);
+ gs().forEach(h=>h.onchange=()=>{ks().filter(c=>c.dataset.g===h.dataset.gg).forEach(c=>c.checked=h.checked);sync()});
+ ov.querySelector("#gmAll").onclick=()=>{ks().forEach(c=>c.checked=true);sync()};
+ ov.querySelector("#gmNone").onclick=()=>{ks().forEach(c=>c.checked=false);sync()};
+ sync();
+ const close=()=>ov.remove();
+ ov.onclick=e=>{if(e.target===ov)close()};
+ ov.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
+ ov.querySelector("#gmCancel").onclick=close;
+ ov.querySelector("#gmOk").onclick=()=>{
+  const on=ks().filter(c=>c.checked).map(c=>c.dataset.k);
+  p.games=on.length===ks().length?null:on;saveProfiles();close();renderStudentMenu()};
+ ov.querySelector("#gmOk").focus();
+}
 function renderStudentMenu(){
  const homeButton=$("#homeBtn");if(homeButton)homeButton.classList.remove("hidden");
  commitStageClock();clearTimeout(autoTimer);
@@ -1468,13 +1525,15 @@ function renderStudentMenu(){
  m.innerHTML=`<section class="panel"><div class="topline stu-top"><div class="stu-hello"><h1>Olá, ${esc(p.name)}! 👋 O que vamos fazer agora?</h1><div class="stu-stars" id="stuStars" aria-live="polite"><span class="stu-star" aria-hidden="true">⭐</span><span>${starsLabel(totalStars(p))}</span></div></div><div class="stu-btns"><button class="secondary" id="changeStudent">← VOLTAR</button><button class="secondary" id="openCfgBtn" type="button">⚙️ CONFIGURAÇÕES</button></div></div>
  ${abMenuMarkup(p)}<h2 style="margin-top:22px">📚 Sílabas e palavras</h2><div class="category-grid">${["simples","complexas","simples_montar","complexas_montar"].map(c=>`<button class="category" data-cat="${c}"><strong>${catLabel(c)}</strong><div class="progress" style="margin:12px 0 6px"><span style="width:${Math.round(catProgress(p,c)/Math.max(1,catTotal(c))*100)}%"></span></div><span class="small">${catProgress(p,c)} de ${catTotal(c)} concluídas</span></button>`).join("")}</div>
  ${fnMenuMarkup(p)}${flMenuMarkup(p)}${lgMenuMarkup(p)}
- <div class="admin"><div class="row"><button class="primary" id="openReport" type="button">📊 Relatório do participante</button><button class="ghost" id="resetStudentProgress">Reiniciar progresso deste participante</button></div></div></section>`;
+ <div class="admin"><div class="row"><button class="secondary" id="openGames" type="button">🎮 Escolher jogos deste participante</button><button class="primary" id="openReport" type="button">📊 Relatório do participante</button><button class="ghost" id="resetStudentProgress">Reiniciar progresso deste participante</button></div></div></section>`;
  $("#changeStudent").onclick=renderClassDashboard;countUpStars(totalStars(p));
  m.querySelectorAll("[data-ab]").forEach(b=>b.onclick=()=>abLevels(b.dataset.ab));
   m.querySelectorAll("[data-fn]").forEach(b=>b.onclick=()=>fnOpen(b.dataset.fn));
  m.querySelectorAll("[data-fl]").forEach(b=>b.onclick=()=>flTexts(+b.dataset.fl));
  m.querySelectorAll("[data-lg]").forEach(b=>b.onclick=()=>lgOpen(b.dataset.lg));
  $("#openReport").onclick=()=>renderReport(p.id);
+ $("#openGames").onclick=()=>gmOpen(p);
+ gmApply(m,p);
  const gb=$("#lgGuideBtn");if(gb)gb.onclick=lgGuideOpen;
  $("#openCfgBtn").onclick=openCfg;
  m.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>startCategory(b.dataset.cat));
