@@ -641,13 +641,71 @@ body.game-mode .app-footer p{margin:0}
 .fl-one.lg-group .fl-card strong{font-size:clamp(1rem,3.2vh,1.4rem)}
 .fl-one.lg-group .fl-card .ab-lvl-s{font-size:clamp(.75rem,2.1vh,1rem)}
 .fl-card.lido{border-color:#22b573;background:#f1fbf5}
+.fl-lvl.lido{border-color:#22b573;background:#f1fbf5}.fl-lv-board{overflow-y:auto}
 .fl-board{display:flex;align-items:center;justify-content:center}
 .fl-text{width:100%;max-height:100%;overflow:auto;text-align:center;font-weight:900;color:var(--ink2);line-height:1.55;font-size:2rem}
 .fl-text.uc{text-transform:uppercase}.fl-text.lc{text-transform:none}
 .fl-text.cur{text-transform:none;font-family:"Playwrite BR","Segoe Script","Lucida Handwriting","Snell Roundhand","Brush Script MT","Bradley Hand",cursive;font-weight:600;line-height:1.7}
 .fl-w{display:inline-block;padding:0 .16em;margin:.04em .03em;border-radius:.3em;cursor:pointer;transition:background .2s,color .2s;user-select:none;-webkit-tap-highlight-color:transparent}
 .fl-w:active{filter:brightness(.95)}
-.fl-w.read{color:#0f6b43;background:#bff0d3;box-shadow:0 .07em 0 #8ad9b1}
+.fl-w.read{color:#0f6b43;background:#bff0d3;box-shadow:0 .07em 0 #8ad9b1;text-decoration:underline;text-decoration-color:#22b573;text-decoration-thickness:.09em;text-underline-offset:.14em}
+.fl-w:focus-visible{outline:3px solid #4c9ce8;outline-offset:2px}
+.fl-after{width:min(100%,640px);display:flex;flex-direction:column;align-items:center;gap:clamp(4px,1vh,10px);margin-top:4px;text-transform:none;font-family:"Nunito","Poppins","Segoe UI",system-ui,sans-serif;font-weight:800;line-height:1.3;word-spacing:normal}
+.fl-re-t{font-size:clamp(.78rem,2vh,.98rem);color:#5b6280}
+.fl-rebtn,.fl-obb{border:2px solid #b9c8f5;border-radius:999px;background:#e9f0ff;color:#1b2250;font:inherit;font-size:clamp(.78rem,2vh,.95rem);font-weight:800;padding:4px 14px;min-height:36px;cursor:pointer;text-transform:none}
+.fl-rebtn{border-color:#22b573;background:#f1fbf5;color:#0f6b43}
+.fl-ob{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 10px;border:2px dashed #b9c8f5;border-radius:16px;background:#f4f7ff;width:100%;box-sizing:border-box}
+.fl-ob-t{font-size:clamp(.75rem,1.9vh,.92rem);color:#1b2250}
+.fl-ob-b{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.fl-obb.on{border-color:#4c9ce8;background:#dbeafe;box-shadow:inset 0 0 0 1px #4c9ce8}
+.fl-ob-n{font-size:clamp(.68rem,1.7vh,.82rem);color:#5b6280;font-weight:700}
+.fl-sum{margin-top:2px;line-height:1.35}.fl-sum .progress{margin:4px 0 2px;max-width:420px}
+.fl-ori .ab-ori-t{font-weight:500}
+.fl-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.fl-rebtn,.fl-obb{min-height:32px;padding:3px 10px;font-size:clamp(.72rem,1.9vh,.9rem)}
+.fl-re-t{font-size:clamp(.72rem,1.8vh,.9rem)}
+.fl-qz.fin{padding:clamp(3px,.6vh,8px)}
+.fl-qz.fin .fl-qo.dim{display:none}
+.fl-ob-b{flex-wrap:nowrap}.fl-obb{padding:3px 8px;white-space:nowrap}
+@media(max-width:700px){.fl-re-t{display:none}}
+.fl-qz.fin .fl-qtag{display:none}
+.fl-qz.fin .fl-qin{gap:clamp(4px,.9vh,8px)}
+.fl-qz.fin .fl-qq{font-size:clamp(1rem,3.2vh,1.7rem)}
+.fl-qz.fin .fl-qo{font-size:clamp(.9rem,2.5vh,1.3rem);padding:clamp(4px,.9vh,10px) 10px;min-height:38px;border-width:2px;border-radius:14px;box-shadow:0 3px 0 #dfe5f5}
+.fl-qz.fin .fl-qo.right{box-shadow:0 3px 0 #8ad9b1}
+.fl-qz.fin .fl-qopts{gap:clamp(4px,.9vh,8px)}
+.fl-qz.fin .fl-qre{min-height:32px;padding:3px 12px}
+@media(max-width:700px){
+.fl-qz .fl-qtag{display:none}
+.fl-qz .fl-qin{gap:clamp(4px,.9vh,8px)}
+.fl-qz .fl-qq{font-size:clamp(1rem,3.2vh,1.7rem)}
+.fl-qz .fl-qo{font-size:clamp(.9rem,2.5vh,1.3rem);padding:clamp(4px,.9vh,10px) 10px;min-height:38px;border-width:2px;border-radius:14px;box-shadow:0 3px 0 #dfe5f5}
+.fl-qz .fl-qo.right{box-shadow:0 3px 0 #8ad9b1}
+.fl-qz .fl-qopts{gap:clamp(4px,.9vh,8px)}
+.fl-qz .fl-qre{min-height:32px;padding:3px 12px}
+}
+@media(max-height:520px){.fl-re-t{display:none}.fl-ob{padding:3px 8px;gap:2px}.fl-ob-t{font-size:.7rem}}
+
+
+/* Leitura: espaçamento entre palavras/linhas e atividade de compreensão (Treino de Leitura Livre) */
+.fl-text{word-spacing:.14em;padding:.15em .3em;box-sizing:border-box}
+.fl-qz{width:100%;height:100%;display:flex;flex-direction:column;overflow:auto;box-sizing:border-box;padding:clamp(4px,1vh,10px);text-align:center;font-weight:900;color:var(--ink2)}
+.fl-qz.uc{text-transform:uppercase}.fl-qz.lc{text-transform:none}
+.fl-qz.cur{text-transform:none;font-family:"Playwrite BR","Segoe Script","Lucida Handwriting","Snell Roundhand","Brush Script MT","Bradley Hand",cursive;font-weight:600;line-height:1.6}
+.fl-qin{margin:auto 0;display:flex;flex-direction:column;align-items:center;gap:clamp(5px,1.3vh,14px);width:100%}
+.fl-qtag{font-weight:800;color:#5b6280;font-size:clamp(.72rem,1.9vh,.95rem)}
+.fl-qq{font-size:clamp(1.05rem,3.6vh,2rem);line-height:1.25;word-spacing:.1em}
+.fl-qtext{max-width:min(100%,700px);padding:clamp(8px,1.6vh,14px) clamp(10px,2vw,18px);border:2px dashed #b9c8f5;border-radius:16px;background:#f4f7ff;font-size:clamp(1rem,3vh,1.45rem);line-height:1.5;word-spacing:.12em}
+.fl-qopts{display:flex;flex-direction:column;gap:clamp(6px,1.3vh,14px);width:min(100%,640px)}
+.fl-qo{border:3px solid #dfe5f5;border-radius:20px;background:#fff;box-shadow:0 5px 0 #dfe5f5;color:var(--ink2);font:inherit;font-size:clamp(1rem,3vh,1.6rem);padding:clamp(5px,1.2vh,14px) 12px;min-height:44px;cursor:pointer;line-height:1.2;-webkit-tap-highlight-color:transparent}
+.fl-qo:active:not(:disabled){filter:brightness(.96)}
+.fl-qo.right{border-color:#22b573;background:#e6f9ee;box-shadow:0 5px 0 #8ad9b1;color:#0f6b43}
+.fl-qo.wrong{border-color:#f43f5e;background:#ffe4e8;color:#9f1239;box-shadow:none;transform:translateY(4px);animation:shake .4s}
+.fl-qo.dim{opacity:.35;box-shadow:none}
+.fl-qre{border:2px solid #b9c8f5;border-radius:999px;background:#e9f0ff;color:#1b2250;font:inherit;font-size:clamp(.78rem,2vh,.95rem);font-weight:800;padding:4px 14px;min-height:34px;cursor:pointer;text-transform:none}
+@media(orientation:landscape){.fl-qopts{flex-direction:row;width:100%}.fl-qo{flex:1 1 0;min-width:0}}
+@media(max-height:760px){.fl-qtag{display:none}}
+@media(min-height:761px){.fl-qq{font-size:clamp(1.6rem,5vh,2.8rem)}.fl-qo{font-size:clamp(1.3rem,3.6vh,2.1rem);padding:clamp(12px,2vh,22px) 16px}.fl-qtext{font-size:clamp(1.15rem,3vh,1.7rem)}.fl-qopts{width:min(100%,760px)}}
 .row>.ab-discreet{flex:0 0 auto}.ab-discreet{font-size:.78rem;font-weight:700;letter-spacing:.05em;padding:6px 14px;border-radius:999px;opacity:.9;box-shadow:none}
 .ab-letters{grid-template-columns:minmax(0,1.9fr) minmax(0,1fr)}
 .ab-letters .ab-grid{--cols:7;--rows:4}
@@ -829,6 +887,9 @@ body.game-mode .app-footer p{margin:0}
 .fw-tag{font-size:min(calc(7cqh / var(--r,2)),2.6cqw);font-weight:800;color:#8a6a00}
 .ab-levels.fc-many{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(orientation:portrait){.ab-levels.fc-many{grid-template-columns:minmax(0,1fr);grid-template-rows:none;grid-auto-rows:max-content;overflow-y:auto;align-content:start}}
+/* Treino de Leitura Livre: 4 níveis (categoria simples) em tela vertical empilham com rolagem, sem esmagar os cartões */
+@media(orientation:portrait){.ab-levels.fl-lv-board.fc-two{grid-template-columns:minmax(0,1fr);grid-template-rows:none;grid-auto-rows:max-content;overflow-y:auto;align-content:start}}
+@media(orientation:landscape) and (max-height:520px){.ab-levels.fl-lv-board{grid-template-rows:none;grid-auto-rows:max-content;overflow-y:auto;align-content:start}}
 .hud-btn.mini.on{background:#e9f0ff;box-shadow:0 4px 0 #9db4ff}
 </style>
 <style>
@@ -1474,7 +1535,7 @@ function gmCatalog(){
   {t:"🔤 Alfabeto",a:[["ab:teste","🔊 Sons das letras"],["ab:caca","🔍 Caça-Letras"],["ab:inicial","🅰️ Qual letra começa?"]]},
   {t:"📚 Sílabas e palavras",a:["simples","complexas","simples_montar","complexas_montar"].map(c=>["cat:"+c,catLabel(c)])},
   {t:"🧠 Consciência fonológica",a:fn},
-  {t:"📖 Treino de Leitura Livre",a:[["fl:1","📘 Palavras simples"],["fl:2","📗 Palavras complexas"]]},
+  {t:"📖 Treino de Leitura Livre",a:[["fl:1","📘 Textos com palavras simples"],["fl:2","📗 Textos com palavras complexas"]]},
   {t:"⏱️ Treino de Fluência Leitora",a:[["lg:p","📖 Palavras"],["lg:f","💬 Frases"],["lg:tc","📄 Textos curtos"]]}
  ];
 }
@@ -1581,10 +1642,10 @@ function rpBlocks(p){
   [["silabas","👏 Conte as sílabas"],["inicial","🔤 Som inicial"],["ditado","✏️ Ditado com letras"],["juntar","🧩 Junte os Sons"]].forEach(x=>{const ks=fnKeys(x[0]);out.push({g:"🧠 Consciência fonológica",t:x[1],note:ks.length+" atividades",subs:ks.map(L=>sub(fnCard(x[0],L)[0],fd.n[x[0]+"|"+L]))})});
   /* Treino de Leitura Livre */
  const f=flAlpha(p);
- [[1,"📘 Palavras simples"],[2,"📗 Palavras complexas"]].forEach(x=>{
-  const l=FL_TEXTS.filter(t=>t.n===x[0]);
-  const items=l.map(t=>({t:t.t,n:(f.textos[t.id]&&f.textos[t.id].n)||0}));
-  out.push({g:"📖 Treino de Leitura Livre",t:x[1],unit:"textos",items})});
+ [[1,"📘 Textos com palavras simples"],[2,"📗 Textos com palavras complexas"]].forEach(x=>{
+  const l=FL_TEXTS.filter(t=>flCat(t)===x[0]).sort((a,b)=>a.lv-b.lv);
+  const items=l.map(t=>{const r=f.textos[t.id]||{};return {t:"Nível "+t.lv+" · "+t.t,n:r.n||0,ini:!!r.ini,d:r.quando?flDate(r.quando):"",o:(r.obs&&FL_OBS[r.obs.c])||""}});
+  out.push({g:"📖 Treino de Leitura Livre",t:x[1],unit:"textos",items,rel:true})});
  /* Treino de Fluência Leitora */
  const d=lgData(p);
  const lgItems=k=>lgUnits(k).map(u=>({t:u.t,n:(d.u[u.id]&&d.u[u.id].n)||0}));
@@ -1601,10 +1662,10 @@ function rpBlocks(p){
   b.pct=rpPct(b.done,b.total)});
  return out;
 }
-function rpChips(items){return `<div class="rp-chips">${items.map(i=>`<span class="rp-chip${i.n?" on":""}">${esc(i.t)}${i.n?` • ${i.n}x`:""}</span>`).join("")}</div>`}
+function rpChips(items){return `<div class="rp-chips">${items.map(i=>`<span class="rp-chip${i.n?" on":""}">${esc(i.t)}${i.n?` • ${i.n}x`:(i.ini?" • em andamento":"")}${i.d?` • última: ${esc(i.d)}`:""}${i.o?` • adulto: ${esc(i.o)}`:""}</span>`).join("")}</div>`}
 function rpBlockHTML(b){
  const unit=b.unit||"sub-blocos";
- const head=`<div class="rp-head"><strong>${b.pct}%</strong> <span>${b.done} de ${b.total} ${unit} concluídos • ${b.real} ${b.real===1?"realização":"realizações"}</span></div>${rpBar(b.pct)}`;
+ const head=`<div class="rp-head"><strong>${b.pct}%</strong> <span>${b.done} de ${b.total} ${unit} concluídos • ${b.real} ${b.real===1?"realização":"realizações"}${b.rel?` (${Math.max(0,b.real-b.done)} ${b.real-b.done===1?"releitura":"releituras"})`:""}</span></div>${rpBar(b.pct)}`;
  let body="";
  if(b.items)body=`<details class="rp-det"><summary>Ver os ${b.total} ${unit}</summary>${rpChips(b.items)}</details>`;
  else if(b.syl){
@@ -2951,55 +3012,266 @@ function fnFinOri(){return fnOriBox([fnOL("🎉","Ao final:","parabenize a crian
 
 /* ===== Treino de fluência de leitura (reconhecimento de voz) ===== */
 const FL_TEXTS=[
- {id:"t1",t:"O Gato",e:"🐱",n:1,x:"O gato bebe leite. O gato é bonito."},
- {id:"t2",t:"A Bola",e:"⚽",n:1,x:"A bola é da Ana. A Ana joga bola."},
- {id:"t3",t:"O Pato",e:"🦆",n:1,x:"O pato nada no lago. O pato come milho."},
- {id:"t4",t:"A Casa",e:"🏠",n:1,x:"A casa é bonita. Na casa tem uma mesa."},
- {id:"t9",t:"A Vaca",e:"🐄",n:1,x:"A vaca come capim. A vaca dá leite. Eu bebo leite."},
- {id:"t10",t:"A Lua",e:"🌙",n:1,x:"A lua sai de noite. A lua é bela. Eu vejo a lua da janela."},
- {id:"t13",t:"O Sapo",e:"🐸",n:1,x:"O sapo pula na lama. O sapo vê a mosca. A mosca fugiu."},
- {id:"t14",t:"O Peixe",e:"🐟",n:1,x:"O peixe nada no rio. O peixe é amarelo. Eu vejo o peixe."},
- {id:"t15",t:"O Sol",e:"☀️",n:1,x:"O sol é amarelo. O sol dá luz. Eu fico no sol com a Lia."},
- {id:"t16",t:"O Bebê",e:"👶",n:1,x:"O bebê dorme no berço. A mamãe vê o bebê. O bebê é lindo."},
- {id:"t17",t:"O Macaco",e:"🐒",n:1,x:"O macaco pula no galho. O macaco come banana. Eu rio do macaco."},
- {id:"t18",t:"O Bolo",e:"🎂",n:1,x:"A mamãe fez um bolo. O bolo é de uva. Eu como o bolo com a Lia."},
- {id:"t5",t:"A Floresta",e:"🌳",n:2,x:"Na floresta grande vive uma coruja branca. Ela dorme de dia e trabalha à noite. Os filhotes brincam perto da árvore."},
- {id:"t6",t:"A Chuva",e:"🌧️",n:2,x:"A chuva forte molhou a grama do jardim. As crianças brincaram de barquinho na enxurrada. Depois o sol brilhou outra vez."},
- {id:"t7",t:"A Feira",e:"🍎",n:2,x:"Eu vou à feira com a minha mãe. Ela compra laranja, abacaxi e framboesa. Eu carrego a sacola cheia de frutas."},
- {id:"t8",t:"A Escola",e:"🏫",n:2,x:"Na escola nova tem uma biblioteca bonita. A professora conta histórias de dragões e princesas. Todos escutam com muita atenção."},
- {id:"t11",t:"O Circo",e:"🎪",n:2,x:"No circo da cidade, o palhaço faz truques com bolas coloridas. O mágico tira um coelho da cartola. A plateia aplaude com alegria."},
- {id:"t12",t:"A Montanha",e:"⛰️",n:2,x:"Meu primo subiu a montanha com a família. No topo, eles viram nuvens brancas e um vale verde. Foi uma aventura inesquecível."},
- {id:"t19",t:"O Mar",e:"🌊",n:2,x:"No domingo fomos ver o mar. A água estava azul e as ondas batiam na areia. Eu construí um castelo com a minha irmã."},
- {id:"t20",t:"O Parque",e:"🎡",n:2,x:"Eu brinco no parque com os meus amigos. Pulamos na gangorra e corremos pelo gramado. No fim, tomamos sorvete de chocolate."},
- {id:"t21",t:"A Fazenda",e:"🚜",n:2,x:"Na fazenda do meu avô tem galinhas, porcos e cavalos. De manhã, ele ordenha a vaca e colhe os ovos frescos."},
- {id:"t22",t:"O Foguete",e:"🚀",n:2,x:"O foguete branco subiu até as estrelas. O astronauta olhou a Terra pela janela e viu oceanos, florestas e nuvens."},
- {id:"t23",t:"Os Dinossauros",e:"🦕",n:2,x:"Há milhões de anos, os dinossauros viviam na Terra. Alguns eram gigantes e comiam folhas. Outros caçavam com dentes afiados."},
- {id:"t24",t:"O Piquenique",e:"🧺",n:2,x:"No sábado, a família fez um piquenique debaixo da mangueira. Levamos sanduíches, suco gelado e uma toalha xadrez. Foi uma tarde feliz."},
- {id:"t25",t:"A Pipa",e:"🪁",n:1,x:"A pipa é azul. A pipa sobe no céu. Eu vejo a pipa voar."},
- {id:"t26",t:"O Pão",e:"🍞",n:1,x:"O pão é macio. A vovó faz o pão. Eu como pão com leite."},
- {id:"t27",t:"O Livro",e:"📖",n:1,x:"O livro é novo. Eu leio o livro de noite. O livro tem um gato."},
- {id:"t28",t:"O Zoológico",e:"🦁",n:2,x:"No zoológico, vimos girafas, leões e elefantes. A girafa mastigava folhas bem altas. Todos tiraram fotografias."},
- {id:"t29",t:"O Aniversário",e:"🎉",n:2,x:"Hoje é o aniversário da minha prima. Nós cantamos parabéns e comemos brigadeiro. Ela soprou as velinhas e fez um pedido."},
- {id:"t30",t:"A Pescaria",e:"🎣",n:2,x:"Meu tio me levou para uma pescaria no rio. Esperamos quietinhos até o peixe beliscar a isca. Voltamos com três peixes e muita felicidade."}
+ {id:"t33",t:"A Mula na Lama",e:"🐴",n:1,lv:1,x:"A mula é Lula. A mula pula a lama. A lama é mole, mole, mole."},
+ {id:"t31",t:"A Pata Lila",e:"🦆",n:1,lv:1,x:"A pata é Lila. O pato é Tomé. Pula a pata, pula o pato. Pula, pula, pula!"},
+ {id:"t62",t:"A Pipa Pula",e:"🪁",n:1,lv:1,x:"A pipa pula e pula. A Lila pula a pipa. O Tomé pula a pipa. Pula, pula, pula!"},
+ {id:"t61",t:"A Mala",e:"🧳",n:1,lv:1,x:"A Lila pula a mala. A mala é mole. O Tomé pula a mala e a Lila pula, pula, pula."},
+ {id:"t34",t:"O Bode",e:"🐐",n:1,lv:2,x:"O bode é fofo. O bode é bobo. O bode bebe, bebe e bebe."},
+ {id:"t63",t:"A Fefa e o Beto",e:"👫",n:1,lv:2,x:"O Beto vê a Fefa. A Fefa vê o Beto. O Beto dá o pote. A Fefa bebe e bebe."},
+ {id:"t64",t:"O Dado",e:"🎲",n:1,lv:2,x:"O vovô vê o dado. O dado é da Dina. O vovô dá o dado e a Dina vê o dado."},
+ {id:"t35",t:"A Uva e o Nabo",e:"🍇",n:1,lv:2,x:"A Nina vê o Dudu e dá a uva. O Dudu dá o nabo. A uva é da Nina. O nabo é do Dudu."},
+ {id:"t36",t:"A Vovó",e:"👵",n:1,lv:2,x:"A vovó vê a Nina. A Nina dá o bolo. A vovó dá a uva. A Nina é fofa e a vovó é fofa."},
+ {id:"t2",t:"A Bola",e:"⚽",n:1,lv:3,x:"A bola é da Ana. A Ana joga bola."},
+ {id:"t1",t:"O Gato",e:"🐱",n:1,lv:3,x:"O gato é fofo. O gato pula, pula e pula. A Ana ri do gato."},
+ {id:"t65",t:"A Gata",e:"🐈",n:1,lv:3,x:"A Nina vê a gata. A gata fica no sofá. A gata pula e some. A Nina ri."},
+ {id:"t66",t:"A Bola da Rita",e:"⚽",n:1,lv:3,x:"A Rita joga a bola. A bola rola e rola. O gato pula e pega a bola da Rita."},
+ {id:"t37",t:"O Rato",e:"🐭",n:1,lv:3,x:"O rato come a uva. O gato vê o rato. O rato pula e o gato pula. O gato come a cuca."},
+ {id:"t39",t:"A Batata e a Barata",e:"🥔",n:1,lv:4,x:"A barata sobe na batata. A batata rola e rola. A barata pula na lama."},
+ {id:"t67",t:"O Cavalo",e:"🐴",n:1,lv:4,x:"O cavalo é bonito. O Tomé pula no cavalo. O cavalo pula, pula e pula!"},
+ {id:"t38",t:"A Menina e a Boneca",e:"👧",n:1,lv:4,x:"A menina bonita come banana. A menina lava a boneca. A boneca é mole e bonita."},
+ {id:"t40",t:"O Jacaré",e:"🐊",n:1,lv:4,x:"O jacaré sobe na mata. O jacaré pula na lama. O macaco vê o jacaré e ri."},
+ {id:"t32",t:"O Tatu",e:"🐾",n:1,lv:4,x:"O tatu pula o tapete. A mula pula o tapete. O Tomé pula o tapete e a Lila pula, pula, pula."},
+ {id:"t41",t:"A Girafa e o Gelo",e:"🦒",n:2,lv:5,x:"A girafa pega o gelo. O gelo é gelado. A girafa ri do gelo!"},
+ {id:"t69",t:"A Gema",e:"🥚",n:2,lv:5,x:"A Gigi pega a gema. A gema é amarela. A Gigi ri e a Cici ri."},
+ {id:"t43",t:"O Foguete do Guido",e:"🚀",n:2,lv:5,x:"O Guido vê o foguete. O foguete sobe e sobe. O Guido ri e a Cici ri."},
+ {id:"t68",t:"O Quibe",e:"🥙",n:2,lv:5,x:"A Cici pega o quibe. O gato pega o quibe da Cici. A Cici ri e o gato ri. O quibe some!"},
+ {id:"t17",t:"O Macaco",e:"🐒",n:2,lv:6,x:"O macaco pula no galho. O macaco come banana. Eu rio do macaco."},
+ {id:"t3",t:"O Pato",e:"🦆",n:2,lv:6,x:"O pato nada no lago. O pato come milho. A Nina vê o pato no ninho."},
+ {id:"t46",t:"O Chinelo",e:"👡",n:2,lv:6,x:"O Chico achou o chinelo. O chinelo é da vovó. O chinelo é velho e bonito."},
+ {id:"t44",t:"A Chave",e:"🔑",n:2,lv:6,x:"A chave da mala sumiu. O Chico achou a chave. A vovó riu e beijou o Chico."},
+ {id:"t45",t:"A Galinha",e:"🐔",n:2,lv:6,x:"A galinha ficou no ninho. A galinha chocou o ovo. O ovo rachou e saiu o filhote. A galinha viu o filhote e riu."},
+ {id:"t48",t:"O Passarinho",e:"🐦",n:2,lv:7,x:"O passarinho parou na terra. A terra é macia. O passarinho achou a minhoca e saiu."},
+ {id:"t47",t:"O Carro",e:"🚗",n:2,lv:7,x:"O carro é do Murilo. O carro passa na rua. O Murilo ri e o carro passa, passa, passa."},
+ {id:"t70",t:"O Barro",e:"🟤",n:2,lv:7,x:"O Murilo pula no barro. O barro suja o gorro e o carro do Murilo. A Mariana ri do Murilo!"},
+ {id:"t49",t:"O Cachorro",e:"🐶",n:2,lv:7,x:"A Mariana lavou o cachorro. O cachorro pulou na lama e sujou a toalha. A Mariana riu e lavou o cachorro de novo."},
+ {id:"t53",t:"O Globo",e:"🌍",n:2,lv:8,x:"O globo é bonito. A Gláucia gira o globo. O globo gira, gira, gira!"},
+ {id:"t51",t:"A Flauta",e:"🎶",n:2,lv:8,x:"A Flávia toca a flauta. A flauta é bela. O Cláudio ouve a flauta e ri."},
+ {id:"t71",t:"O Bloco",e:"📒",n:2,lv:8,x:"A Clara pegou o bloco. O bloco é belo e macio. A Clara riu e pulou."},
+ {id:"t52",t:"A Bicicleta",e:"🚲",n:2,lv:8,x:"A bicicleta é do Cláudio. O Cláudio pula na bicicleta e sai pela rua. A Flávia vê a bicicleta e ri."},
+ {id:"t27",t:"O Livro",e:"📖",n:2,lv:9,x:"O livro é novo. Eu leio o livro de noite. O Pedro lê o livro e ri."},
+ {id:"t56",t:"O Prato",e:"🍽️",n:2,lv:9,x:"O Pedro pegou o prato. A Cláudia deu a fruta no prato. O Pedro agradeceu a Cláudia."},
+ {id:"t72",t:"O Gato Preto",e:"🐈‍⬛",n:2,lv:9,x:"O gato é preto. O Pedro pega o gato. O gato fica bravo e foge pela grade."},
+ {id:"t55",t:"O Tigre",e:"🐯",n:2,lv:9,x:"O tigre é bravo. O tigre abre a boca e grita. O Pedro vê o tigre e grita."},
+ {id:"t54",t:"A Fruta",e:"🍎",n:2,lv:9,x:"A Bruna pegou a fruta na prateleira. A fruta é bela e macia. A Bruna gritou: Que fruta bonita!"},
+ {id:"t14",t:"O Peixe",e:"🐟",n:2,lv:10,x:"O peixe nada no rio. O peixe é amarelo. Eu vejo o peixe."},
+ {id:"t4",t:"A Casa",e:"🏠",n:2,lv:10,x:"A casa da Teresa é bonita. A casa é rosa e a mesa é rosa."},
+ {id:"t60",t:"A Moça",e:"👩",n:2,lv:10,x:"A moça bonita abraçou o Zeca. O Zeca deu a fruta e a moça sorriu."},
+ {id:"t57",t:"A Zebra",e:"🦓",n:2,lv:10,x:"A zebra é bonita. O Zeca viu a zebra e riu. A zebra fugiu pela mata."},
+ {id:"t59",t:"A Abelha",e:"🐝",n:2,lv:10,x:"Hoje a Helena viu uma abelha. A abelha pousou na caixa. A Helena riu da abelha."},
+ {id:"t58",t:"A Caixa",e:"🎁",n:2,lv:10,x:"A caixa é bonita. A Lúcia abriu a caixa e achou a boneca. A boneca é da Luíza."},
+ {id:"t13",t:"O Sapo",e:"🐸",n:2,lv:11,x:"O sapo pula na lama. O sapo vê a mosca. A mosca fugiu."},
+ {id:"t25",t:"A Pipa",e:"🪁",n:2,lv:11,x:"A pipa é azul. A pipa sobe no céu. Eu vejo a pipa voar."},
+ {id:"t73",t:"O Mar",e:"🌊",n:2,lv:11,x:"A Ana pula no mar. A Lia pula no mar. O sol bate no mar."},
+ {id:"t15",t:"O Sol",e:"☀️",n:2,lv:11,x:"O sol é amarelo. O sol dá luz. Eu fico no sol e a Lia fica no sol."},
+ {id:"t75",t:"O Porco",e:"🐖",n:2,lv:11,x:"O porco é gordo. O porco fica na lama. O porco come e come. O Pedro vê o porco e ri."},
+ {id:"t74",t:"A Festa",e:"🎉",n:2,lv:11,x:"A festa da Lia é no sábado. O bolo é de uva. O Pedro pega a bola e a Lia fica feliz."},
+ {id:"t26",t:"O Pão",e:"🍞",n:2,lv:12,x:"O pão é macio. A vovó faz o pão. Eu como pão com leite."},
+ {id:"t18",t:"O Bolo",e:"🎂",n:2,lv:12,x:"A mamãe fez um bolo. O bolo é de uva. Eu como o bolo com a Lia."},
+ {id:"t16",t:"O Bebê",e:"👶",n:2,lv:12,x:"O bebê dorme no berço. A mamãe vê o bebê. O bebê é lindo."},
+ {id:"t9",t:"A Vaca",e:"🐄",n:2,lv:12,x:"A vaca come capim. A vaca dá leite. Eu bebo leite com pão."},
+ {id:"t19",t:"O Castelo de Areia",e:"🏖️",n:2,lv:12,x:"No domingo fomos ver o mar. A água estava azul e as ondas batiam na areia. Eu construí um castelo com a minha irmã."},
+ {id:"t6",t:"A Chuva",e:"🌧️",n:2,lv:12,x:"A chuva forte molhou a grama do jardim. As crianças brincaram de barquinho na enxurrada. Depois o sol brilhou outra vez."},
+ {id:"t7",t:"A Feira",e:"🍎",n:2,lv:12,x:"Eu vou à feira com a minha mãe. Ela compra laranja, abacaxi e framboesa. Eu carrego a sacola cheia de frutas."},
+ {id:"t21",t:"A Fazenda",e:"🚜",n:2,lv:12,x:"Na fazenda do meu avô tem galinhas, porcos e cavalos. De manhã, ele ordenha a vaca e colhe os ovos frescos."},
+ {id:"t5",t:"A Floresta",e:"🌳",n:2,lv:12,x:"Na floresta grande vive uma coruja branca. Ela dorme de dia e trabalha à noite. Os filhotes brincam perto da árvore."},
+ {id:"t11",t:"O Circo",e:"🎪",n:2,lv:12,x:"No circo da cidade, o palhaço faz truques com bolas coloridas. O mágico tira um coelho da cartola. A plateia aplaude com alegria."},
+ {id:"t12",t:"A Montanha",e:"⛰️",n:2,lv:12,x:"Meu primo subiu a montanha com a família. No topo, eles viram nuvens brancas e um vale verde. Foi uma aventura muito divertida."},
+ {id:"t23",t:"Os Dinossauros",e:"🦕",n:2,lv:12,x:"Há milhões de anos, os dinossauros viviam na Terra. Alguns eram gigantes e comiam folhas. Outros caçavam com dentes afiados."},
+ {id:"t20",t:"O Parque",e:"🎡",n:2,lv:12,x:"Eu brinco no parque com os meus amigos. Pulamos na gangorra e corremos pelo gramado. No fim, tomamos sorvete de chocolate."},
+ {id:"t30",t:"A Pescaria",e:"🎣",n:2,lv:12,x:"Meu tio me levou para uma pescaria no rio. Esperamos quietinhos até o peixe beliscar a isca. Voltamos com três peixes e muita felicidade."},
+ {id:"t22",t:"O Foguete",e:"🚀",n:2,lv:12,x:"O foguete branco subiu até as estrelas. O astronauta olhou a Terra pela janela e viu oceanos, florestas e nuvens."},
+ {id:"t29",t:"O Aniversário",e:"🎉",n:2,lv:12,x:"Hoje é o aniversário da minha prima. Nós cantamos parabéns e comemos brigadeiro. Ela soprou as velinhas e fez um pedido."},
+ {id:"t24",t:"O Piquenique",e:"🧺",n:2,lv:12,x:"No sábado, a família fez um piquenique debaixo da mangueira. Levamos sanduíches, suco gelado e uma toalha xadrez. Foi uma tarde feliz."},
+ {id:"t8",t:"A Escola",e:"🏫",n:2,lv:12,x:"Na escola nova tem uma biblioteca bonita. A professora conta histórias de dragões e princesas. Todos escutam com muita atenção."},
+ {id:"t28",t:"O Zoológico",e:"🦁",n:2,lv:12,x:"No zoológico, vimos girafas, leões e elefantes. A girafa mastigava folhas bem altas. Todos tiraram fotografias."},
+ {id:"t76",t:"O Doce da Cecé",e:"🍬",n:2,lv:5,x:"A Cecé pega o doce. O doce é da vovó. A Cecé come o doce e o Tomé come o doce."},
+ {id:"t77",t:"A Raquete",e:"🎾",n:2,lv:5,x:"O Beto pega a raquete. A raquete é da Fefa. O Beto bate a bola e a bola pula, pula, pula!"},
+ {id:"t78",t:"A Pluma",e:"🪶",n:2,lv:8,x:"A Clara acha a pluma. A pluma é macia e leve. A pluma sobe e a Clara ri."},
+ {id:"t79",t:"A Trave",e:"🥅",n:2,lv:9,x:"O Pedro chuta a bola. A bola bate na trave. O Pedro ri e chuta de novo."},
+ {id:"t80",t:"A Crina",e:"🐎",n:2,lv:9,x:"A crina do cavalo é preta. A crina é macia. A Clara pega a crina e ri."}
 ];
+/* Compreensão textual do Treino de Leitura Livre: 1 pergunta literal por texto, 3 alternativas, só a 1ª é a correta (a ordem é sorteada na tela).
+   Formato: id:[pergunta, certa, errada, errada]. Perguntas só usam informações do próprio texto. */
+const FL_QUIZ={
+ t33:["Quem pula a lama?","A mula","A pata","A Lila"],
+ t31:["Quem é o Tomé?","O pato","A pata","A mula"],
+ t62:["O que pula e pula?","A pipa","A mala","A lama"],
+ t61:["O que a Lila pula?","A mala","A lama","A pipa"],
+ t34:["O que o bode faz?","Bebe","Pula","Come"],
+ t63:["Quem dá o pote?","O Beto","A Fefa","O vovô"],
+ t64:["De quem é o dado?","Da Dina","Da Fefa","Do Beto"],
+ t35:["O que o Dudu dá?","O nabo","A uva","O bolo"],
+ t36:["O que a Nina dá?","O bolo","A uva","O nabo"],
+ t2:["De quem é a bola?","Da Ana","Da Rita","Da Nina"],
+ t1:["Quem ri do gato?","A Ana","A Nina","A Rita"],
+ t65:["Onde a gata fica?","No sofá","Na lama","Na mala"],
+ t66:["Quem pega a bola da Rita?","O gato","O rato","O pato"],
+ t37:["O que o gato come?","A cuca","A uva","O bolo"],
+ t39:["Onde a barata pula?","Na lama","Na bola","No sofá"],
+ t67:["Quem pula no cavalo?","O Tomé","O Dudu","O Beto"],
+ t38:["O que a menina come?","Banana","Uva","Bolo"],
+ t40:["Quem ri do jacaré?","O macaco","O tatu","O gato"],
+ t32:["O que o tatu pula?","O tapete","A mala","A pipa"],
+ t41:["O que a girafa pega?","O gelo","O quibe","A gema"],
+ t69:["Como é a gema?","Amarela","Gelada","Mole"],
+ t43:["Quem vê o foguete?","O Guido","O Beto","O Tomé"],
+ t68:["O que acontece com o quibe no fim?","Ele some","Ele pula","Ele rola"],
+ t17:["O que o macaco come?","Banana","Uva","Milho"],
+ t3:["Onde o pato nada?","No lago","No rio","No mar"],
+ t46:["Quem achou o chinelo?","O Chico","O Pedro","O Tomé"],
+ t44:["De que é a chave?","Da mala","Da casa","Do carro"],
+ t45:["O que saiu do ovo?","O filhote","O pato","O gato"],
+ t48:["O que o passarinho achou?","A minhoca","A barata","A uva"],
+ t47:["De quem é o carro?","Do Murilo","Do Pedro","Do Chico"],
+ t70:["Quem ri do Murilo?","A Mariana","A Clara","A Lia"],
+ t49:["Onde o cachorro pulou?","Na lama","No barro","No rio"],
+ t53:["Quem gira o globo?","A Gláucia","A Cláudia","A Flávia"],
+ t51:["Quem ouve a flauta?","O Cláudio","O Pedro","O Murilo"],
+ t71:["O que a Clara pegou?","O bloco","A flauta","O livro"],
+ t52:["De quem é a bicicleta?","Do Cláudio","Da Flávia","Do Murilo"],
+ t27:["Quando eu leio o livro?","De noite","De manhã","De tarde"],
+ t56:["O que a Cláudia deu no prato?","A fruta","O bolo","O pão"],
+ t72:["Por onde o gato foge?","Pela grade","Pela rua","Pela mata"],
+ t55:["Como é o tigre?","Bravo","Bonito","Pequeno"],
+ t54:["Onde a Bruna pegou a fruta?","Na prateleira","No prato","Na geladeira"],
+ t14:["Onde o peixe nada?","No rio","No lago","No mar"],
+ t4:["De que cor é a casa?","Rosa","Azul","Amarela"],
+ t60:["Quem a moça abraçou?","O Zeca","O Pedro","O Cláudio"],
+ t57:["Por onde a zebra fugiu?","Pela mata","Pela rua","Pela grade"],
+ t59:["Onde a abelha pousou?","Na caixa","Na mesa","Na casa"],
+ t58:["De quem é a boneca?","Da Luíza","Da Lúcia","Da Teresa"],
+ t13:["O que o sapo vê?","A mosca","A abelha","A barata"],
+ t25:["De que cor é a pipa?","Azul","Rosa","Amarela"],
+ t73:["O que bate no mar?","O sol","O vento","A chuva"],
+ t15:["O que o sol dá?","Luz","Água","Leite"],
+ t75:["Onde o porco fica?","Na lama","Na casa","No rio"],
+ t74:["Quando é a festa da Lia?","No sábado","No domingo","Na sexta"],
+ t9:["O que a vaca dá?","Leite","Pão","Capim"],
+ t16:["Onde o bebê dorme?","No berço","No sofá","Na mesa"],
+ t26:["Quem faz o pão?","A vovó","A mamãe","A Lia"],
+ t28:["O que a girafa mastigava?","Folhas altas","Capim alto","Frutas doces"],
+ t18:["Com quem eu como o bolo?","Com a Lia","Com a mamãe","Com a vovó"],
+ t8:["Quem conta histórias?","A professora","A diretora","A mamãe"],
+ t22:["De que cor era o foguete?","Branco","Azul","Vermelho"],
+ t23:["O que os dinossauros gigantes comiam?","Folhas","Peixes","Frutas"],
+ t5:["Quando a coruja dorme?","De dia","De noite","De tarde"],
+ t6:["Do que as crianças brincaram?","De barquinho","De bola","De pipa"],
+ t7:["O que eu carrego?","A sacola","A caixa","A bola"],
+ t20:["O que tomamos no fim?","Sorvete de chocolate","Suco de uva","Leite gelado"],
+ t21:["O que o avô colhe de manhã?","Os ovos","As frutas","O milho"],
+ t29:["De quem é o aniversário?","Da minha prima","Da minha irmã","Da minha vovó"],
+ t24:["Onde a família fez o piquenique?","Debaixo da mangueira","Dentro da casa","Perto do rio"],
+ t11:["O que o mágico tira da cartola?","Um coelho","Uma bola","Um pombo"],
+ t12:["O que eles viram no topo?","Nuvens brancas e um vale verde","Um rio azul e uma ponte","Casas altas e carros"],
+ t19:["Com quem eu construí um castelo?","Com a minha irmã","Com a minha mãe","Com o meu primo"],
+ t30:["Quantos peixes pegamos?","Três peixes","Dois peixes","Cinco peixes"],
+ t76:["O que a Cecé pega?","O doce","O bolo","A uva"],
+ t77:["De quem é a raquete?","Da Fefa","Do Beto","Da Dina"],
+ t78:["O que a Clara acha?","A pluma","A placa","A flauta"],
+ t79:["Onde a bola bate?","Na trave","Na grade","Na lama"],
+ t80:["De que cor é a crina?","Preta","Rosa","Amarela"]};
+function flShuf(a){const r=a.slice();for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]]}return r}
+/* libera o botão de avançar para o próximo texto do nível (ou volta à lista do nível) */
+function flAdvance(){
+ const T=FL.text,lvl=FL_TEXTS.filter(x=>x.lv===T.lv),k=lvl.findIndex(x=>x.id===T.id),nx=lvl[k+1],n=$("#abNext");
+ if(n){n.disabled=false;n.textContent=nx?"Próximo texto ▶":"Escolher texto ▶";n.onclick=()=>nx?flStart(nx.id):flTextList(T.lv)}
+}
+/* Atividade de compreensão exibida ao terminar a leitura: acertou -> reforço e libera avançar; errou -> avisa e deixa tentar de novo, sem revelar a resposta */
+function flQuiz(){
+ const T=FL.text,Q=FL_QUIZ[T.id];
+ if(!Q){flAdvance();autoClick("#abNext");return}
+ const tk=FL.tok,board=document.querySelector(".fl-board");if(!board)return;
+ FL.qErr=0;FL.qDone=false;
+ const opts=flShuf([{t:Q[1],ok:true},{t:Q[2]},{t:Q[3]}]);
+ const cls=caseMode==="l"?"lc":caseMode==="c"?"cur":"uc";
+ board.innerHTML=`<div class="fl-qz ${cls}" id="flQz"><div class="fl-qin"><div class="fl-qtag">❓ Pergunta sobre o texto</div><div class="fl-qq" id="flQq">${esc(Q[0])}</div><div class="fl-qtext hidden" id="flQtx">${esc(T.x)}</div><div class="fl-qopts" id="flQo" role="group" aria-label="Alternativas">${opts.map((o,i)=>`<button type="button" class="fl-qo" data-i="${i}">${esc(o.t)}</button>`).join("")}</div><button type="button" class="fl-qre" id="flQre" aria-expanded="false">📖 Reler o texto</button></div></div>`;
+ const oi=document.querySelector(".ab-ori-t");if(oi)oi.textContent=(T.lv<=4?"O adulto lê a pergunta em voz alta (as palavras de pergunta ainda não foram treinadas). A criança lê as respostas e toca na certa. ":T.lv<=11?"A criança lê a pergunta e toca na resposta; ajude com as palavras de pergunta (quem, onde, quando…) se preciso. ":"A criança lê a pergunta e toca na resposta. ")+"Se errar, incentive-a a reler o texto e tentar de novo.";
+ const sb=document.querySelector(".hud-sub");if(sb)sb.textContent=`${T.e} ${T.t} • Compreensão`;
+ $("#flQre").onclick=e=>{const tx=$("#flQtx"),b=e.currentTarget,show=tx.classList.contains("hidden");tx.classList.toggle("hidden",!show);b.textContent=show?"❓ Voltar à pergunta":"📖 Reler o texto";b.setAttribute("aria-expanded",show?"true":"false")};
+ const bs=[...document.querySelectorAll(".fl-qo")];
+ const pick=b=>{
+  if(!FL||!abAlive(tk)||FL.qDone)return;
+  const o=opts[+b.dataset.i];if(!o)return;
+  if(o.ok){
+   FL.qDone=true;b.classList.add("right");bs.forEach(x=>{if(x!==b){x.disabled=true;x.classList.add("dim")}});
+   const p=active();
+   if(p&&!CFG.skip){const r=flAlpha(p).textos[T.id];if(r){r.qOk=(r.qOk||0)+1;r.qErr=(r.qErr||0)+FL.qErr;saveProfiles()}}
+   abChime();
+   abMsg("Muito bem! 🎉 Resposta certa!"+(FL.lvOk?" 🏆 Nível "+T.lv+" concluído!":""));
+   flAdvance();flAfter();autoClick("#abNext");
+  }else{
+   FL.qErr++;abTick(false);b.classList.add("wrong");setTimeout(()=>b.classList.remove("wrong"),900);
+   abMsg("Ops! Essa resposta não está correta. Leia a pergunta de novo e tente outra vez. 💪");
+  }
+ };
+ bs.forEach(b=>b.onclick=()=>pick(b));
+ if(CFG.skip)setTimeout(()=>{if(!FL||!abAlive(tk)||FL.qDone)return;const i=opts.findIndex(o=>o.ok);if(bs[i])pick(bs[i])},900);
+}
 let FL=null;
 function flStop(){}
 function flAlpha(p){p.fluencia=p.fluencia||{};const f=p.fluencia;f.textos=f.textos||{};f.sessoes=f.sessoes||[];return f}
-let FL_LVL=1;
-function flTexts(lv){
- if(lv===1||lv===2)FL_LVL=lv;lv=FL_LVL;
+/* Registro individual do Treino de Leitura Livre (campos por texto em fluencia.textos[id]):
+   n = leituras concluídas (n>0 => texto concluído; releituras = n-1) • quando = última leitura • prim = 1ª conclusão
+   ini = leitura iniciada e ainda não concluída • obs/oc = observação do adulto (opcional). Nada disso é avaliação automática da pronúncia. */
+function flDate(iso){try{const d=new Date(iso);return isNaN(d)?"":d.toLocaleDateString("pt-BR")}catch(_){return""}}
+function flStats(list,f){
+ let c=0,rel=0,last="",ini=0;
+ list.forEach(x=>{const r=f.textos[x.id];if(!r)return;if(r.n>0){c++;rel+=r.n-1}else if(r.ini)ini++;if(r.quando&&r.quando>last)last=r.quando});
+ const tot=list.length;return {tot,c,nc:tot-c,ini,rel,last,pct:tot?Math.round(c/tot*100):0}}
+const FL_OBS={seg:"leu com segurança",ajuda:"precisou de ajuda",rel:"reler outro dia"};
+function flMarkStart(){
+ const p=active();if(!p||!FL)return;const f=flAlpha(p),r=f.textos[FL.text.id]=f.textos[FL.text.id]||{n:0};
+ if(!(r.n>0))r.ini=new Date().toISOString();saveProfiles()}
+/* após acertar a pergunta: convite à releitura + observação opcional do adulto (sem avaliação automática) */
+function flAfter(){
+ const box=document.querySelector(".fl-qin");if(!box||!FL||box.querySelector(".fl-after"))return;
+ const T=FL.text,tk=FL.tok,w=document.createElement("div"),lab={seg:"✔ Com segurança",ajuda:"🤝 Com ajuda",rel:"🔁 Reler depois"},tt={seg:"Leu com segurança",ajuda:"Precisou de ajuda",rel:"Reler outro dia"};w.className="fl-after";
+ w.innerHTML=`<div class="fl-re-t">🔁 Reler ajuda a ler com mais segurança e fluidez, no seu ritmo.</div><div class="fl-row" id="flRow"></div><div class="fl-ob" role="group" aria-label="Observação do adulto"><div class="fl-ob-t">👩‍🏫 Observação do adulto (opcional)</div><div class="fl-ob-b">${Object.keys(lab).map(k=>`<button type="button" class="fl-obb" data-o="${k}" title="${tt[k]}" aria-label="${tt[k]}" aria-pressed="false">${lab[k]}</button>`).join("")}</div></div>`;
+ box.appendChild(w);
+ const row=$("#flRow"),re=$("#flQre"),rb=document.createElement("button");rb.type="button";rb.className="fl-rebtn";rb.id="flReBtn";rb.textContent="🔁 Ler de novo";rb.title="Ler este texto de novo";
+ if(re)row.appendChild(re);row.appendChild(rb);
+ const qz=$("#flQz");if(qz)qz.classList.add("fin");
+ const oi=document.querySelector(".ab-ori-t");if(oi)oi.textContent="Reler e registrar a observação do adulto são opcionais. O aplicativo não avalia a pronúncia.";
+ rb.onclick=()=>{if(abAlive(tk))flStart(T.id)};
+ w.querySelectorAll(".fl-obb").forEach(b=>b.onclick=()=>{
+  if(!abAlive(tk))return;const k=b.dataset.o,p=active();if(!p)return;
+  const r=flAlpha(p).textos[T.id];if(!r)return;
+  r.oc=r.oc||{seg:0,ajuda:0,rel:0};
+  if(FL.obsC&&r.oc[FL.obsC]>0)r.oc[FL.obsC]--;
+  r.oc[k]=(r.oc[k]||0)+1;FL.obsC=k;r.obs={c:k,q:new Date().toISOString()};saveProfiles();
+  w.querySelectorAll(".fl-obb").forEach(x=>{const on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-pressed",on?"true":"false")});
+  abMsg("Observação do adulto registrada. ✍️")})}
+let FL_LVL=1,FL_LV=0;
+/* Treino de Leitura Livre: categoria (1 = textos com palavras simples: níveis 1-4; 2 = palavras complexas: níveis 5-12) -> nível (trilha de 12 níveis, LVN) -> texto */
+function flCat(t){return t.lv<=4?1:2}
+const FL_LVN=[0,["Sílabas simples I","P · T · M · L"],["Sílabas simples II","+ B · D · V · F · N"],["Sílabas simples III","C · G · S · R · J (A O U)"],["Palavras maiores","3 sílabas ou mais"],["Sons com E e I","CE CI GE GI QUE QUI GUE GUI"],["Dígrafos","CH · LH · NH"],["RR e SS","carro · passo"],["Encontros com L","BL PL FL CL GL"],["Encontros com R","BR PR TR DR CR FR GR VR"],["Ç · X · Z · H","dificuldades ortográficas"],["Sílabas travadas","R · S · L · Z no fim da sílaba"],["Nasais","ÃO · ÃE · AM · EM · IM · OM · UM"]];/* mesmos nomes/ordem da trilha de 12 níveis (Sílabas) */
+function flLvInfo(n){return FL_LVN[n]||["Nível "+n,""]}
+function flTexts(cat){
+ if(cat===1||cat===2)FL_LVL=cat;cat=FL_LVL;
  const p=active();if(!p){renderClassDashboard();return}
  FL=null;const f=flAlpha(p);
- const card=x=>{const r=f.textos[x.id];const lido=r&&r.n;return `<button class="ab-lvl fl-card${lido?" lido":""}" data-id="${x.id}" type="button"><strong>${x.e} ${esc(x.t)}</strong><span class="ab-lvl-s">${x.x.split(/\s+/).length} palavras • ${lido?"✅ Lido "+r.n+(r.n===1?"x":"x"):"Não lido"}</span></button>`};
- const grid=n=>`<div class="fl-block"><div class="fl-block-t">${n===1?"📘 Palavras simples":"📗 Palavras complexas"}</div><div class="fl-block-s">${n===1?"Leitura inicial":"Leitura avançada"}</div><div class="fl-texts">${FL_TEXTS.filter(x=>x.n===n).map(card).join("")}</div></div>`;
- abShell({title:"Treino de Leitura Livre",sub:lv===1?"Palavras simples":"Palavras complexas",stars:Object.keys(f.textos).filter(k=>f.textos[k].n).length,
-  single:`<div class="ab-board fl-pick fl-one">${grid(lv)}</div>`,
-  msg:"",bare:true,onBack:renderStudentMenu,noSound:true});
+ const lvs=cat===1?[1,2,3,4]:[5,6,7,8,9,10,11,12];
+ const cards=lvs.map(n=>{const l=FL_TEXTS.filter(x=>x.lv===n),c=l.filter(x=>f.textos[x.id]&&f.textos[x.id].n).length,I=flLvInfo(n),ok=l.length>0&&c===l.length,S=flStats(l,f);
+  return `<button class="ab-lvl fl-lvl${ok?" lido":""}" data-flv="${n}" type="button"><strong>${ok?"✅":"📖"} Nível ${n}</strong><span class="ab-lvl-d">${esc(I[0])}</span><span class="ab-lvl-s">${esc(I[1])}</span><span class="small">${c} de ${l.length} textos concluídos (${S.pct}%)</span><div class="progress"><span style="width:${S.pct}%"></span></div>${S.rel?`<span class="small">🔁 ${S.rel} ${S.rel===1?"releitura":"releituras"}</span>`:""}</button>`}).join("");
+ abShell({title:"Treino de Leitura Livre",sub:cat===1?"📘 Textos com palavras simples":"📗 Textos com palavras complexas",stars:Object.keys(f.textos).filter(k=>f.textos[k].n).length,noSound:true,
+  single:`<div class="ab-board ab-levels fl-lv-board${cat===1?" fc-two":" fc-many"}">${cards}</div>`,
+  msg:"Escolha um nível para ver os textos",onBack:renderStudentMenu});
+ document.querySelectorAll("[data-flv]").forEach(b=>b.onclick=()=>flTextList(+b.dataset.flv));
+}
+function flTextList(lv){
+ const p=active();if(!p){renderClassDashboard();return}
+ FL=null;FL_LV=lv;FL_LVL=lv<=4?1:2;const f=flAlpha(p),I=flLvInfo(lv);
+ const card=x=>{const r=f.textos[x.id];const lido=r&&r.n;return `<button class="ab-lvl fl-card${lido?" lido":""}" data-id="${x.id}" type="button"><strong>${x.e} ${esc(x.t)}</strong><span class="ab-lvl-s">${x.x.split(/\s+/).length} palavras • ${lido?"✅ Concluído "+r.n+"x":(r&&r.ini?"⏳ Em andamento":"Não concluído")}</span>${lido?`<span class="ab-lvl-s">Última leitura: ${esc(flDate(r.quando))} • 🔁 Reler</span>`:""}</button>`};
+ const list=FL_TEXTS.filter(x=>x.lv===lv),SL=flStats(list,f);
+ abShell({title:"Treino de Leitura Livre",sub:`Nível ${lv} • ${esc(I[0])}`,stars:Object.keys(f.textos).filter(k=>f.textos[k].n).length,
+  single:`<div class="ab-board fl-pick fl-one"><div class="fl-block"><div class="fl-block-t">Nível ${lv} • ${esc(I[0])}</div><div class="fl-block-s">${esc(I[1])}</div><div class="fl-block-s fl-sum">${SL.c} de ${SL.tot} textos concluídos (${SL.pct}%) • ${SL.nc} ainda não concluídos • 🔁 ${SL.rel} ${SL.rel===1?"releitura":"releituras"}${SL.last?" • Última leitura: "+esc(flDate(SL.last)):""}<div class="progress"><span style="width:${SL.pct}%"></span></div></div><div class="fl-texts">${list.map(card).join("")||'<p class="muted">Em breve.</p>'}</div></div></div>`,
+  msg:"",bare:true,onBack:()=>flTexts(FL_LVL),noSound:true});
  document.querySelectorAll(".fl-card").forEach(b=>b.onclick=()=>flStart(b.dataset.id));
 }
 function flStart(id){
  const T=FL_TEXTS.find(x=>x.id===id);if(!T)return;
- FL={text:T,words:T.x.split(/\s+/).filter(Boolean).map(raw=>({raw,read:false})),done:0,finished:false};
+ const p0=active(),r0=p0&&flAlpha(p0).textos[id];
+ FL={text:T,words:T.x.split(/\s+/).filter(Boolean).map(raw=>({raw,read:false})),done:0,finished:false,re:!!(r0&&r0.n>0)};
  flRender();
 }
 function flFit(){
@@ -3008,30 +3280,33 @@ function flFit(){
  box.style.fontSize=fs+"px";let guard=0;
  while(box.scrollHeight>par.clientHeight-4&&fs>12&&guard++<60){fs*=.94;box.style.fontSize=fs+"px"}
 }
-function flSub(){const s=document.querySelector(".hud-sub");if(s&&FL)s.textContent=`${FL.text.e} ${FL.text.t} • ${FL.done} de ${FL.words.length}`;}
+function flSub(){const s=document.querySelector(".hud-sub");if(s&&FL)s.textContent=`${FL.re?"🔁 ":""}${FL.text.e} ${FL.text.t} • ${FL.done} de ${FL.words.length} marcadas`;}
 function flRender(){
  const T=FL.text;const tok0=abTok+1;
  const spans=FL.words.map((w,i)=>`<span class="fl-w" data-i="${i}" role="button" tabindex="0" aria-pressed="false">${esc(w.raw)}</span>`).join(" ");
- abShell({title:"Treino de Leitura Livre",sub:`${T.e} ${esc(T.t)} • 0 de ${FL.words.length}`,stars:0,caseBtn:true,noSound:true,
+ abShell({title:"Treino de Leitura Livre",sub:`${FL.re?"🔁 ":""}${T.e} ${esc(T.t)} • 0 de ${FL.words.length} marcadas`,stars:0,caseBtn:true,noSound:true,
+  ori:abOri(FL.re?"Releitura: a criança lê de novo, com mais segurança e menos pausas, sem pressa. Observe a precisão e a continuidade.":"A criança lê no ritmo dela e toca cada palavra depois de lê-la. A marcação é só apoio: observe a precisão, as pausas e a continuidade."),
   single:`<div class="ab-board fl-board"><div class="fl-text" id="flText">${spans}</div></div>`,
-  msg:"Leia o texto e toque em cada palavra que já leu",
-  next:{label:"Concluir ▶",disabled:true},onBack:()=>flTexts(T.n),onRestart:()=>flStart(T.id)});
+  msg:FL.re?"Releitura: leia no seu ritmo e toque nas palavras que já leu":"Leia o texto e toque em cada palavra que já leu",
+  next:{label:"Concluir ▶",disabled:true},onBack:()=>flTextList(T.lv),onRestart:()=>flStart(T.id)});
  FL.tok=abTok;
- const syncCase=()=>{const t=$("#flText"),cb=$("#caseBtn");if(!t||!cb)return;t.classList.remove("uc","lc","cur");t.classList.add(caseMode==="l"?"lc":caseMode==="c"?"cur":"uc");cb.textContent=CASE_LABEL[caseMode];cb.classList.toggle("cs",caseMode==="c");cb.classList.toggle("on",caseMode!=="u");cb.title="Mudar para "+({u:"minúsculas",l:"cursiva",c:"maiúsculas"}[caseMode]);flFit()};
+ {const oe=document.querySelector(".ab-ori");if(oe)oe.classList.add("fl-ori")}
+ const syncCase=()=>{const t=$("#flText")||$("#flQz"),cb=$("#caseBtn");if(!t||!cb)return;t.classList.remove("uc","lc","cur");t.classList.add(caseMode==="l"?"lc":caseMode==="c"?"cur":"uc");cb.textContent=CASE_LABEL[caseMode];cb.classList.toggle("cs",caseMode==="c");cb.classList.toggle("on",caseMode!=="u");cb.title="Mudar para "+({u:"minúsculas",l:"cursiva",c:"maiúsculas"}[caseMode]);flFit()};
  $("#caseBtn").onclick=e=>{e.stopPropagation();caseMode=caseMode==="u"?"l":caseMode==="l"?"c":"u";try{localStorage.setItem("jl_case",caseMode)}catch(_){}syncCase()};
  const toggle=el=>{
   if(!FL||!abAlive(FL.tok)||FL.finished)return;
   const i=+el.dataset.i,w=FL.words[i];if(!w)return;
-  w.read=!w.read;el.classList.toggle("read",w.read);el.setAttribute("aria-pressed",w.read?"true":"false");
+  w.read=!w.read;el.classList.toggle("read",w.read);
+  if(w.read&&!FL.started){FL.started=true;flMarkStart()}el.setAttribute("aria-pressed",w.read?"true":"false");
   FL.done=FL.words.filter(x=>x.read).length;flSub();
   if(FL.done>=FL.words.length)flComplete();
-  else abMsg(w.read?"Muito bem! 👏 Faltam "+(FL.words.length-FL.done):"Palavra desmarcada. Leia de novo quando quiser");
+  else abMsg(w.read?"Palavra marcada ✔ Faltam "+(FL.words.length-FL.done)+". Siga no seu ritmo.":"Palavra desmarcada. Leia de novo quando quiser");
  };
  const box=$("#flText");
  box.onclick=e=>{const el=e.target.closest(".fl-w");if(el)toggle(el)};
  box.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){const el=e.target.closest(".fl-w");if(el){e.preventDefault();toggle(el)}}};
- if(CFG.skip){const lvl=FL_TEXTS.filter(x=>x.n===T.n),k=lvl.findIndex(x=>x.id===T.id),nx=lvl[k+1];
-  abEnableNext(nx?"Próximo texto ▶":"Escolher texto ▶",()=>{if(!FL||FL.finished||!abAlive(FL.tok))return;document.querySelectorAll(".fl-w").forEach(el=>{el.classList.add("read");el.setAttribute("aria-pressed","true")});FL.words.forEach(x=>x.read=true);FL.done=FL.words.length;flSub();flComplete();nx?flStart(nx.id):flTexts(T.n)});
+ if(CFG.skip){const lvl=FL_TEXTS.filter(x=>x.lv===T.lv),k=lvl.findIndex(x=>x.id===T.id),nx=lvl[k+1];
+  abEnableNext(nx?"Próximo texto ▶":"Escolher texto ▶",()=>{if(!FL||FL.finished||!abAlive(FL.tok))return;document.querySelectorAll(".fl-w").forEach(el=>{el.classList.add("read");el.setAttribute("aria-pressed","true")});FL.words.forEach(x=>x.read=true);FL.done=FL.words.length;flSub();flComplete()});
   autoClick("#abNext",FL.words.length*900)}
  syncCase();requestAnimationFrame(flFit);setTimeout(flFit,150);
  const tk=FL.tok;window.addEventListener("resize",function f(){if(!abAlive(tk)){window.removeEventListener("resize",f);return}flFit()});
@@ -3039,16 +3314,17 @@ function flRender(){
 function flComplete(){
  const p=active();const T=FL.text;FL.finished=true;let flN=0;
  const now=new Date().toISOString();
- if(p){const f=flAlpha(p);const r=f.textos[T.id]=f.textos[T.id]||{n:0};r.n=(r.n||0)+1;r.quando=now;flN=r.n;f.sessoes.push({texto:T.id,quando:now});if(f.sessoes.length>60)f.sessoes=f.sessoes.slice(-60);saveProfiles();hudStarsRefresh()}
- const lvl=FL_TEXTS.filter(x=>x.n===T.n);const idx=lvl.findIndex(x=>x.id===T.id);const next=lvl[idx+1];
- const n=$("#abNext");if(n){n.disabled=false;n.textContent=next?"Próximo texto ▶":"Escolher texto ▶";n.onclick=()=>next?flStart(next.id):flTexts(T.n)}
- abMsg("Parabéns! 🎉 Você leu o texto todo!"+repMsg(flN===1,flN));
- celebrateStars();abChime();autoClick("#abNext");
+ if(p){const f=flAlpha(p);const r=f.textos[T.id]=f.textos[T.id]||{n:0};r.n=(r.n||0)+1;r.quando=now;if(!r.prim)r.prim=now;delete r.ini;flN=r.n;f.sessoes.push({texto:T.id,quando:now});if(f.sessoes.length>60)f.sessoes=f.sessoes.slice(-60);saveProfiles();hudStarsRefresh()}
+ const lvl=FL_TEXTS.filter(x=>x.lv===T.lv);
+ const n=$("#abNext");if(n){n.disabled=true;n.textContent="Responda ▶"}
+ FL.lvOk=!!p&&flN===1&&lvl.every(x=>{const r=flAlpha(p).textos[x.id];return r&&r.n});
+ abMsg(flN===1?"Parabéns! 🎉 Você marcou o texto todo!"+repMsg(true,1)+" Agora responda à pergunta.":"Releitura concluída! 🔁 Esta foi a leitura número "+flN+". Reler ajuda a ler com mais segurança. Agora responda à pergunta.");
+ celebrateStars();abChime();flQuiz();
 }
 function flMenuMarkup(p){
  const f=flAlpha(p);
- const card=(n,t,d)=>{const l=FL_TEXTS.filter(x=>x.n===n);const c=l.filter(x=>f.textos[x.id]&&f.textos[x.id].n).length;return `<button class="category" data-fl="${n}" type="button"><strong>${t}</strong><div class="progress" style="margin:12px 0 6px"><span style="width:${Math.round(c/l.length*100)}%"></span></div><span class="small">${c} de ${l.length} textos lidos</span></button>`};
- return `<h2 style="margin-top:22px">📖 Treino de Leitura Livre</h2><div class="category-grid">${card(1,"📘 Palavras simples","Textos curtos de leitura inicial • toque em cada palavra lida")}${card(2,"📗 Palavras complexas","Textos maiores de leitura avançada • toque em cada palavra lida")}</div>`;
+ const card=(n,t)=>{const l=FL_TEXTS.filter(x=>flCat(x)===n),c=l.filter(x=>f.textos[x.id]&&f.textos[x.id].n).length;return `<button class="category" data-fl="${n}" type="button"><strong>${t}</strong><div class="progress" style="margin:12px 0 6px"><span style="width:${Math.round(c/Math.max(1,l.length)*100)}%"></span></div><span class="small">${c} de ${l.length} textos lidos</span></button>`};
+ return `<h2 style="margin-top:22px">📖 Treino de Leitura Livre</h2><div class="category-grid">${card(1,"📘 Textos com palavras simples")}${card(2,"📗 Textos com palavras complexas")}</div>`;
 }
 
 /* ===== Leitura guiada: intervenção com ritmo por palavra (Iniciante / Intermediário / Avançado) =====
