@@ -945,6 +945,12 @@ button.stu-stars:focus-visible{outline:3px solid #3b4fd0;outline-offset:2px}
 .pw-lock{opacity:.55}
 .pw-hl{background:#ffe066;color:#1f2a5a;border-radius:8px;padding:0 .35em;font-size:1.15em;letter-spacing:.04em}
 /* Orientação em texto nas Sílabas Simples/Complexas (mesmo modelo de Palavras Simples/Complexas) */
+.board.families.fam-comb .fam-chips{grid-template-columns:repeat(var(--n,5),minmax(0,1fr))}
+.board.families.fam-comb .fchip.comb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.05em;line-height:1.05}
+.board.families.fam-comb .fchip .fc-top{display:flex;align-items:baseline;justify-content:center;gap:.28em;font-size:.55em;font-weight:800;opacity:.85;white-space:nowrap}
+.board.families.fam-comb .fchip .fc-top b{font-weight:900}
+.board.families.fam-comb .fchip .fc-top i{font-style:normal;opacity:.6}
+.board.families.fam-comb .fchip.target{box-shadow:inset 0 0 0 3px var(--tc)}
 .stage-body.stage-families.fam-st{display:flex;flex-direction:column;gap:clamp(6px,1.4vh,12px)}
 .stage-body.stage-families.fam-st>.board{flex:1 1 0;min-height:0}
 .stage-body.stage-families.fam-st>.fam-ori{flex:0 0 auto;margin:0;max-width:100%;box-sizing:border-box;padding:.4em .9em;font-size:clamp(.8rem,min(2.5vh,4.3vw),1.15rem);line-height:1.25}
@@ -982,6 +988,12 @@ button.stu-stars:focus-visible{outline:3px solid #3b4fd0;outline-offset:2px}
 
 /* Orientações em duas linhas: ORIENTAÇÃO/FALE e CRIANÇA */
 .ori-l{margin:.1em 0}.pw-ori b{font-weight:900}
+/* Orientação do mediador: respostas só sob demanda; a criança vê apenas a instrução da atividade */
+.med-wrap .ori-k{font-weight:800;color:#1f2a5a;margin:.1em 0}
+.med-btn{display:inline-flex;align-items:center;gap:.35em;margin:.2em 0 0;padding:.12em .7em;border:2px solid #a88be8;border-radius:999px;background:#fff;color:#5b3fb8;font:inherit;font-weight:800;font-size:.8em;line-height:1.3;cursor:pointer;opacity:.8}
+.med-btn:hover,.med-btn[aria-expanded="true"]{opacity:1;background:#efe9ff}
+.med-body{margin-top:.3em;padding-top:.25em;border-top:2px dashed #a88be8;font-weight:400}
+.med-wrap.med-closed .med-body{display:none}
 </style>
 </head>
 <body>
@@ -1536,10 +1548,10 @@ function catLabel(c){return ({simples:"📘 Sílabas Simples",complexas:"📗 S�
 function wordDoneIn(p,cat,w){const d=(p&&p.done)||{},suf=String(cat).endsWith("_montar")?"_montar":"";return ["simples","complexas"].some(b=>(d[b+suf]||[]).includes(w.w))}
 function progress(p,cat){return wordsFor(cat).filter(w=>wordDoneIn(p,cat,w)).length}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function newStageStats(){return {timeMs:0,attempts:0,errors:0,correct:0}}
+function newStageStats(){return {timeMs:0,attempts:0,errors:0,correct:0,marks:0}}
 function ensureRunStats(run){run.stages=run.stages||{};["families","read","build","picture"].forEach(k=>{if(!run.stages[k])run.stages[k]=newStageStats()});return run}
-function stageLabel(k){return ({families:"1. Famílias silábicas",read:"2. Leia a palavra",build:"3. Junte as sílabas",picture:"4. Escolha a figura"})[k]||k}
-function pct(run){let a=0,c=0;Object.values((run&&run.stages)||{}).forEach(x=>{a+=x.attempts||0;c+=x.correct||0});return a?Math.round(c/a*100):0}
+function stageLabel(k){return ({families:"1. Junte os sons",read:"2. Leia a palavra",build:"3. Junte as sílabas",picture:"4. Escolha a figura"})[k]||k}
+function pct(run){const v=runVerif(run);return v.att?Math.round(v.ok/v.att*100):0}
 function formatElapsed(ms){const total=Math.max(0,Math.floor(ms/1000));const mins=Math.floor(total/60),secs=total%60;const hundredths=Math.floor((ms%1000)/10);return `${String(mins).padStart(2,"0")}:${String(secs).padStart(2,"0")}.${String(hundredths).padStart(2,"0")}`}
 function stageStorageKey(){const w=wordsFor(category)[currentIndex];return active()&&w&&["families","read","build","picture"].includes(stage)?`${category}:${w.w}:${stage}`:""}
 function commitStageClock(){if(!stageClockKey||!stageClockStarted)return;const elapsed=Math.max(0,Date.now()-stageClockStarted);const p=active();if(p){p.stageTimes=p.stageTimes||{};p.stageTimes[stageClockKey]=(p.stageTimes[stageClockKey]||0)+elapsed;if(currentRun){ensureRunStats(currentRun);currentRun.stages[stageClockStage].timeMs+=elapsed;currentRun.updated=new Date().toISOString();saveProfiles()}}stageClockStarted=0;stageClockKey="";stageClockStage="";if(stageClockInterval){clearInterval(stageClockInterval);stageClockInterval=null}}
@@ -1818,7 +1830,7 @@ function famBegin(){
  fam.step=1;fam.done={1:false,2:false,3:false,4:false};fam.ok=false;lockInput=false;
  fam.words=famBuildWords(f);famPrepStep();
  p.activityLog=p.activityLog||[];
- currentRun=ensureRunStats({id:makeId(),category:fam.cat,word:f.id,started:new Date().toISOString(),updated:new Date().toISOString(),completed:false,stages:{families:newStageStats(),read:newStageStats(),build:newStageStats(),picture:newStageStats()}});
+ currentRun=ensureRunStats({id:makeId(),kind:"fam",category:fam.cat,word:f.id,started:new Date().toISOString(),updated:new Date().toISOString(),completed:false,stages:{families:newStageStats(),read:newStageStats(),build:newStageStats(),picture:newStageStats()}});
  p.activityLog.push(currentRun);saveProfiles();
  currentIndex=fam.idx;stage="fam1";renderFamActivity();
 }
@@ -1859,8 +1871,15 @@ function renderFamActivity(){
 }
 function famOriOn(){const p=active();return !(p&&p.cfg&&p.cfg.orient===0)}
 function famOri3(s){return ori2("<b class=\"pw-hl\">"+esc(s)+"</b>","Toque nessa sílaba entre as opções.")}
-function ori2(f,c,a){return `<div class="ori-l">👩‍🏫 <b>ORIENTAÇÃO:</b> ${f!=null?`🗣️ <b>FALE:</b> ${f}.`:(a||"")}</div><div class="ori-l">👆 <b>CRIANÇA:</b> ${c}</div>`}
-function famOri(h){return `<div class="pw-inst pw-ori fam-ori" style="display:${famOriOn()?"block":"none"}">${h}</div>`}
+function ori2(f,c,a){return `<div class="ori-k">👆 ${c}</div><div class="ori-l">👩‍🏫 <b>ORIENTAÇÃO:</b> ${f!=null?`🗣️ <b>FALE:</b> ${f}.`:(a||"")}</div>`}
+/* Orientação do mediador: a instrução da criança (ori-k) fica sempre visível; o restante (palavra-alvo, exemplos, respostas) fica atrás do botão */
+function medInner(h){const re=/<div class="ori-k">[\s\S]*?<\/div>/g,ks=h.match(re)||[],body=h.replace(re,""),on=famOriOn();
+ return ks.join("")+(on&&body.trim()?`<button type="button" class="med-btn" aria-expanded="false">👩‍🏫 Orientação do mediador <span class="med-car">▾</span></button><div class="med-body">${body}</div>`:"")}
+function medBox(cls,h){const i=medInner(h);return `<div class="pw-inst pw-ori ${cls} med-wrap med-closed"${i?"":' style="display:none"'}>${i}</div>`}
+document.addEventListener("click",e=>{const b=e.target&&e.target.closest?e.target.closest(".med-btn"):null;if(!b)return;e.preventDefault();e.stopPropagation();
+ const w=b.closest(".med-wrap");if(!w)return;const open=w.classList.contains("med-closed");w.classList.toggle("med-closed",!open);
+ b.setAttribute("aria-expanded",open?"true":"false");const c=b.querySelector(".med-car");if(c)c.textContent=open?"▴":"▾"},true);
+function famOri(h){return medBox("fam-ori",h)}
 function famGrid(n){const cols=n<=2?n:n===4?2:3;return {cols,rws:Math.ceil(n/cols)}}
 function renderFamStage(){
  const body=$("#stageBody");if(!fam||!body)return;
@@ -1871,7 +1890,7 @@ function renderFamStage(){
  if(fam.ok){
   if(sn)sn.textContent="Família concluída!";
   const len=f.syl.join("").length+f.syl.length*.5;
-  body.innerHTML=`<div class="board win" style="--len:${len}"><div class="win-emoji">🎉</div><div class="win-word">${f.syl.map((sy,i)=>`<span style="color:${PALETTE[i%PALETTE.length]};margin:0 .12em">${esc(sy)}</span>`).join("")}</div><div class="win-msg">Família ${esc(f.label)} concluída!</div></div>`;
+  body.innerHTML=`<div class="board win" style="--len:${len}"><div class="win-emoji">🎉</div><div class="win-word">${f.syl.map((sy,i)=>`<span style="color:${PALETTE[i%PALETTE.length]};margin:0 .12em">${esc(sy)}</span>`).join("")}</div><div class="win-msg">Família ${esc(f.label)} concluída!</div>${runObsBtn()}</div>`;runObsBind(body);
   setFb(fam.idx+1<n?"🎉 Muito bem! Aperte Próxima família.":"🎉 Muito bem! Você terminou o grupo.");
   next.textContent=fam.idx+1<n?"Próxima família ▶":"Finalizar ▶";next.disabled=false;next.classList.remove("hidden");
   restart.classList.add("hidden");sfb.classList.add("hidden");return;
@@ -1894,38 +1913,38 @@ function renderFamStage(){
   els.forEach(b=>b.onclick=()=>{
    if(stage!=="fam"+step||b.classList.contains("marked")||b.disabled)return;
    b.classList.add("marked");b.setAttribute("aria-pressed","true");famSpeak(b.textContent);
-   if(stat()){stat().attempts++;stat().correct++;save()}
+   if(stat()){stgInc(stat(),"marks");save()}
    const lk=els.find(x=>x.classList.contains("locked"));if(lk){lk.classList.remove("locked");lk.disabled=false}
    const dn=els.filter(x=>x.classList.contains("marked")).length;
    if(dn===els.length){finishStep();celebrateDone();autoNext()}
    else setFb(`Muito bem! ${dn} de ${els.length}.`)});
   if(alreadyDone){markAll();next.disabled=false;setFb(doneMsg)}
   else{next.disabled=true;setFb(step===1?(f.note?"💡 "+f.note:"Toque na sílaba e leia em voz alta"):"Leia e toque nas sílabas embaralhadas")}
-  if(CFG.skip&&!alreadyDone){markAll();finishStep();autoNext()}
+  if(CFG.skip&&!alreadyDone){runFlag("demo");markAll();finishStep();autoNext()}
  }else if(step===3){
   const L=fam.l3,total=L.order.length,{cols,rws}=famGrid(L.opts.length);
   body.innerHTML=`${famOri(alreadyDone?ori2("a sílaba pedida","Toque nela entre as opções."):famOri3(L.order[L.i]))}<div class="board fam-listen" style="--rows:${rws};--r:${rws};--cols:${cols}"><div class="fl-top"><button type="button" class="fl-ear" id="famEar" aria-label="Ouvir de novo">🔊<span>Ouvir</span></button><div class="fl-count" id="flCount"></div></div><div class="fl-opts">${L.opts.map(sy=>`<button type="button" class="fchip fl-o" data-s="${esc(sy)}" style="--len:${sy.length}">${esc(sy)}</button>`).join("")}</div></div>`;
-  const cnt=()=>{const c=$("#flCount");if(c)c.textContent=alreadyDone||fam.done[3]?`${total} de ${total}`:`${Math.min(L.i+1,total)} de ${total}`;const o=body.querySelector(".fam-ori");if(o&&!(alreadyDone||fam.done[3]))o.innerHTML=famOri3(L.order[L.i])};
+  const cnt=()=>{const c=$("#flCount");if(c)c.textContent=alreadyDone||fam.done[3]?`${total} de ${total}`:`${Math.min(L.i+1,total)} de ${total}`;const o=body.querySelector(".fam-ori");if(o&&!(alreadyDone||fam.done[3])){o.innerHTML=medInner(famOri3(L.order[L.i]));o.classList.add("med-closed")}};
   cnt();
   const say=()=>famSpeak(L.order[L.i]);
   $("#famEar").onclick=()=>{};
   const opts=[...body.querySelectorAll(".fl-o")];
   opts.forEach(b=>b.onclick=()=>{
    if(lockInput||stage!=="fam3"||fam.done[3])return;
-   const target=L.order[L.i],st=stat();if(st)st.attempts++;
+   const target=L.order[L.i],st=stat();if(st)stgInc(st,"attempts");
    if(b.dataset.s===target){
-    if(st){st.correct++;save()}
+    if(st){stgInc(st,"correct");save()}
     lockInput=true;b.classList.add("right");L.i++;
     if(L.i>=total){fam.done[3]=true;lockInput=false;opts.forEach(o=>{o.classList.remove("right");o.classList.add("marked")});cnt();finishStep();celebrateDone();autoNext()}
     else{setFb(`✅ Isso mesmo! ${L.i} de ${total}.`);setTimeout(()=>{b.classList.remove("right");lockInput=false;if(stage!=="fam3")return;cnt();say()},900)}
    }else{
-    if(st){st.errors++;save()}
+    if(st){stgInc(st,"errors");save()}
     b.classList.add("wrong");setFb("Quase! O ADULTO DEVE REPETIR A SÍLABA. Tente outra.");
     setTimeout(()=>b.classList.remove("wrong"),650)}
   });
   if(alreadyDone){opts.forEach(o=>o.classList.add("marked"));next.disabled=false;setFb(doneMsg)}
   else{next.disabled=true;
-   if(CFG.skip){fam.done[3]=true;opts.forEach(o=>o.classList.add("marked"));cnt();finishStep();autoNext()}
+   if(CFG.skip){runFlag("demo");fam.done[3]=true;opts.forEach(o=>o.classList.add("marked"));cnt();finishStep();autoNext()}
    else{setFb("Toque na sílaba que o adulto falou")}}
  }else{
   const W=fam.wview,{cols,rws}=famGrid(W.length>4?6:W.length);
@@ -1934,21 +1953,21 @@ function renderFamStage(){
   els.forEach((b,i)=>b.onclick=()=>{
    if(stage!=="fam4"||b.classList.contains("marked"))return;
    b.classList.add("marked");b.setAttribute("aria-pressed","true");famSpeak(W[i].t);
-   if(stat()){stat().attempts++;stat().correct++;save()}
+   if(stat()){stgInc(stat(),"marks");save()}
    const dn=els.filter(x=>x.classList.contains("marked")).length;
    if(dn===els.length){finishStep();celebrateDone();autoNext()}
    else setFb(`Muito bem! ${dn} de ${els.length}.`)});
   const markAll=()=>els.forEach(b=>{b.classList.add("marked");b.setAttribute("aria-pressed","true")});
   if(alreadyDone){markAll();next.disabled=false;setFb(doneMsg)}
   else{next.disabled=true;setFb(W.some(w=>w.pseudo)?"Leia cada palavra. As com ✨ são inventadas: junte os sons!":"Leia cada palavra juntando as sílabas");
-   if(CFG.skip){markAll();finishStep();autoNext()}}
+   if(CFG.skip){runFlag("demo");markAll();finishStep();autoNext()}}
  }
 }
 function famFinish(){
  const p=active(),f=famCur();if(!p)return;
- if(currentRun){currentRun.completed=true;currentRun.finished=new Date().toISOString();currentRun.updated=currentRun.finished}
+ if(currentRun){currentRun.completed=true;currentRun.modoFinal=runModo();currentRun.finished=new Date().toISOString();currentRun.updated=currentRun.finished}
  p.done[fam.cat]=p.done[fam.cat]||[];if(!p.done[fam.cat].includes(f.id))p.done[fam.cat].push(f.id);
- p.last={category:fam.cat,word:f.id,at:new Date().toISOString()};saveProfiles();
+ regConcl(fam.cat,f.id);p.last={category:fam.cat,word:f.id,at:new Date().toISOString()};saveProfiles();
  fam.ok=true;stage="famok";celebrateDone();renderFamStage();autoNext();
 }
 function famAdvance(){if(fam.idx+1<fam.list.length){famGoIdx(fam.idx+1)}else famComplete()}
@@ -2003,6 +2022,7 @@ function celebrateDone(msg){
 const CFG={
  get auto(){const p=active();return !!(p&&p.cfg&&p.cfg.auto)},
  get skip(){const p=active();return !!(p&&p.cfg&&p.cfg.skip)},
+ get med(){const p=active();return !!(p&&p.cfg&&p.cfg.med)},
  get letter(){const p=active(),l=p&&p.cfg&&p.cfg.letter;return ["m","u","l","c"].includes(l)?l:"m"},
  get pace(){const p=active(),v=p&&p.cfg&&p.cfg.pace;return ["i","m","a","p"].includes(v)?v:"i"},
  get secs(){const p=active(),v=p&&p.cfg&&+p.cfg.secs;return v>=0.1&&v<=30?v:2},
@@ -2010,7 +2030,78 @@ const CFG={
  get syl(){const p=active();return !!(p&&p.cfg&&p.cfg.syl)},
  get delay(){if(CFG._d)return CFG._d;const p=active(),d=p&&p.cfg&&+p.cfg.delay;return [2,4,7].includes(d)?d:4}
 };
-function setCfg(o){const p=active();if(!p)return;p.cfg=Object.assign({},p.cfg,{auto:!!o.auto,skip:!!o.skip,letter:["m","u","l","c"].includes(o.letter)?o.letter:"m",delay:[2,4,7].includes(+o.delay)?+o.delay:4});saveProfiles()}
+
+/* ===== Origem da resposta: autônoma × ajuda do adulto × demonstrativa =====
+ Só respostas dadas pela criança, sem a solução fornecida pelo sistema ("Avançar sem selecionar") nem pelo adulto
+ (opção "Atividade com ajuda do adulto"), compõem os indicadores de desempenho autônomo (acertos/erros/tentativas).
+ As demais são gravadas à parte (p.reg e campos "demo"/"ajuda"/"modo" nos registros). A CONCLUSÃO continua sendo
+ registrada, mas concluir não significa que a criança aprendeu ou domina a habilidade. */
+let AUTO_N=0;
+function isAuto(){return AUTO_N>0}
+function asAuto(fn){AUTO_N++;try{return fn()}finally{AUTO_N--}}
+function recMode(){return AUTO_N>0?"demo":(CFG.med?"ajuda":"auto")}
+function regNA(k){const m=recMode();if(m==="auto")return;const p=active();if(!p)return;const r=p.reg=p.reg||{};const b=r[m]=r[m]||{ac:0,er:0,sess:0};b[k]=(b[k]||0)+1;saveProfiles()}
+function naBox(S){return S.na=S.na||{demo:{ac:0,er:0},ajuda:{ac:0,er:0}}}
+function cntHit(S){const m=recMode();if(m==="auto")S.hit++;else{naBox(S)[m].ac++;regNA("ac")}}
+function cntErr(S){const m=recMode();if(m==="auto")S.err++;else{naBox(S)[m].er++;regNA("er")}}
+function sessModo(S){const n=S.na||{},d=n.demo?n.demo.ac+n.demo.er:0,h=n.ajuda?n.ajuda.ac+n.ajuda.er:0,au=(S.hit||0)+(S.err||0);if(!d&&!h)return CFG.med?"ajuda":"autonomo";if(au)return "misto";return d?"demonstrativo":"ajuda"}
+function sessExtra(S){const n=S.na||{};return {modo:sessModo(S),demo:n.demo||{ac:0,er:0},ajuda:n.ajuda||{ac:0,er:0}}}
+function regSess(S){const n=S.na;if(!n)return;const p=active();if(!p)return;const r=p.reg=p.reg||{};["demo","ajuda"].forEach(k=>{if(n[k]&&n[k].ac+n[k].er>0){const b=r[k]=r[k]||{ac:0,er:0,sess:0};b.sess=(b.sess||0)+1}})}
+function naKeys(o){if(!CFG.med)return o;const r={};for(const k in o)r[(k==="att"||k==="ok"||k==="err")?"med_"+k:k]=o[k];return r}
+function stgInc(st,k){if(!st)return;const m=recMode();if(m==="auto"){st[k]=(st[k]||0)+1;return}const b=st[m]=st[m]||{attempts:0,correct:0,errors:0};b[k]=(b[k]||0)+1;runFlag(m)}
+function runFlag(m){if(typeof currentRun!=="undefined"&&currentRun){currentRun.modo=currentRun.modo||{};currentRun.modo[m]=true}}
+function runModo(){const m=(typeof currentRun!=="undefined"&&currentRun&&currentRun.modo)||{};return m.demo?"demonstrativo":(m.ajuda||CFG.med)?"ajuda":"autonomo"}
+/* ===== Cinco níveis de informação em Sílabas e palavras (nunca confundir) =====
+ 1) Atividade concluída  → run.completed / p.done: só diz que o percurso chegou ao fim.
+ 2) Resposta correta na interação → stages[k].attempts/correct/errors, SÓ nas etapas com checagem do sistema
+    (palavras: "Junte as sílabas" e "Escolha a figura"; famílias: "Ouça e escolha").
+ 3) Toque de leitura → stages[k].marks, nas etapas em que a criança apenas toca para marcar o que leu
+    (palavras: "Junte os sons" e "Leia a palavra"; famílias: etapas 1, 2 e 4). O app não ouve a criança: não é acerto.
+ 4) Leitura com autonomia / com ajuda → run.obs.aut ("a" | "h"), informada pelo adulto. A autonomia nunca é presumida;
+    a chave "Atividade com ajuda do adulto" já assinala ajuda e o avanço automático assinala demonstração.
+ 5) Habilidade observada → run.obs.hab ("s" | "p" | "n"), SÓ o adulto registra. Quantidade de toques não é indicador de alfabetização. */
+function runIsFam(r){return !!(r&&(r.kind==="fam"||(r.kind==null&&isFamCat(r.category)&&famOf(r.word))))}
+function runTapKeys(r){return runIsFam(r)?["families","read","picture"]:["families","read"]}
+function runVerif(r){let att=0,ok=0,err=0;const tap=runTapKeys(r),st=(r&&r.stages)||{};Object.keys(st).forEach(k=>{if(tap.includes(k))return;const x=st[k]||{};att+=x.attempts||0;ok+=x.correct||0;err+=x.errors||0});return {att,ok,err}}
+function runMarks(r){let n=0;const st=(r&&r.stages)||{};runTapKeys(r).forEach(k=>{const x=st[k]||{};n+=(x.marks!=null?x.marks:(x.correct||0))+((x.ajuda&&x.ajuda.marks)||0)});return n}
+function runLeitura(r){const o=r&&r.obs;if(r&&r.modoFinal==="demonstrativo")return "demo";if(o&&o.aut==="a")return "autonomia";if(o&&o.aut==="h")return "ajuda";if(r&&r.modoFinal==="ajuda")return "ajuda";return "nao"}
+function runObsBtn(){const r=currentRun;if(!r||!active()||(r.modo&&r.modo.demo))return "";return `<button type="button" class="secondary" data-obs-open style="margin-top:.5em;font-size:.9rem;padding:6px 14px">${r.obs?"✅ Registro do adulto salvo":"📝 Registro do adulto"}</button>`}
+function runObsBind(root){const b=root&&root.querySelector("[data-obs-open]");if(b)b.onclick=ev=>{ev.stopPropagation();runObsOpen(currentRun,b)}}
+function runObsOpen(run,btn){
+ if(document.getElementById("runObsOv")||!run)return;const p=active();if(!p)return;clearTimeout(autoTimer);
+ const o=run.obs||{},rad=(n,v,t,c)=>`<label><input type="radio" name="${n}" value="${v}" ${c?"checked":""}>${t}</label>`;
+ const ov=document.createElement("div");ov.className="cfg-ov";ov.id="runObsOv";
+ ov.innerHTML=`<div class="cfg-box ds-reg" role="dialog" aria-modal="true" aria-labelledby="roT"><h2 id="roT">📝 Registro do adulto</h2>
+ <p class="muted small" style="margin:0 0 8px">O aplicativo não ouve nem avalia a pronúncia. Os toques da criança só marcam o percurso: quem registra como foi a leitura e se a habilidade foi observada é você.</p>
+ <div class="cfg-sec"><b>Como foi a leitura?</b></div>
+ <div class="cfg-pace">${rad("roA","a","✔ Leitura realizada com autonomia",o.aut==="a")}${rad("roA","h","🤝 Leitura realizada com ajuda",o.aut==="h")}${rad("roA","","Não observei",!o.aut)}</div>
+ <div class="cfg-sec"><b>Habilidade observada pelo adulto</b></div>
+ <div class="cfg-pace">${rad("roH","s","✅ Habilidade observada",o.hab==="s")}${rad("roH","p","🔶 Observada em parte",o.hab==="p")}${rad("roH","n","🔁 Ainda não observada",o.hab==="n")}${rad("roH","","Sem registro",!o.hab)}</div>
+ <div class="cfg-actions"><button class="secondary" id="roCancel" type="button">Cancelar</button><button class="primary" id="roSave" type="button">Salvar registro</button></div></div>`;
+ document.body.appendChild(ov);
+ const close=()=>ov.remove();
+ ov.querySelector("#roCancel").onclick=close;
+ ov.querySelector("#roSave").onclick=()=>{
+  const a=(ov.querySelector('input[name=roA]:checked')||{}).value||"",h=(ov.querySelector('input[name=roH]:checked')||{}).value||"";
+  const r=(p.activityLog||[]).find(x=>x.id===run.id)||run;
+  if(a||h)r.obs={aut:a||null,hab:h||null,q:new Date().toISOString()};else delete r.obs;
+  run.obs=r.obs;r.updated=new Date().toISOString();saveProfiles();close();
+  if(btn&&btn.isConnected)btn.textContent=r.obs?"✅ Registro do adulto salvo":"📝 Registro do adulto"};
+ const f=ov.querySelector('input[name=roA]');if(f)f.focus({preventScroll:true});ov.querySelector(".cfg-box").scrollTop=0;
+}
+function runSumHTML(p){
+ const L=((p&&p.activityLog)||[]).filter(r=>r&&r.stages);let conc=0,att=0,ok=0,mk=0;const le={autonomia:0,ajuda:0,demo:0,nao:0},hb={s:0,p:0,n:0,x:0};
+ L.forEach(r=>{mk+=runMarks(r);const v=runVerif(r);att+=v.att;ok+=v.ok;if(!r.completed)return;conc++;le[runLeitura(r)]++;const h=r.obs&&r.obs.hab;hb[h==="s"||h==="p"||h==="n"?h:"x"]++});
+ return `<div class="cfg-sec"><b>🧮 Sílabas e palavras: o que cada número significa</b><span>1) Atividades concluídas: <b>${conc}</b> — só indica que o percurso terminou.<br>2) Respostas corretas na interação: <b>${ok} de ${att}</b> — apenas nas etapas em que o aplicativo confere a resposta.<br>3) Toques de leitura: <b>${mk}</b> — a criança marca o que leu; o aplicativo não ouve, então isso não é acerto.<br>4) Leitura informada pelo adulto: com autonomia <b>${le.autonomia}</b> • com ajuda <b>${le.ajuda}</b> • sem informação <b>${le.nao}</b> • avançada pelo aplicativo <b>${le.demo}</b>.<br>5) Habilidade observada pelo adulto: observada <b>${hb.s}</b> • em parte <b>${hb.p}</b> • ainda não <b>${hb.n}</b> • sem registro <b>${hb.x}</b>.<br>Quantidade de toques não é indicador de alfabetização.</span></div>`}
+function regConcl(cat,id){const p=active();if(!p)return;p.concl=p.concl||{};p.concl[cat+"|"+id]={modo:runModo(),quando:new Date().toISOString()}}
+function medBadge(){let b=document.getElementById("medBadge");const on=!!active()&&CFG.med;
+ if(!on){if(b)b.remove();return}
+ if(!b){b=document.createElement("button");b.id="medBadge";b.type="button";b.title="Toque para desligar o registro com ajuda do adulto";
+  b.style.cssText="position:fixed;left:8px;bottom:8px;z-index:60;border:2px solid #f0a000;background:#fff6dc;color:#7a4b00;font:800 .72rem/1.1 inherit;padding:6px 10px;border-radius:999px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.18)";
+  b.onclick=()=>{const q=active();if(q){q.cfg=Object.assign({},q.cfg,{med:false});saveProfiles()}medBadge()};document.body.appendChild(b)}
+ b.textContent="🧑‍🏫 Com ajuda do adulto"}
+setInterval(()=>{try{medBadge()}catch(_){}},1500);
+function setCfg(o){const p=active();if(!p)return;p.cfg=Object.assign({},p.cfg,{auto:!!o.auto,skip:!!o.skip,med:!!o.med,letter:["m","u","l","c"].includes(o.letter)?o.letter:"m",delay:[2,4,7].includes(+o.delay)?+o.delay:4});saveProfiles()}
 let noAutoOnce=false;
 function autoNext(extra){
  clearTimeout(autoTimer);if(!CFG.auto)return;
@@ -2029,11 +2120,16 @@ function openCfg(){
  ov.innerHTML=`<div class="cfg-box" role="dialog" aria-modal="true" aria-labelledby="cfgT"><h2 id="cfgT">⚙️ Configurações</h2><p class="muted small" style="margin:0 0 8px">Participante: <b>${esc(pp.name)}</b>. As escolhas ficam salvas só para este participante. Por padrão, tudo fica desligado.</p>
  <label class="cfg-opt"><input type="checkbox" id="cfgAuto" ${CFG.auto?"checked":""}><div><b>⏭️ Transição automática</b><span>Ao concluir cada etapa, o jogo avança sozinho para a próxima etapa, palavra ou texto.</span></div></label>
  <div class="cfg-delay ${CFG.auto?"":"off"}" id="cfgDelay"><span style="margin:0 6px 0 0;font-weight:800;color:#5b6280">Tempo de espera:</span>${[[2,"2 s"],[4,"4 s"],[7,"7 s"]].map(d=>`<label><input type="radio" name="cfgD" value="${d[0]}" ${CFG.delay===d[0]?"checked":""}>${d[1]}</label>`).join("")}</div>
- <label class="cfg-opt"><input type="checkbox" id="cfgSkip" ${CFG.skip?"checked":""}><div><b>👆 Avançar sem selecionar</b><span>Libera o botão de avançar sem precisar tocar em cada sílaba, palavra, letra ou figura. As respostas aparecem prontas na tela.</span></div></label>
- <label class="cfg-opt"><input type="checkbox" id="cfgOri" ${(pp.cfg&&pp.cfg.orient===0)?"":"checked"}><div><b>👩‍🏫 Orientações para o adulto</b><span>Mostra, nas atividades de Sílabas e palavras, do Alfabeto (Sons das letras, Caça-Letras e Qual letra começa?) e da Consciência fonológica, o texto de orientação para o professor ou familiar saber o que pronunciar. Funciona mesmo sem áudio. O jogo não reconhece a fala: a criança responde tocando na tela. Vem ligado.</span></div></label>
+ <label class="cfg-opt"><input type="checkbox" id="cfgSkip" ${CFG.skip?"checked":""}><div><b>👆 Avançar sem selecionar</b><span>Libera o botão de avançar sem precisar tocar em cada sílaba, palavra, letra ou figura. As respostas aparecem prontas na tela. Atividades feitas assim são registradas como <b>demonstrativas</b>: concluem a etapa, mas não contam como acerto, erro nem domínio da habilidade.</span></div></label>
+ <label class="cfg-opt"><input type="checkbox" id="cfgMed" ${CFG.med?"checked":""}><div><b>🧑‍🏫 Atividade com ajuda do adulto</b><span>Ligue quando o adulto der a resposta ou realizar a atividade junto. Os registros ficam separados como <b>“com ajuda”</b> e não entram nos indicadores de desempenho autônomo. Desligue para voltar ao registro autônomo.</span></div></label>
+ <label class="cfg-opt"><input type="checkbox" id="cfgOri" ${(pp.cfg&&pp.cfg.orient===0)?"":"checked"}><div><b>👩‍🏫 Orientações para o adulto</b><span>Mostra, nas atividades de Sílabas e palavras, do Alfabeto (Sons das letras, Caça-Letras e Qual letra começa?) e da Consciência fonológica, o botão “Orientação do mediador”, que abre e fecha o texto de orientação para o professor ou familiar saber o que pronunciar (palavra-alvo, exemplos e respostas ficam escondidos da criança até o adulto abrir). Funciona mesmo sem áudio. O jogo não reconhece a fala: a criança responde tocando na tela. Vem ligado.</span></div></label>
   <label class="cfg-opt"><input type="checkbox" id="cfgAudio" ${soundOn?"checked":""}><div><b>🔊 Áudio do jogo</b><span>Ativa ou desativa todos os sons, inclusive o toque suave ao responder e o estouro de confete da comemoração. A escolha vale para todo o jogo e fica salva neste aparelho para os próximos acessos.</span></div></label>
   <div class="cfg-sec"><b>🔤 Tipo de letra</b><span>Escolha como as letras aparecem nos jogos do Alfabeto. Também dá para trocar durante o jogo, no botão de letras.</span></div>
  <div class="cfg-delay cfg-letter">${[["u","ABC",""],["l","abc",""],["c","Abc","cs"],["m","Misto",""]].map(d=>`<label class="${d[2]}"><input type="radio" name="cfgL" value="${d[0]}" ${CFG.letter===d[0]?"checked":""}>${d[1]}</label>`).join("")}</div>
+ ${(()=>{const a=pp.alpha||{},r=pp.reg||{},d=r.demo||{},h=r.ajuda||{};return `<div class="cfg-sec"><b>📊 Origem dos registros</b><span>Autônomas (Alfabeto): ${a.acertos||0} acertos, ${a.erros||0} erros • Com ajuda do adulto: ${h.ac||0} acertos, ${h.er||0} erros • Demonstrativas (automáticas): ${d.ac||0} respostas. Apenas as autônomas compõem os indicadores de desempenho.</span></div>`})()}
+ ${runSumHTML(pp)}
+  <div class="cfg-sec"><b>🔓 Desbloqueio de níveis (Sílabas e palavras)</b><span>Meta para liberar o nível seguinte. Conta apenas acerto autônomo, sem ajuda do adulto e sem resposta automática. Níveis já liberados continuam liberados.</span></div>
+ <div class="cfg-delay"><label style="display:block;margin:4px 0">Acertos autônomos mínimos: <select id="cfgPwMin">${[60,70,80,90].map(v=>`<option value="${v}" ${(((pp.cfg||{}).pwMin)||80)==v?"selected":""}>${v}%</option>`).join("")}</select></label><label style="display:block;margin:4px 0">Palavras do nível acertadas sozinha: <select id="cfgPwCov">${[30,50,70].map(v=>`<option value="${v}" ${(((pp.cfg||{}).pwCov)||50)==v?"selected":""}>${v}%</option>`).join("")}</select></label></div>
  <div class="cfg-actions"><button class="primary" id="cfgOk" type="button">Salvar</button></div></div>`;
  document.body.appendChild(ov);
  const au=ov.querySelector("#cfgAuto");au.onchange=()=>ov.querySelector("#cfgDelay").classList.toggle("off",!au.checked);
@@ -2043,8 +2139,8 @@ function openCfg(){
  {const ca=ov.querySelector("#cfgAudio");if(ca)ca.onchange=()=>kaSet(ca.checked)}
  ov.querySelector("#cfgOk").onclick=()=>{
   const d=ov.querySelector('input[name=cfgD]:checked');
-  {const o=ov.querySelector("#cfgOri");if(o){const q=active();q.cfg=Object.assign({},q.cfg,{orient:o.checked?1:0})}}setCfg({auto:au.checked,skip:ov.querySelector("#cfgSkip").checked,letter:(ov.querySelector('input[name=cfgL]:checked')||{}).value,delay:d?+d.value:4});
-  close();clearTimeout(autoTimer);abApplyCase();if(window.pwRefresh)pwRefresh();
+  {const o=ov.querySelector("#cfgOri");if(o){const q=active();q.cfg=Object.assign({},q.cfg,{orient:o.checked?1:0})}}{const m=ov.querySelector("#cfgPwMin"),v=ov.querySelector("#cfgPwCov");if(m&&v){const q=active();q.cfg=Object.assign({},q.cfg,{pwMin:+m.value,pwCov:+v.value})}}setCfg({auto:au.checked,skip:ov.querySelector("#cfgSkip").checked,med:ov.querySelector("#cfgMed").checked,letter:(ov.querySelector('input[name=cfgL]:checked')||{}).value,delay:d?+d.value:4});
+  close();medBadge();clearTimeout(autoTimer);abApplyCase();if(window.pwRefresh)pwRefresh();
   if(["families","read","build","picture"].includes(stage)&&$("#stageBody")){renderStage()}
   else if(/^fam[1-4]$/.test(stage)&&$("#stageBody")&&typeof fam!=="undefined"&&fam){renderFamStage()}
   else if(stage==="alpha-game"){if($("#lgText")&&typeof LG!=="undefined"&&LG)lgStart(LG.kind,LG.id,LG.i);else if(typeof FL!=="undefined"&&FL&&!FL.finished&&$("#flText"))flStart(FL.text.id);else if(typeof AB!=="undefined"&&AB&&AB.queue&&AB.i<AB.queue.length&&$("#abLeft"))abRound()}
@@ -2053,6 +2149,7 @@ function openCfg(){
 }
 function applySkip(w){
  if(!CFG.skip)return false;
+ if(["families","read","build","picture"].includes(stage))runFlag("demo");
  if(stage==="families"||stage==="read"){
   if(stageDone[stage])return false;
   stageDone[stage]=true;
@@ -2148,8 +2245,10 @@ let caseMode='u',famShuffled=null,famMode=0,famBase=null;try{const m=localStorag
 function caseClass(){return caseMode==='l'?' lc':caseMode==='c'?' cur':''}
 const CASE_LABEL={u:'ABC',l:'abc',c:'Abc'};
 /* palavras regulares (cat "simples"): só famílias com letras já ensinadas (sem GE, GI, CE, CI nem a coluna ÃO) */
-function famLists(w){const L=w.families||[];return w.cat==="simples"?L.map(l=>l.filter(sy=>!/^(GE|GI|CE|CI)$/.test(sy)&&!/ÃO$/.test(sy))).filter(l=>l.length):L}
-function famRows(w){const seen=[];return (famShuffled||famLists(w)).filter(f=>{const k=f.join();if(seen.includes(k))return false;seen.push(k);return true}).map(f=>{const hit=distinct(w.s).filter(x=>f.includes(x));return {list:f,hit,color:hit.length?sylColor(w,hit[0]):"#b8bfd6"}})}
+function famLists(w){const L=(w.families||[]).map(l=>l.filter(sy=>!/[ÃÕ]/.test(sy))).filter(l=>l.length);return w.cat==="simples"?L.map(l=>l.filter(sy=>!/^(GE|GI|CE|CI)$/.test(sy))).filter(l=>l.length):L}
+/* Método fônico: separa a sílaba em sons (início + vogal [+ final]). Dígrafos (CH, NH, LH, QU, GU) e encontros (BR, PL…) contam como uma unidade. */
+function famSplit(sy){const s=String(sy),V="AEIOUÁÉÍÓÚÂÊÔ";let m=s.match(new RegExp("^(QU|GU|CH|NH|LH|[BCDFGPTV][LR]|[BCDFGJLMNPQRSTVXZÇ])(["+V+"]+)([A-Z]*)$"));if(m)return {on:m[1],v:m[2],cd:m[3]};m=s.match(new RegExp("^(["+V+"]+)([A-Z]+)$"));if(m)return {on:"",v:m[1],cd:m[2]};return {on:"",v:s,cd:""}}
+function famRows(w){const seen=[];return (famShuffled||famLists(w)).filter(f=>{const k=f.join();if(seen.includes(k))return false;seen.push(k);return true}).map(f=>{const hit=distinct(w.s).filter(x=>f.includes(x));return {list:f,hit,color:hit.length?sylColor(w,hit[0]):"#b8bfd6",parts:f.map(sy=>{const p=famSplit(sy);return [p.on,p.v,p.cd].filter(Boolean)})}})}
 /* Registro de conclusões (A.sg): guarda o resultado de cada modo/grupo de Sons das letras para o acompanhamento pedagógico; não gera pontuação. */
 function sgLedger(A){
  if(A.sg)return A.sg;
@@ -2176,7 +2275,7 @@ function bindMarks(sel,key,doneMsg){
  els.forEach(b=>b.onclick=()=>{
   if(stage!==key||b.classList.contains("marked"))return;
   b.classList.add("marked");b.setAttribute("aria-pressed","true");
-  if(currentRun){currentRun.stages[key].attempts++;currentRun.stages[key].correct++;currentRun.updated=new Date().toISOString();saveProfiles()}
+  if(currentRun){stgInc(currentRun.stages[key],"marks");currentRun.updated=new Date().toISOString();saveProfiles()}
   const done=els.filter(x=>x.classList.contains("marked")).length;
   if(done===els.length){commitStageClock();stageDone[key]=true;celebrateDone();const nb=$("#nextStage");if(nb)nb.disabled=false;setFb(doneMsg);startStageClock();autoNext()}
   else setFb(`Muito bem! ${done} de ${els.length}.`);
@@ -2190,12 +2289,12 @@ function renderStage(){
  const sn=$("#stageName");if(sn)sn.textContent=stage==="success"?"Palavra formada!":`Etapa ${ci+1} de ${order.length}`;
  body.className="stage-body stage-"+stage;const sfb=$("#shuffleFamBtn");if(sfb)sfb.classList.toggle("hidden",stage!=="families");
  const done=stage==="success"||!!stageDone[stage];
- const doneMsg={families:"🎉 Famílias lidas! Aperte Já li.",read:"🎉 Muito bem! Aperte Já li.",build:isMontar()?"✅ Sílabas na ordem certa! Aperte Concluir.":"✅ Sílabas na ordem certa! Aperte Próxima etapa.",picture:"",success:""};
- setFb(done&&doneMsg[stage]?doneMsg[stage]:defaultMsg());
+ const doneMsg={families:"🎉 Sons juntados! Aperte Já li.",read:"🎉 Muito bem! Aperte Já li.",build:isMontar()?"✅ Sílabas na ordem certa! Aperte Concluir.":"✅ Sílabas na ordem certa! Aperte Próxima etapa.",picture:"",success:""};
+ setFb(done&&doneMsg[stage]?doneMsg[stage]:(stage==="families"?"Junte os sons e leia a sílaba (B + A = BA). Toque em cada uma.":defaultMsg()));
  if(stage==="families"){
-  const rows=famRows(w);
-  body.innerHTML=`<div class="board families" style="--rows:${rows.length}">${rows.map(f=>`<div class="fam-row"><div class="fam-chips">${f.list.map(sy=>`<button type="button" class="fchip${f.hit.includes(sy)?" target":""}" style="--len:${sy.length};${f.hit.includes(sy)?"--tc:"+sylColor(w,sy):""}" aria-pressed="false">${esc(sy)}</button>`).join("")}</div></div>`).join("")}</div>`;
-  bindMarks(".fchip","families","🎉 Famílias lidas! Aperte Já li.");
+  const rows=famRows(w),maxN=Math.max(...rows.map(f=>f.list.length));
+  body.innerHTML=`<div class="board families fam-comb" style="--rows:${rows.length};--n:${maxN}">${rows.map(f=>`<div class="fam-row"><div class="fam-chips">${f.list.map((sy,k)=>{const pt=f.parts[k],cb=pt.length>1,len=cb?Math.max(sy.length,(pt.join("").length+(pt.length-1)*1.3+1.5)*.55):sy.length;return `<button type="button" class="fchip${cb?" comb":""}${f.hit.includes(sy)?" target":""}" style="--len:${len};${f.hit.includes(sy)?"--tc:"+sylColor(w,sy):""}" aria-pressed="false"${cb?` aria-label="${esc(pt.join(" + "))} = ${esc(sy)}"`:""}>${cb?`<span class="fc-top">${pt.map(x=>`<b>${esc(x)}</b>`).join("<i>+</i>")}<i>=</i></span><span class="fc-res">${esc(sy)}</span>`:esc(sy)}</button>`}).join("")}</div></div>`).join("")}</div>`;
+  bindMarks(".fchip","families","🎉 Sons juntados! Aperte Já li.");
  }else if(stage==="read"){
   const rows=readShuffled;
   body.innerHTML=`<div class="board read" style="--rows:${rows.length}">${rows.map(r=>[0,1,2].map(()=>`<button type="button" class="cell" style="--len:${r.s.length}" aria-pressed="false"><span class="cell-t">${esc(r.s)}</span><span class="chk">✓</span></button>`).join("")).join("")}</div>`;
@@ -2208,7 +2307,7 @@ function renderStage(){
    chosen.push({s:buildShuffled.find(o=>o.i===i).s,i});
    if(chosen.length<w.s.length){renderStage();return}
    const correct=chosen.map(c=>c.s).join("")===w.w;
-   if(currentRun){currentRun.stages.build.attempts++;if(correct)currentRun.stages.build.correct++;else currentRun.stages.build.errors++;currentRun.updated=new Date().toISOString();saveProfiles()}
+   if(currentRun){stgInc(currentRun.stages.build,"attempts");stgInc(currentRun.stages.build,correct?"correct":"errors");currentRun.updated=new Date().toISOString();saveProfiles()}
    if(correct){commitStageClock();stageDone.build=true;celebrateDone();renderStage();setFb(isMontar()?"✅ Muito bem! Sílabas na ordem certa. Aperte Concluir.":"✅ Muito bem! Sílabas na ordem certa. Aperte Próxima etapa.");autoNext()}
    else{lockInput=true;renderStage();document.querySelectorAll(".slot2").forEach(x=>x.classList.add("wrong"));setFb("❌ Ops! Essa ordem não está certa. Tente de novo!");setTimeout(()=>{if(stage!=="build")return;lockInput=false;chosen=[];renderStage();setFb("Vamos tentar de novo! Toque nas sílabas na ordem certa.")},900)}
   });
@@ -2218,20 +2317,20 @@ function renderStage(){
   body.innerHTML=`<div class="board pics"><div class="pic-grid">${figureChoices.map((x,i)=>`<button type="button" class="pic" data-picture="${i}" aria-label="Figura ${i+1}"><span class="emoji">${figureMarkup(x)}</span></button>`).join("")}</div></div>${sideHTML(w,"done",false)}`;
   body.querySelectorAll("[data-picture]").forEach(b=>b.onclick=()=>{
    if(lockInput)return;const item=figureChoices[Number(b.dataset.picture)];
-   if(currentRun)currentRun.stages.picture.attempts++;
+   if(currentRun)stgInc(currentRun.stages.picture,"attempts");
    if(item.w===w.w){
-    if(currentRun){currentRun.stages.picture.correct++;currentRun.updated=new Date().toISOString();saveProfiles()}
+    if(currentRun){stgInc(currentRun.stages.picture,"correct");currentRun.updated=new Date().toISOString();saveProfiles()}
     lockInput=true;b.classList.add("correct");body.querySelectorAll("[data-picture]").forEach(x=>x.disabled=true);
     const fbx=$("#figBox");if(fbx)fbx.innerHTML=`<div class="fig-emoji">${figureMarkup(w)}</div><div class="fig-cap">${esc(w.w)}</div>`;
     setFb("⭐ Acertou!");setTimeout(()=>{lockInput=false;finishWord()},800);
    }else{
-    if(currentRun){currentRun.stages.picture.errors++;currentRun.updated=new Date().toISOString();saveProfiles()}
+    if(currentRun){stgInc(currentRun.stages.picture,"errors");currentRun.updated=new Date().toISOString();saveProfiles()}
     b.classList.add("wrong");b.disabled=true;setFb("Tente outra figurinha.");
     setTimeout(()=>{b.classList.remove("wrong");b.disabled=false;if(!lockInput&&stage==="picture")setFb(defaultMsg())},650);
    }
   });
  }else if(stage==="success"){
-  body.innerHTML=`<div class="board win" style="--len:${w.w.length}"><div class="win-emoji">🎉</div><div class="win-word">${w.s.map(sy=>`<span style="color:${sylColor(w,sy)}">${esc(sy)}</span>`).join("")}</div><div class="win-msg">Palavra formada!</div></div>${sideHTML(w,"done",true)}`;
+  body.innerHTML=`<div class="board win" style="--len:${w.w.length}"><div class="win-emoji">🎉</div><div class="win-word">${w.s.map(sy=>`<span style="color:${sylColor(w,sy)}">${esc(sy)}</span>`).join("")}</div><div class="win-msg">Palavra formada!</div>${runObsBtn()}</div>${sideHTML(w,"done",true)}`;runObsBind(body);
  }
  if(next){next.textContent=stage==="success"?"Próxima palavra ▶":stage==="build"?(isMontar()?"Concluir ▶":"Próxima etapa ▶"):"Já li ▶";next.disabled=!done;next.classList.toggle("hidden",stage==="picture")}
  if(restart)restart.classList.toggle("hidden",stage==="success");
@@ -2241,7 +2340,7 @@ function renderStage(){
 
 function renderFigureBox(show){let box=$("#figureBox");if(!box)return;const w=wordsFor(category)[currentIndex];box.innerHTML=show?`<div class="emoji">${figureMarkup(w)}</div><div class="figure-caption">${esc(w.w)}</div>`:""}
 function playSuccess(){/* efeito sonoro removido: só o toque suave de interação */}
-function finishWord(){commitStageClock();celebrateDone();const w=wordsFor(category)[currentIndex];if(!active())return;if(currentRun){currentRun.completed=true;currentRun.finished=new Date().toISOString();currentRun.updated=currentRun.finished;saveProfiles()}active().done[category]=active().done[category]||[];if(!active().done[category].includes(w.w))active().done[category].push(w.w);active().last={category,word:w.w,at:new Date().toISOString()};saveProfiles();stage="success";playSuccess();renderStage();autoNext()}
+function finishWord(){commitStageClock();celebrateDone();const w=wordsFor(category)[currentIndex];if(!active())return;if(currentRun){currentRun.completed=true;currentRun.modoFinal=runModo();currentRun.finished=new Date().toISOString();currentRun.updated=currentRun.finished;saveProfiles()}active().done[category]=active().done[category]||[];if(!active().done[category].includes(w.w))active().done[category].push(w.w);regConcl(category,w.w);active().last={category,word:w.w,at:new Date().toISOString()};saveProfiles();stage="success";playSuccess();renderStage();autoNext()}
 function renderCompleteCategory(){commitStageClock();clearTimeout(autoTimer);stage="complete";const m=$("#appMain");m.innerHTML=`<section class="panel" style="text-align:center"><div style="font-size:4rem">🎉</div><h1>Parabéns, ${esc(active().name)}!</h1><p>Você concluiu todas as palavras desta categoria.</p><div class="progress"><span style="width:100%"></span></div><p class="muted">${progress(active(),category)} de ${wordsFor(category).length} palavras concluídas.</p><div class="row" style="justify-content:center"><button class="primary" id="otherCat">Ir para ${catLabel(category.startsWith("simples")?category.replace("simples","complexas"):category.replace("complexas","simples"))}</button><button class="secondary" id="menu">Voltar ao menu</button></div></section>`;$("#otherCat").onclick=()=>startCategory(category.startsWith("simples")?category.replace("simples","complexas"):category.replace("complexas","simples"));$("#menu").onclick=renderHome}
 ["renderHome","renderClassDashboard","renderStudentMenu","renderGate","renderCompleteCategory","renderProfile","renderForgot"].forEach(n=>{const orig=window[n];window[n]=function(){document.body.classList.remove("game-mode");if(typeof flStop==="function")flStop();return orig.apply(this,arguments)}});
 
@@ -2294,9 +2393,9 @@ function abSoundSay(l){return "AEIOU".includes(l)?abLetterName(l):l==="H"?"agá"
 function abIniSay(x){const c=x.c;if("AEIOU".includes(c))return abLetterName(c);if(c==="H")return abWordSay(x.w);if(c==="G"&&/^G[EI]/.test(x.w))return "jê";return AB_SIL[c]||abLetterName(c)}
 function abExWord(l,avoid){const a=(AB_FIG[l]||[]).filter(x=>x[0]!==avoid);return a.length?a[abRnd(a.length)][0]:""}
 function abMast(a,l){const r=(a.let||{})[l]||{};return (r.o||0)>=2&&(r.o||0)>(r.e||0)}
-function abLog(l,ok){const p=active();if(!p||!l)return;const a=abAlpha(p);a.let=a.let||{};const r=a.let[l]=a.let[l]||{o:0,e:0};ok?r.o++:r.e++;saveProfiles()}
+function abLog(l,ok){const p=active();if(!p||!l)return;if(recMode()!=="auto")return;const a=abAlpha(p);a.let=a.let||{};const r=a.let[l]=a.let[l]||{o:0,e:0};ok?r.o++:r.e++;saveProfiles()}
 const abHl=t=>`<b class="pw-hl">${esc(t)}</b>`;
-function abOri(h){return `<div class="pw-inst pw-ori ab-ori" style="display:${famOriOn()?"block":"none"}">${h}</div>`}
+function abOri(h){return medBox("ab-ori",h)}
 function abOriLetter(l,ex){return `Letra ${abHl(l)}`+(ex?` de ${abHl(ex.toLowerCase())}`:` — diga ${abHl(abLetterName(l))}`)+"."}
 function abBtns(list){return `<div class="ab-sbtns">${list.map((x,i)=>`<button type="button" class="ab-sbtn" data-sb="${i}">${x[0]}</button>`).join("")}</div>`}
 function abBindBtns(list){/* botões de voz desativados */}
@@ -2381,7 +2480,7 @@ function sgRound(){
  let opts,say,left,msg;
  if(S.game==="ouvir"){
   opts=shuffle([l,...others]).map(ch=>({ch,html:ch,ok:ch===l}));
-  say="Encontre a letra "+name;msg=stg+": ache a letra que o adulto falou";
+  say="Encontre a letra "+name;msg="Ache a letra que o adulto falou";
   left=`<div class="ab-left ab-tap" id="abLeft" role="button" tabindex="0" aria-label="Ouvir de novo"><span class="ab-hear-ic" aria-hidden="true">🔊</span><div class="ab-figwrap"><div class="ab-fig" id="abBig">🎧</div><div class="ab-cap" id="abCap"><span class="ab-q">?</span></div></div></div>`;
  }else{
   opts=shuffle([{ch:l,html:fig[1],ok:true},...others.map(o=>{const f=AB_FIG[o][abRnd(AB_FIG[o].length)];return {ch:o,html:f[1],ok:false}})]);
@@ -2392,31 +2491,31 @@ function sgRound(){
  
  abShell({say,sub:`${SG_NAME[S.kind]} • ${S.i+1} de ${S.queue.length}`,left,
   right:`<div class="ab-board"><div class="ab-opts" style="--n:${opts.length}">${opts.map((o,i)=>`<button class="ab-opt" type="button" data-i="${i}" aria-label="Opção ${i+1}">${o.html}</button>`).join("")}</div></div>`,
-  ori:abOri(S.game==="ouvir"?ori2(abHl(l),"Procure e toque nessa letra na tela."):ori2(abHl(l),"Toque na figura que começa com essa letra.")),
+  ori:abOri(S.game==="ouvir"?ori2(abHl(l)+" (grupo: "+stg+")","Procure e toque nessa letra na tela."):ori2(abHl(l),"Toque na figura que começa com essa letra.")),
   msg,next:{label:isLast?"Concluir ▶":"Próxima ▶",disabled:true},
   onBack:()=>abSoundMode(S.kind),onRestart:()=>sgStart(S.kind,S.game)});
  abBindBtns(btns);
  $("#abLeft").onclick=()=>abSpeak(say);$("#abLeft").onkeydown=e=>{if(e.target.id==="abLeft"&&(e.key==="Enter"||e.key===" ")){e.preventDefault();abSpeak(say)}};
  abSayLater(tok,S.i===0?[AB_INS[S.game],say]:say,450);
  let solved=false;
- if(CFG.skip)setTimeout(()=>{if(!abAlive(tok)||solved)return;const i=opts.findIndex(o=>o.ok);const r=document.querySelector('.ab-opt[data-i="'+i+'"]');if(r)r.click()},900);
+ if(CFG.skip)setTimeout(()=>{if(!abAlive(tok)||solved)return;const i=opts.findIndex(o=>o.ok);const r=document.querySelector('.ab-opt[data-i="'+i+'"]');if(r)asAuto(()=>r.click())},900);
  document.querySelectorAll(".ab-opt").forEach(b=>b.onclick=()=>{
   if(!abAlive(tok)||solved||b.disabled)return;
   const o=opts[+b.dataset.i];
-  if(o.ok){solved=true;S.hit++;abLog(l,true);b.classList.add("right");document.querySelectorAll(".ab-opt").forEach(x=>{if(x!==b){if(!x.classList.contains("wrong"))x.classList.add("dim");x.disabled=true}});
+  if(o.ok){solved=true;cntHit(S);abLog(l,true);b.classList.add("right");document.querySelectorAll(".ab-opt").forEach(x=>{if(x!==b){if(!x.classList.contains("wrong"))x.classList.add("dim");x.disabled=true}});
    const big=$("#abBig");if(big)big.textContent=fig[1];
    $("#abCap").innerHTML=`<b>${esc(fig[0].charAt(0))}</b>${esc(fig[0].slice(1))}`;
    abMsg(["Muito bem! 🎉","Isso mesmo! ⭐","Acertou! 🌟"][abRnd(3)]+" "+l+" de "+fig[0].charAt(0)+fig[0].slice(1).toLowerCase());abChime();
    abSpeak(name+" de "+abWordSay(fig[0]));
    abEnableNext(isLast?"Concluir ▶":"Próxima ▶",()=>{if(!abAlive(tok))return;S.i++;S.i>=S.queue.length?sgFinish():sgRound()})}
-  else{S.err++;abLog(l,false);b.disabled=true;b.classList.add("wrong");abTick(false);abMsg("Tente de novo! O ADULTO DEVE REPETIR A LETRA. 👂");setTimeout(()=>{if(abAlive(tok)&&!solved)abSpeak(say)},800)}
+  else{cntErr(S);abLog(l,false);b.disabled=true;b.classList.add("wrong");abTick(false);abMsg("Tente de novo! O ADULTO DEVE REPETIR A LETRA. 👂");setTimeout(()=>{if(abAlive(tok)&&!solved)abSpeak(say)},800)}
  });
 }
 function sgFinish(){
  const S=SG,p=active();if(!p)return;const a=abAlpha(p);
  const firstRun=abExecGet(a,"sons_"+S.game,S.kind)===0&&sgLedger(a)["sons_"+S.game+"|"+S.kind]==null;
- a.acertos+=S.hit;a.erros+=S.err;abExecAdd(a,"sons_"+S.game,S.kind);sgAward(a,"sons_"+S.game,S.kind,S.hit);
- a.sessoes.push({jogo:"sons_"+S.game,nivel:S.kind,quando:new Date().toISOString(),acertos:S.hit,erros:S.err});
+ a.acertos+=S.hit;a.erros+=S.err;abExecAdd(a,"sons_"+S.game,S.kind);if(sessModo(S)==="autonomo")sgAward(a,"sons_"+S.game,S.kind,S.hit);
+ a.sessoes.push({jogo:"sons_"+S.game,nivel:S.kind,quando:new Date().toISOString(),acertos:S.hit,erros:S.err,...sessExtra(S)});regSess(S);
  if(a.sessoes.length>60)a.sessoes=a.sessoes.slice(-60);
  saveProfiles();
  const k=S.kind,g=S.game;
@@ -2471,9 +2570,16 @@ function abStart(game,L){
 }
 function abRound(){AB.game==="caca"?abCacaRound():abInicialRound()}
 function abLetterCase(c,mode){return mode==="l"?c.toLowerCase():mode==="m"?(Math.random()<.5?c.toLowerCase():c):c}
+/* Letras visualmente semelhantes (AB_SIM lido nos dois sentidos). A filtragem usa a identidade da letra, antes de aplicar maiúscula/minúscula/cursiva. */
+function abSimilar(a,b){a=String(a).toUpperCase();b=String(b).toUpperCase();return a!==b&&((AB_SIM[a]||"").includes(b)||(AB_SIM[b]||"").includes(a))}
+function abMastFn(){const p=active(),a=p?abAlpha(p):null;return l=>!!a&&abMast(a,l)}
+function abSimOk(a,b,L,mast){return !abSimilar(a,b)||(L===3&&mast(a)&&mast(b))}
 function abDistract(t,n,L,mixed){
- const out=[];const sim=(AB_SIM[t]||"").split("");const pool=AB_LET.filter(x=>x!==t);let tries=0;
- while(out.length<n&&tries++<400){const ch=(L===3&&Math.random()<.6&&sim.length)?sim[abRnd(sim.length)]:pool[abRnd(pool.length)];out.push(mixed?abLetterCase(ch,"m"):ch)}
+ const out=[],mast=abMastFn(),T=String(t).toUpperCase();
+ const free=AB_LET.filter(x=>x!==T&&abSimOk(T,x,L,mast));
+ const sim=L===3?free.filter(x=>abSimilar(T,x)):[];
+ let tries=0;
+ while(out.length<n&&free.length&&tries++<400){const sp=sim.filter(x=>free.includes(x));const src=(sp.length&&Math.random()<.6)?sp:free;const ch=src[abRnd(src.length)];free.splice(free.indexOf(ch),1);out.push(mixed?abLetterCase(ch,"m"):ch)}
  return out}
 function abCacaRound(){
  const S=AB,L=S.level,t=S.queue[S.i];S.roundErr=0;S.found=0;
@@ -2502,22 +2608,25 @@ function abCacaRound(){
  abBindBtns(btns);
  $("#abLeft").onclick=()=>abSpeak(say);$("#abLeft").onkeydown=e=>{if(e.target.id==="abLeft"&&(e.key==="Enter"||e.key===" ")){e.preventDefault();abSpeak(say)}};
  abSayLater(tok,first?[AB_INS[ik],say]:say,450);
- if(CFG.skip)setTimeout(()=>{if(!abAlive(tok))return;document.querySelectorAll(".ab-tile").forEach(b=>{if(tiles[+b.dataset.i].ok)b.click()})},600);
+ if(CFG.skip)setTimeout(()=>{if(!abAlive(tok))return;document.querySelectorAll(".ab-tile").forEach(b=>{if(tiles[+b.dataset.i].ok)asAuto(()=>b.click())})},600);
  document.querySelectorAll(".ab-tile").forEach(b=>b.onclick=()=>{
   if(!abAlive(tok)||b.classList.contains("found"))return;
   const x=tiles[+b.dataset.i];
-  if(x.ok){b.classList.add("found");b.disabled=true;S.found++;S.hit++;abLog(t,true);abTick(true);
+  if(x.ok){b.classList.add("found");b.disabled=true;S.found++;cntHit(S);abLog(t,true);abTick(true);
    if(S.found===S.nT){abMsg(["Muito bem! 🎉","Isso mesmo! ⭐","Você achou todas! 🌟"][abRnd(3)]);abChime();
     if(som){const bg=$("#abBig"),cp=$("#abCap");if(bg)bg.textContent=fig[1];if(cp)cp.innerHTML=`<b>${esc(target)}</b>`}
     abEnableNext(isLast?"Concluir ▶":"Próxima ▶",()=>{if(!abAlive(tok))return;S.i++;S.i>=S.queue.length?abFinish():abRound()})}
    else abMsg("Isso! "+S.found+" de "+S.nT+" • "+(som?"Continue procurando o som que você ouviu":"Ache todas: "+target))}
-  else{S.err++;S.roundErr++;abLog(t,false);abTick(false);b.classList.remove("shake");void b.offsetWidth;b.classList.add("shake");abMsg(som?"Quase! O ADULTO DEVE REPETIR O SOM. Procure a letra. 👂":"Quase! Procure a letra "+target+" 🔎");if(som&&S.roundErr%2===0)abSpeak(say)}
+  else{cntErr(S);S.roundErr++;abLog(t,false);abTick(false);b.classList.remove("shake");void b.offsetWidth;b.classList.add("shake");abMsg(som?"Quase! O ADULTO DEVE REPETIR O SOM. Procure a letra. 👂":"Quase! Procure a letra "+target+" 🔎");if(som&&S.roundErr%2===0)abSpeak(say)}
  });
 }
 function abInicialRound(){
  const S=AB,L=S.level,w=S.queue[S.i],c=w.c;S.roundErr=0;
- const n=L+1;const letters=[c];const sim=(L===3?(AB_SIM[c]||"").split(""):[]);let guard=0;
- while(letters.length<n&&guard++<300){const ch=(L===3&&sim.length&&Math.random()<.5)?sim[abRnd(sim.length)]:AB_LET[abRnd(26)];if(!letters.includes(ch))letters.push(ch)}
+ const n=L+1;const letters=[c];const mast=abMastFn();let guard=0;
+ const okAll=ch=>!letters.includes(ch)&&letters.every(x=>abSimOk(x,ch,L,mast));
+ const simC=L===3?AB_LET.filter(x=>abSimilar(c,x)):[];
+ while(letters.length<n&&guard++<300){const sp=simC.filter(okAll);const ch=(L===3&&sp.length&&Math.random()<.5)?sp[abRnd(sp.length)]:AB_LET[abRnd(26)];if(okAll(ch))letters.push(ch)}
+ if(letters.length<n)shuffle(AB_LET.slice()).forEach(ch=>{if(letters.length<n&&okAll(ch))letters.push(ch)});
  const mode=L===1?"u":L===2?"l":"m";
  const opts=shuffle(letters.map(ch=>({ch,show:abLetterCase(ch,mode)})));
  const isLast=S.i+1>=S.queue.length,tok=abTok+1;
@@ -2533,14 +2642,14 @@ function abInicialRound(){
  $("#abLeft").onclick=()=>abSpeak(say);$("#abLeft").onkeydown=e=>{if(e.target.id==="abLeft"&&(e.key==="Enter"||e.key===" ")){e.preventDefault();abSpeak(say)}};
  abSayLater(tok,S.i===0?[AB_INS.ini,say]:say,450);
  let solved=false;
- if(CFG.skip)setTimeout(()=>{if(!abAlive(tok)||solved)return;const r=document.querySelector('.ab-opt[data-ch="'+c+'"]');if(r)r.click()},900);
+ if(CFG.skip)setTimeout(()=>{if(!abAlive(tok)||solved)return;const r=document.querySelector('.ab-opt[data-ch="'+c+'"]');if(r)asAuto(()=>r.click())},900);
  document.querySelectorAll(".ab-opt").forEach(b=>b.onclick=()=>{
   if(!abAlive(tok)||solved||b.disabled)return;
-  if(b.dataset.ch===c){solved=true;S.hit++;abLog(c,true);b.classList.add("right");document.querySelectorAll(".ab-opt").forEach(x=>{if(x!==b&&!x.classList.contains("wrong"))x.classList.add("dim");x.disabled=x!==b?true:x.disabled});
+  if(b.dataset.ch===c){solved=true;cntHit(S);abLog(c,true);b.classList.add("right");document.querySelectorAll(".ab-opt").forEach(x=>{if(x!==b&&!x.classList.contains("wrong"))x.classList.add("dim");x.disabled=x!==b?true:x.disabled});
    $("#abCap").innerHTML=`<b>${esc(w.w.charAt(0))}</b>${esc(w.w.slice(1))}`;
    abMsg(["Muito bem! 🎉","Isso mesmo! ⭐","Acertou! 🌟"][abRnd(3)]+" "+w.w.charAt(0)+" de "+w.w.charAt(0)+w.w.slice(1).toLowerCase());abChime();
    abSpeak(abLetterName(c)+" de "+say);abEnableNext(isLast?"Concluir ▶":"Próxima ▶",()=>{if(!abAlive(tok))return;S.i++;S.i>=S.queue.length?abFinish():abRound()})}
-  else{S.err++;S.roundErr++;abLog(c,false);b.disabled=true;b.classList.add("wrong");abTick(false);abMsg("Tente de novo! O ADULTO DEVE REPETIR A PALAVRA. Pense no primeiro som. 👂");setTimeout(()=>{if(abAlive(tok)&&!solved)abSpeak(say)},800)}
+  else{cntErr(S);S.roundErr++;abLog(c,false);b.disabled=true;b.classList.add("wrong");abTick(false);abMsg("Tente de novo! O ADULTO DEVE REPETIR A PALAVRA. Pense no primeiro som. 👂");setTimeout(()=>{if(abAlive(tok)&&!solved)abSpeak(say)},800)}
  });
 }
 function abFinish(){
@@ -2549,7 +2658,7 @@ function abFinish(){
  const arr=a[S.game][S.level]=a[S.game][S.level]||[];
  S.queue.forEach(x=>{const k=S.game==="caca"?x:x.w;if(!arr.includes(k))arr.push(k)});
  a.acertos+=S.hit;a.erros+=S.err;abExecAdd(a,S.game,S.level);
- a.sessoes.push({jogo:S.game,nivel:S.level,quando:new Date().toISOString(),acertos:S.hit,erros:S.err});
+ a.sessoes.push({jogo:S.game,nivel:S.level,quando:new Date().toISOString(),acertos:S.hit,erros:S.err,...sessExtra(S)});regSess(S);
  if(a.sessoes.length>60)a.sessoes=a.sessoes.slice(-60);
  saveProfiles();
  const g=S.game,L=S.level;
@@ -2709,7 +2818,7 @@ function fnHead(o){const S=FN,E=FN_ET.find(x=>x[0]===S.et);return{title:`Pergunt
 function fnSub(){const s=document.querySelector(".hud-sub");if(s)s.textContent=fnHead().sub}
 function fnBackFn(){return FN.et==="rimas"?fnBlocks:()=>fnLevels(FN.et)}
 function fnNextLbl(){return FN.i+1>=FN.qs.length?"Concluir ▶":"Próxima ▶"}
-function fnOk(tok,msg,sayT){const S=FN;if(S.re===0&&S.hc!==S.i){S.hit++;S.hc=S.i}fnSub();abMsg(msg);
+function fnOk(tok,msg,sayT){const S=FN;if(S.re===0&&S.hc!==S.i){cntHit(S);S.hc=S.i}fnSub();abMsg(msg);
  abEnableNext(fnNextLbl(),()=>{if(!abAlive(tok))return;S.i++;S.i>=S.qs.length?fnFinish():fnRound()})}
 function fnBad(msg){FN.err++;FN.re++;abMsg(msg)}
 const fnPraise=()=>["Muito bem! 🎉","Isso mesmo! ⭐","Acertou! 🌟"][abRnd(3)];
@@ -2727,7 +2836,7 @@ function fnBindPics(ok,onOk,onBad,tok){
   if(b.dataset.w===ok){solved=true;b.classList.add("right");all.forEach(x=>{if(x!==b){if(!x.classList.contains("wrong"))x.classList.add("dim");x.disabled=true}});onOk(b)}
   else{b.disabled=true;b.classList.add("wrong");onBad(b)}};
  all.forEach(b=>b.onclick=()=>pick(b));
- if(CFG.skip)setTimeout(()=>{if(abAlive(tok)&&!solved){const r=all.find(x=>x.dataset.w===ok);if(r)r.click()}},900)}
+ if(CFG.skip)setTimeout(()=>{if(abAlive(tok)&&!solved){const r=all.find(x=>x.dataset.w===ok);if(r)asAuto(()=>r.click())}},900)}
 function fnRimaR(){
  const S=FN,q=S.qs[S.i],tok=abTok+1,opts=shuffle(q.o.slice()),say=abWordSay(q.t);
  abShell(Object.assign(fnHead(),{say,
@@ -2750,7 +2859,7 @@ function fnSilR(){
    $("#abCap").innerHTML=q.s.map((s,i)=>`<span style="color:${PALETTE[i%4]}">${esc(s)}</span>`).join('<span class="fn-hy">-</span>');
    fnOk(tok,`${fnPraise()} ${q.w.toLowerCase()} tem ${n} ${n===1?"sílaba":"sílabas"}: ${q.s.join("-")}`,q.s.join(", "))}
   else{b.disabled=true;b.classList.add("wrong");fnBad("Tente de novo! Bata palmas a cada pedacinho. 👏")}});
- if(CFG.skip)setTimeout(()=>{if(abAlive(tok)&&!solved){const r=bs.find(x=>+x.dataset.n===n);if(r)r.click()}},900)}
+ if(CFG.skip)setTimeout(()=>{if(abAlive(tok)&&!solved){const r=bs.find(x=>+x.dataset.n===n);if(r)asAuto(()=>r.click())}},900)}
 function fnIniR(){
  const S=FN,q=S.qs[S.i],tok=abTok+1,L=S.k;let left,say,ok,words,tip="",msgQ;
  if(L===1){say=q[1];ok=q[2];words=shuffle([q[2],...q[3].split(",")]);left=fnLeft(`<div class="ab-letter">${esc(q[0])}</div>`);msgQ=`🔤 Qual figura começa com o som ${q[0]}?`}
@@ -2784,10 +2893,10 @@ function fnDitR(){
  bt.forEach(b=>b.onclick=()=>{if(!abAlive(tok)||done||busy)return;const i=slots.findIndex(s=>!s);if(i<0)return;slots[i]=tiles.find(t=>t.id===+b.dataset.id);paint();chk()});
  $("#fnErase").onclick=e=>{e.stopPropagation();if(done||busy)return;for(let i=slots.length-1;i>=0;i--)if(slots[i]){rm(i);break}};
  paint();
- if(CFG.skip)setTimeout(()=>{if(!abAlive(tok)||done)return;L.forEach((c,i)=>{const t=tiles.find(x=>x.c===c&&!slots.some(s=>s&&s.id===x.id));slots[i]=t});paint();chk()},900)}
+ if(CFG.skip)setTimeout(()=>{if(!abAlive(tok)||done)return;L.forEach((c,i)=>{const t=tiles.find(x=>x.c===c&&!slots.some(s=>s&&s.id===x.id));slots[i]=t});paint();asAuto(chk)},900)}
 function fnFinish(){
  const S=FN,p=active();if(!p)return;const d=fnData(p),key=S.et+"|"+S.k;
- const first=!d.n[key];d.n[key]=(d.n[key]||0)+1;d.h[key]=(d.h[key]||0)+S.hit;d.last={et:S.et,k:S.k,at:new Date().toISOString()};saveProfiles();
+ const first=!d.n[key];d.n[key]=(d.n[key]||0)+1;d.h[key]=(d.h[key]||0)+S.hit;if(S.na){d.hna=d.hna||{};const q=d.hna[key]=d.hna[key]||{demo:0,ajuda:0};q.demo+=S.na.demo.ac;q.ajuda+=S.na.ajuda.ac;regSess(S)}d.last={et:S.et,k:S.k,at:new Date().toISOString()};saveProfiles();
  const order=FN_ET.map(x=>x[0]),idx=order.indexOf(S.et),last=S.et==="rimas"?S.k>=FN_B.length:S.k>=3;
  let nx;
  if(!last)nx=[S.et==="rimas"?"Próximo bloco ▶":"Próximo nível ▶",()=>fnStart(S.et,S.k+1)];
@@ -2868,7 +2977,7 @@ function fnCxBank(q,k){const acc=/[ÁÂÃÉÊÍÓÔÕÚÇ]/,need=q.g.slice(),n=k
  const dg=ok.filter(d=>d.length===2),rs=ok.filter(d=>d.length!==2),pk=(k===3&&dg.length?[dg[0]]:[]).concat(rs,dg).filter((d,i,a)=>a.indexOf(d)===i).slice(0,n);
  return shuffle(need.concat(pk).map((c,i)=>({c,id:i})))}
 /* registro no perfil: acertos (peças certas), erros (peças trocadas) e ajudas (💡 ou avanço automático), por nível e por palavra */
-function fnCxRec(q,k,f){const p=active();if(!p)return;const d=fnData(p);d.cx=d.cx||{};const key="caixas|"+k,r=d.cx[key]=d.cx[key]||{acertos:0,erros:0,ajudas:0,palavras:0,w:{}};
+function fnCxRec(q,k,f){const p=active();if(!p)return;if(recMode()=="ajuda"&&(f==="acertos"||f==="erros"))f=f==="acertos"?"med_ac":"med_er";const d=fnData(p);d.cx=d.cx||{};const key="caixas|"+k,r=d.cx[key]=d.cx[key]||{acertos:0,erros:0,ajudas:0,palavras:0,w:{}};
  const w=r.w[q.w]=r.w[q.w]||{acertos:0,erros:0,ajudas:0,vezes:0};if(f==="palavras"){r.palavras++;w.vezes++}else{r[f]=(r[f]||0)+1;w[f]++}saveProfiles()}
 function fnCxNote(q){const dg=q.g.filter(g=>g.length>1),o=[];
  if(dg.length)o.push(`${dg.map(g=>abHl(g)).join(" e ")} = 2 letras, 1 som: ${dg.length>1?"cada uma ocupa":"ocupa"} 1 caixa`);
@@ -2892,7 +3001,7 @@ function fnCxR(){
  const finish=()=>{done=true;pop=-1;paint();$("#fnCx").classList.add("fn-cx-done");$("#fnCxW").style.visibility="visible";
   $("#fnExp").textContent=k===3?fnExp(q.w):"👆 Passe o dedo pelas caixas e leia a palavra.";
   fnCxRec(q,k,"palavras");fnOk(tok,`${fnPraise()} Agora leia ${q.w.charAt(0)}${q.w.slice(1).toLowerCase()}, passando o dedo pelas caixas.`,q.w);sweep()};
- const place=(t,auto)=>{const i=cur();slots[i]=t;pop=i;fnCxRec(q,k,auto?"ajudas":"acertos");bt.forEach(x=>x.classList.remove("hint"));paint();if(cur()<0)finish();else abMsg(`${fnPraise()} Agora o ${ord(cur())} som.`)};
+ const place=(t,auto)=>{const i=cur();slots[i]=t;pop=i;fnCxRec(q,k,auto?"demo":"acertos");bt.forEach(x=>x.classList.remove("hint"));paint();if(cur()<0)finish();else abMsg(`${fnPraise()} Agora o ${ord(cur())} som.`)};
  const attempt=b=>{if(!abAlive(tok)||done||b.disabled)return false;const t=T(+b.dataset.id),c=cur();if(!t||c<0)return false;
   if(t.c===q.g[c]){place(t);return true}
   b.classList.remove("shake");void b.offsetWidth;b.classList.add("shake");setTimeout(()=>b.classList.remove("shake"),450);
@@ -2918,7 +3027,7 @@ function fnCxR(){
   fnCxRec(q,k,"ajudas");bt.forEach(x=>x.classList.remove("hint"));b.classList.add("hint");clearTimeout(hintT);hintT=setTimeout(()=>b.classList.remove("hint"),3500);
   abMsg("💡 Ajuda: a peça certa está brilhando. O ADULTO DEVE REPETIR O SOM.")};
  paint();
- if(CFG.skip)setTimeout(()=>{const step=()=>{if(!abAlive(tok)||done)return;const c=cur(),t=tiles.find(x=>x.c===q.g[c]&&!slots.some(s=>s&&s.id===x.id));if(!t)return;place(t,true);if(!done)setTimeout(step,350)};step()},900)}
+ if(CFG.skip)setTimeout(()=>{const step=()=>{if(!abAlive(tok)||done)return;const c=cur(),t=tiles.find(x=>x.c===q.g[c]&&!slots.some(s=>s&&s.id===x.id));if(!t)return;asAuto(()=>place(t,true));if(!done)setTimeout(step,350)};step()},900)}
 const FN_DL=[["Palavras curtas","3 e 4 letras"],["Palavras maiores","3 sílabas, letras simples"],["Acentos e til","É, Á, Ã, Ê, Ç: cada marca conta"],["Dígrafos","CH, LH, NH, QU, RR: 2 letras, 1 som"]];
 function fnKeys(et){return et==="caixas"?[1,2,3]:et==="rimas"?FN_B.map((_,i)=>i+1):et==="inicial"?[1,2,3].flatMap(L=>[0,1,2].map(P=>P*3+L)):et==="ditado"?[1,11,2,12,4,14,3,13]:[1,2,3]}
 function fnCard(et,k){const I=["🌱","🌿","🌳","🌲"];
@@ -2943,8 +3052,8 @@ function fnSilQs(k){const L=x=>x.s.length,by=n=>FN_SIL.filter(x=>L(x)===n),pk=(a
 function fnIniQs(k){const L=(k-1)%3+1,P=Math.floor((k-1)/3),part=FNP.slice(FN_PP[P][0],FN_PP[P][1]);
  return part.map(e=>{const ok3=w=>e.g==="CH"?w.startsWith("CH"):e.g==="C"?/^C[AOU]/.test(w):e.g==="G"?/^G[AOU]/.test(w):w[0]===e.g[0]&&w[1]!=="H";
   const w=shuffle(e.ws.filter(ok3))[0],syl=FNW[w].s.split("-")[0].toUpperCase(),model=e.v?"":(shuffle(e.ws.filter(x=>x!==w))[0]||"");
-  const pr=part.find(x=>x.g===FN_PAIR[e.g]),order=(pr?[pr]:[]).concat(shuffle(part.filter(x=>x!==e&&x!==pr))),n=L<3?2:3,ds=[];
-  order.forEach(x=>{if(ds.length>=n)return;const c=shuffle(x.ws.filter(d=>(L!==3||d[0]!==e.g[0])&&(L!==1||FNW[d].s.split("-")[0].toUpperCase()!==syl)))[0];if(c)ds.push(c)});
+  const pr=part.find(x=>x.g===FN_PAIR[e.g]),order=(L===3&&pr?[pr]:[]).concat(shuffle(part.filter(x=>x!==e&&x!==pr))),n=L<3?2:3,ds=[],gs=[e.g];
+  order.forEach(x=>{if(ds.length>=n)return;if(L<3&&gs.some(g=>FN_PAIR[g]===x.g||FN_PAIR[x.g]===g))return;const c=shuffle(x.ws.filter(d=>d!==w&&!ds.includes(d)&&(L!==3||d[0]!==e.g[0])&&(L!==1||FNW[d].s.split("-")[0].toUpperCase()!==syl)))[0];if(c){ds.push(c);gs.push(x.g)}});
   return{e,w,syl,model,o:[w,...ds]}})}
 function fnDitQs(k){const oral=k>10;return shuffle(FN_DIT[k%10-1].slice()).slice(0,6).map(x=>Object.assign({},x,{oral}))}
 function fnJunQs(k){const L=FN_JS[k-1];return L.map(([w,p,e])=>{const ph=p.split(","),sc=o=>o[1].split(",").reduce((n,x,i)=>n+(x===ph[i]?1:0),0),ds=shuffle(L.filter(o=>o[0]!==w)).sort((a,b)=>sc(b)-sc(a)).slice(0,2).map(o=>o[0]);return{w,ph,e,o:[w,...ds]}})}
@@ -2982,7 +3091,7 @@ function fnSilR(){
    const c=$("#abCap");c.style.visibility="visible";c.innerHTML=q.s.map((s,i)=>`<span style="color:${PALETTE[i%4]}${P&&i===ix?";text-decoration:underline":""}">${esc(s)}</span>`).join('<span class="fn-hy">-</span>');
    fnOk(tok,P?`${fnPraise()} A sílaba ${{i:"inicial",m:"medial",f:"final"}[P]} de ${q.w.toLowerCase()} é ${ans.toUpperCase()}: ${q.s.join("-")}`:`${fnPraise()} ${q.w.toLowerCase()} tem ${n} ${n===1?"sílaba":"sílabas"}: ${q.s.join("-")}`,q.s.join(", "))}
   else{b.disabled=true;b.classList.add("wrong");fnBad(P?"Tente de novo! O ADULTO DEVE REPETIR A PALAVRA, devagar. 👂":"Tente de novo! Bata palmas a cada pedacinho. 👏")}});
- if(CFG.skip)setTimeout(()=>{if(abAlive(tok)&&!solved){const r=bs.find(good);if(r)r.click()}},900)}
+ if(CFG.skip)setTimeout(()=>{if(abAlive(tok)&&!solved){const r=bs.find(good);if(r)asAuto(()=>r.click())}},900)}
 /* ---- 3. Som inicial: sílaba inicial, fonema inicial (sem letra), fonema-grafema ---- */
 function fnIniR(){
  const S=FN,q=S.qs[S.i],tok=abTok+1,L=(S.k-1)%3+1,e=q.e,words=shuffle(q.o.slice());
@@ -3015,7 +3124,7 @@ function fnDitR(){
  bt.forEach(b=>b.onclick=()=>{if(!abAlive(tok)||done||busy)return;const i=slots.findIndex(s=>!s);if(i<0)return;slots[i]=tiles.find(t=>t.id===+b.dataset.id);paint();chk()});
  $("#fnErase").onclick=e=>{e.stopPropagation();if(done||busy)return;for(let i=slots.length-1;i>=0;i--)if(slots[i]){rm(i);break}};
  paint();
- if(CFG.skip)setTimeout(()=>{if(!abAlive(tok)||done)return;L.forEach((c,i)=>{slots[i]=tiles.find(x=>x.c===c&&!slots.some(s=>s&&s.id===x.id))});paint();chk()},900)}
+ if(CFG.skip)setTimeout(()=>{if(!abAlive(tok)||done)return;L.forEach((c,i)=>{slots[i]=tiles.find(x=>x.c===c&&!slots.some(s=>s&&s.id===x.id))});paint();asAuto(chk)},900)}
 /* ---- 5. Junte os Sons: síntese fonêmica ---- */
 function fnJunR(){
  const S=FN,q=S.qs[S.i],tok=abTok+1,opts=shuffle(q.o.slice()),sym=q.ph.map(fnPhL).join(" – ");
@@ -3026,7 +3135,7 @@ function fnJunR(){
  fnBindPics(q.w,()=>{const c=$("#abCap");c.style.visibility="visible";fnCapsRev(q.w,0);$("#fnExp").textContent=sym+" = "+fnExp(q.w);fnOk(tok,`${fnPraise()} ${sym} = ${q.w}!`,abWordSay(q.w))},()=>fnBad("Tente de novo! Peça ao adulto para repetir os sons. 👂"),tok)}
 function fnFinish(){
  const S=FN,p=active();if(!p)return;const d=fnData(p),key=S.et+"|"+S.k;
- const first=!d.n[key];d.n[key]=(d.n[key]||0)+1;d.h[key]=(d.h[key]||0)+S.hit;d.last={et:S.et,k:S.k,at:new Date().toISOString()};saveProfiles();
+ const first=!d.n[key];d.n[key]=(d.n[key]||0)+1;d.h[key]=(d.h[key]||0)+S.hit;if(S.na){d.hna=d.hna||{};const q=d.hna[key]=d.hna[key]||{demo:0,ajuda:0};q.demo+=S.na.demo.ac;q.ajuda+=S.na.ajuda.ac;regSess(S)}d.last={et:S.et,k:S.k,at:new Date().toISOString()};saveProfiles();
  const order=FN_ET.map(x=>x[0]),idx=order.indexOf(S.et),ks=fnKeys(S.et),ki=ks.indexOf(S.k),last=ki>=ks.length-1;let nx;
  if(!last)nx=[S.et==="rimas"?"Próximo bloco ▶":"Próxima atividade ▶",()=>fnStart(S.et,ks[ki+1])];
  else if(idx<order.length-1)nx=[`Etapa ${idx+2} ▶`,()=>fnOpen(order[idx+1])];
@@ -3040,7 +3149,7 @@ function fnFinish(){
 
 /* ===== Consciência fonológica v3: SEM ÁUDIO — o adulto apresenta oralmente os estímulos; orientações visíveis (realce amarelo) ===== */
 const fnOL=(ic,t,b)=>`<div class="fn-ori-l">${ic} <b>${t}</b> ${b}</div>`;
-const fnOriBox=h=>`<div class="pw-inst pw-ori ab-ori fn-ori" style="display:${famOriOn()?"block":"none"}">${h}</div>`;
+const fnOriBox=h=>medBox("ab-ori fn-ori",h);
 const FN_PHL={"ʃ":"ch","ʒ":"j","ɛ":"é","ɔ":"ó","ʎ":"lh","ɲ":"nh","k":"c","ʁ":"rr"},fnPhL=x=>FN_PHL[x]||x;
 const FN_SNM={CH:"CH (xxxx)",J:"J (jjjj)",R:"R forte (rrrr)",C:"C (como em CASA)",G:"G (como em GATO)"},fnSn=e=>FN_SNM[e.g]||e.g;
 function fnDgLine(w){const d=[...new Set(w.match(/CH|LH|NH|QU|RR|SS/g)||[])],o=[];
@@ -3261,7 +3370,7 @@ function flQuiz(){
   if(o.ok){
    FL.qDone=true;b.classList.add("right");bs.forEach(x=>{if(x!==b){x.disabled=true;x.classList.add("dim")}});
    const p=active();
-   if(p&&!CFG.skip){const r=flAlpha(p).textos[T.id];if(r){r.qOk=(r.qOk||0)+1;r.qErr=(r.qErr||0)+FL.qErr;saveProfiles()}}
+   if(p){const r=flAlpha(p).textos[T.id],md=recMode();if(r){if(md==="auto"){r.qOk=(r.qOk||0)+1;r.qErr=(r.qErr||0)+FL.qErr}else{r.qNA=r.qNA||{demo:0,ajuda:0};r.qNA[md]++;regNA("ac")}saveProfiles()}}
    abChime();
    abMsg("Muito bem! 🎉 Resposta certa!"+(FL.lvOk?" 🏆 Nível "+T.lv+" concluído!":""));
    flAdvance();flAfter();autoClick("#abNext");
@@ -3271,7 +3380,7 @@ function flQuiz(){
   }
  };
  bs.forEach(b=>b.onclick=()=>pick(b));
- if(CFG.skip)setTimeout(()=>{if(!FL||!abAlive(tk)||FL.qDone)return;const i=opts.findIndex(o=>o.ok);if(bs[i])pick(bs[i])},900);
+ if(CFG.skip)setTimeout(()=>{if(!FL||!abAlive(tk)||FL.qDone)return;const i=opts.findIndex(o=>o.ok);if(bs[i])asAuto(()=>pick(bs[i]))},900);
 }
 let FL=null;
 function flStop(){}
@@ -3372,7 +3481,7 @@ function flRender(){
  box.onclick=e=>{const el=e.target.closest(".fl-w");if(el)toggle(el)};
  box.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){const el=e.target.closest(".fl-w");if(el){e.preventDefault();toggle(el)}}};
  if(CFG.skip){const lvl=FL_TEXTS.filter(x=>x.lv===T.lv),k=lvl.findIndex(x=>x.id===T.id),nx=lvl[k+1];
-  abEnableNext(nx?"Próximo texto ▶":"Escolher texto ▶",()=>{if(!FL||FL.finished||!abAlive(FL.tok))return;document.querySelectorAll(".fl-w").forEach(el=>{el.classList.add("read");el.setAttribute("aria-pressed","true")});FL.words.forEach(x=>x.read=true);FL.done=FL.words.length;flSub();flComplete()});
+  abEnableNext(nx?"Próximo texto ▶":"Escolher texto ▶",()=>{if(!FL||FL.finished||!abAlive(FL.tok))return;document.querySelectorAll(".fl-w").forEach(el=>{el.classList.add("read");el.setAttribute("aria-pressed","true")});FL.words.forEach(x=>x.read=true);FL.done=FL.words.length;FL.demo=true;flSub();flComplete()});
   autoClick("#abNext",FL.words.length*900)}
  syncCase();requestAnimationFrame(flFit);setTimeout(flFit,150);
  const tk=FL.tok;window.addEventListener("resize",function f(){if(!abAlive(tk)){window.removeEventListener("resize",f);return}flFit()});
@@ -3380,7 +3489,7 @@ function flRender(){
 function flComplete(){
  const p=active();const T=FL.text;FL.finished=true;let flN=0;
  const now=new Date().toISOString();
- if(p){const f=flAlpha(p);const r=f.textos[T.id]=f.textos[T.id]||{n:0};r.n=(r.n||0)+1;r.quando=now;if(!r.prim)r.prim=now;delete r.ini;flN=r.n;f.sessoes.push({texto:T.id,quando:now});if(f.sessoes.length>60)f.sessoes=f.sessoes.slice(-60);saveProfiles()}
+ if(p){const f=flAlpha(p);const r=f.textos[T.id]=f.textos[T.id]||{n:0};r.n=(r.n||0)+1;r.quando=now;if(!r.prim)r.prim=now;delete r.ini;flN=r.n;const fm=FL.demo?"demonstrativo":(CFG.med?"ajuda":"autonomo");if(fm!=="autonomo"){r.nm=(r.nm||0)+1;const q=active();if(q){q.reg=q.reg||{};const b=q.reg[fm=="ajuda"?"ajuda":"demo"]=q.reg[fm=="ajuda"?"ajuda":"demo"]||{ac:0,er:0,sess:0};b.sess=(b.sess||0)+1}}f.sessoes.push({texto:T.id,quando:now,modo:fm});if(f.sessoes.length>60)f.sessoes=f.sessoes.slice(-60);saveProfiles()}
  const lvl=FL_TEXTS.filter(x=>x.lv===T.lv);
  const n=$("#abNext");if(n){n.disabled=true;n.textContent="Responda ▶"}
  FL.lvOk=!!p&&flN===1&&lvl.every(x=>{const r=flAlpha(p).textos[x.id];return r&&r.n});
@@ -3590,7 +3699,7 @@ function lgQuizOpen(u){
  const box=h=>`<div class="cfg-box" role="dialog" aria-modal="true" aria-labelledby="lgQT"><h2 id="lgQT">❓ Perguntas sobre o texto</h2><p class="muted small" style="margin:0 0 8px">${esc(u.e)} ${esc(u.t)}</p>${h}</div>`;
  const show=()=>{
   const q=Q[i],imp=q[2]==="i";
-  ov.innerHTML=box(`<div class="cfg-sec"><b>Pergunta ${i+1} de ${tot} • ${imp?"💡 Pense e responda":"📍 Procure no texto"}</b></div><p style="font-size:1.25em;margin:8px 0 12px">${esc(q[0])}</p><div id="lgQAns" class="small" style="display:none;margin:0 0 10px"><b>Resposta esperada:</b> ${esc(q[1])}</div><div class="cfg-actions" id="lgQS"><button class="secondary" id="lgQShow" type="button">👁️ Ver resposta esperada</button></div><div class="cfg-actions" id="lgQJ" style="display:none"><button class="secondary" id="lgQNo" type="button">🙂 Precisa de ajuda</button><button class="primary" id="lgQYes" type="button">😀 Respondeu bem</button></div>`);
+  ov.innerHTML=box(`<div class="cfg-sec"><b>Pergunta ${i+1} de ${tot} • ${imp?"💡 Pense e responda":"📍 Procure no texto"}</b></div><p style="font-size:1.25em;margin:8px 0 12px">${esc(q[0])}</p><div id="lgQAns" class="small" style="display:none;margin:0 0 10px"><b>Resposta esperada:</b> ${esc(q[1])}</div><div class="cfg-actions" id="lgQS"><button class="secondary" id="lgQShow" type="button">👩‍🏫 Orientação do mediador: ver resposta esperada</button></div><div class="cfg-actions" id="lgQJ" style="display:none"><button class="secondary" id="lgQNo" type="button">🙂 Precisa de ajuda</button><button class="primary" id="lgQYes" type="button">😀 Respondeu bem</button></div>`);
   ov.querySelector("#lgQShow").onclick=()=>{ov.querySelector("#lgQAns").style.display="block";ov.querySelector("#lgQS").style.display="none";ov.querySelector("#lgQJ").style.display="flex"};
   const nx=g=>{if(g)ok++;i++;i<tot?show():end()};
   ov.querySelector("#lgQNo").onclick=()=>nx(false);ov.querySelector("#lgQYes").onclick=()=>nx(true);
@@ -3927,7 +4036,7 @@ function dsQuizOpen(){
  const fim=n=>{S.comp=n>0?{ok,pt,tot:n}:null;ov.remove();dsRegOpen()};
  const show=()=>{
   const q=Q[i],imp=q[2]==="i";
-  ov.innerHTML=box(`<div class="cfg-sec"><b>Pergunta ${i+1} de ${tot} • ${imp?"💡 Pense e responda":"📍 Procure no texto"}</b></div><p class="ds-q">${esc(q[0])}</p>${rev}<div id="dsQAns" class="small" style="display:none;margin:0 0 10px"><b>Resposta esperada (para o adulto):</b> ${esc(q[1])}</div><div class="cfg-actions" id="dsQS"><button class="secondary" id="dsQSkip" type="button">Pular perguntas</button><button class="secondary" id="dsQShow" type="button">👁️ Ver resposta esperada</button></div><div class="cfg-actions" id="dsQJ" style="display:none"><button class="secondary" id="dsQNo" type="button">🙂 Precisou de ajuda</button><button class="secondary" id="dsQPt" type="button">🤔 Em parte</button><button class="primary" id="dsQYes" type="button">😀 Respondeu bem</button></div>`);
+  ov.innerHTML=box(`<div class="cfg-sec"><b>Pergunta ${i+1} de ${tot} • ${imp?"💡 Pense e responda":"📍 Procure no texto"}</b></div><p class="ds-q">${esc(q[0])}</p>${rev}<div id="dsQAns" class="small" style="display:none;margin:0 0 10px"><b>Resposta esperada (para o adulto):</b> ${esc(q[1])}</div><div class="cfg-actions" id="dsQS"><button class="secondary" id="dsQSkip" type="button">Pular perguntas</button><button class="secondary" id="dsQShow" type="button">👩‍🏫 Orientação do mediador: ver resposta esperada</button></div><div class="cfg-actions" id="dsQJ" style="display:none"><button class="secondary" id="dsQNo" type="button">🙂 Precisou de ajuda</button><button class="secondary" id="dsQPt" type="button">🤔 Em parte</button><button class="primary" id="dsQYes" type="button">😀 Respondeu bem</button></div>`);
   ov.querySelector("#dsQShow").onclick=()=>{ov.querySelector("#dsQAns").style.display="block";ov.querySelector("#dsQS").style.display="none";ov.querySelector("#dsQJ").style.display="flex"};
   ov.querySelector("#dsQSkip").onclick=()=>fim(i);
   const nx=g=>{if(g===2)ok++;else if(g===1)pt++;i++;i<tot?show():fim(tot)};
@@ -4140,9 +4249,9 @@ function lgFinish(skipped){
  const b=$("#lgPlay");if(b){b.disabled=false;b.textContent="↻ Ler de novo";b.onclick=()=>lgStart(L.kind,L.id,L.i)}
  const p=active(),total=L.u.items.length,last=L.i>=total-1,now=new Date().toISOString();let lgN=0;
  if(p){const d=lgData(p);
-  if(last&&!L.u.custom){const r=d.u[L.u.id]=d.u[L.u.id]||{n:0};r.n=(r.n||0)+1;r.quando=now;if(!r.prim)r.prim=now;lgN=r.n;lgHist(d,{q:now,tp:"l",k:L.kind,id:L.u.id})}
+  if(last&&!L.u.custom){const r=d.u[L.u.id]=d.u[L.u.id]||{n:0};r.n=(r.n||0)+1;r.quando=now;if(!r.prim)r.prim=now;lgN=r.n;if(skipped)r.nd=(r.nd||0)+1;else if(CFG.med)r.nm=(r.nm||0)+1;lgHist(d,{q:now,tp:"l",k:L.kind,id:L.u.id})}
   if(last&&L.u.custom){if(d.cn==null)d.cn=d.sessoes.filter(s=>/-custom$/.test(s.unidade)).length;d.cn++}
-  d.sessoes.push({unidade:L.u.id,item:L.i,quando:now,ms:skipped?0:Math.round(L.el),ritmo:CFG.pace,palavras:L.words.length});if(d.sessoes.length>60)d.sessoes=d.sessoes.slice(-60);
+  const lm=skipped?"demonstrativo":(CFG.med?"ajuda":"autonomo");if(lm!=="autonomo"){const q=p;q.reg=q.reg||{};const b=q.reg[lm==="ajuda"?"ajuda":"demo"]=q.reg[lm==="ajuda"?"ajuda":"demo"]||{ac:0,er:0,sess:0};b.sess=(b.sess||0)+1}d.sessoes.push({unidade:L.u.id,item:L.i,modo:lm,quando:now,ms:skipped?0:Math.round(L.el),ritmo:CFG.pace,palavras:L.words.length});if(d.sessoes.length>60)d.sessoes=d.sessoes.slice(-60);
   saveProfiles()}
  const nx=lgNextInfo();
  abMsg(last?"Parabéns! 🎉 Você leu tudo"+(skipped?"!":" em "+lgFmt(L.el)+"!")+(L.u.custom?"":repMsg(lgN===1,lgN))+(last&&L.u.q?" • Toque em ❓ Perguntas":""):(L.u.rounds?"Muito bem! 👏 Agora as sílabas embaralhadas":"Muito bem! 👏 Vamos para a próxima frase"));
@@ -4311,9 +4420,25 @@ const inLv=l=>bank().filter(x=>x.lv===l);
 function D(p){const d=p.pw=p.pw||{};d.w=d.w||{};d.q=d.q||{};return d}
 function isDone(p,w){const s=D(p).w[w.w];if(s&&s.n>0)return true;const c=(p.done||{});return !w.p&&((c.simples_montar||[]).includes(w.w)||(c.complexas_montar||[]).includes(w.w))}
 const doneN=(p,l)=>inLv(l).filter(w=>isDone(p,w)).length;
-function unlocked(p,l){return true}
-function rec(w,o){const p=active();if(!p)return;const s=D(p).w[w]=D(p).w[w]||{att:0,ok:0,err:0,help:0,n:0};for(const k in o)s[k]=(s[k]||0)+o[k];saveProfiles()}
-function recQ(k,o){const p=active();if(!p)return;const s=D(p).q[k]=D(p).q[k]||{att:0,ok:0,err:0,help:0,n:0};for(const k2 in o)s[k2]=(s[k2]||0)+o[k2];saveProfiles()}
+/* ---- desbloqueio progressivo dos níveis (1º nível de cada trilha aberto; os demais por desempenho autônomo ou liberação do adulto) ----
+   Só conta como domínio: acerto AUTÔNOMO (campos att/ok, que não recebem respostas com ajuda "med_*" nem demonstrativas) e palavra
+   formada sem tocar em 💡 (campo "au"). Perfis antigos sem "au" usam ok>0 e help=0. Registros em p.pw.u (níveis liberados) e p.pw.ulog (histórico). */
+const FIRST=[1,5],UMIN=[60,70,80,90],UCOV=[30,50,70];
+function UC(p){const c=(p&&p.cfg)||{};return {min:UMIN.includes(+c.pwMin)?+c.pwMin:80,cov:UCOV.includes(+c.pwCov)?+c.pwCov:50}}
+const UM=p=>D(p).u=D(p).u||{};
+function ulog(p,l,ev,by){const a=D(p).ulog=D(p).ulog||[];a.push({l,ev,by,at:new Date().toISOString()});if(a.length>300)a.splice(0,a.length-300)}
+function lvStat(p,l){const c=UC(p),L=inLv(l),n=L.length;let att=0,ok=0,dom=0;
+ L.forEach(x=>{const s=D(p).w[x.w];if(!s)return;att+=s.att||0;ok+=s.ok||0;if((s.au||0)>0||(s.au===undefined&&(s.ok||0)>0&&!(s.help||0)))dom++});
+ return {n,att,ok,dom,need:Math.min(n,Math.max(8,Math.ceil(n*c.cov/100))),acc:att?Math.round(ok/att*100):0}}
+function lvMet(p,l){const s=lvStat(p,l);return s.att>0&&s.dom>=s.need&&s.ok*100>=UC(p).min*s.att}
+function unlocked(p,l){return !!p&&(FIRST.includes(l)||!!UM(p)[l])}
+function syncUnlock(p){if(!p)return[];const u=UM(p),now=new Date().toISOString(),nw=[];let ch=false;
+ FIRST.forEach(l=>{if(!u[l]){u[l]={by:"inicial",at:now};ulog(p,l,"liberado","inicial");ch=true}});
+ for(let l=2;l<=12;l++){if(FIRST.includes(l)||u[l]||!unlocked(p,l-1)||!lvMet(p,l-1))continue;const s=lvStat(p,l-1);u[l]={by:"desempenho",at:now,acc:s.acc,dom:s.dom};ulog(p,l,"liberado","desempenho");nw.push(l);ch=true}
+ if(ch)saveProfiles();return nw}
+const unlockMsg=nw=>nw.length?" 🔓 Nível "+nw.join(" e ")+" liberado!":"";
+function rec(w,o){const p=active();if(!p)return;const s=D(p).w[w]=D(p).w[w]||{att:0,ok:0,err:0,help:0,n:0};o=naKeys(o);for(const k in o)s[k]=(s[k]||0)+o[k];saveProfiles()}
+function recQ(k,o){const p=active();if(!p)return;const s=D(p).q[k]=D(p).q[k]||{att:0,ok:0,err:0,help:0,n:0};o=naKeys(o);for(const k2 in o)s[k2]=(s[k2]||0)+o[k2];saveProfiles()}
 /* ---- áudio: gravação do educador (IndexedDB) > voz do aparelho com grafia fonética ---- */
 const REC=new Map();let tok=0,voice=null,idb=null;
 function idbOpen(){return new Promise(r=>{try{const q=indexedDB.open("pwAudio",1);q.onupgradeneeded=()=>q.result.createObjectStore("a");q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}catch(e){r(null)}})}
@@ -4340,22 +4465,34 @@ function shell(title,sub,back){
  $("#soundBtn").onclick=()=>kaSet(!soundOn);$("#fsBtn").onclick=toggleFullscreen;
  $("#pwBack").onclick=()=>{say([]);back()}}
 const oriOn=()=>{const p=active();return !(p&&p.cfg&&p.cfg.orient===0)};
-const ori=h=>`<div class="pw-inst pw-ori" style="display:${oriOn()?"block":"none"}">${h}</div>`;
-window.pwRefresh=()=>document.querySelectorAll(".pw-ori").forEach(e=>e.style.display=oriOn()?"block":"none");
+const ori=h=>medBox("",h);
+window.pwRefresh=()=>document.querySelectorAll(".pw-ori").forEach(e=>{if(e.classList.contains("med-wrap")){e.querySelectorAll(".med-btn,.med-body").forEach(x=>x.style.display=oriOn()?"":"none")}else e.style.display=oriOn()?"block":"none"});
 const fb=t=>{const f=$("#feedback");if(f)f.textContent=t};
 const nextBtn=(txt,fn)=>{const n=$("#nextStage");n.disabled=false;n.textContent=txt;n.onclick=fn};
 /* ---- trilha (menu dos níveis e atividades) ---- */
 let grp="simples_montar";
-function trail(g){say([]);grp=g||grp;const p=active();if(!p){renderClassDashboard();return}
+function trail(g){say([]);grp=g||grp;const p=active();if(!p){renderClassDashboard();return}syncUnlock(p);
  const [a,b]=GRP[grp],pct=l=>Math.round(doneN(p,l)/inLv(l).length*100);
- let cards="";for(let l=a;l<=b;l++){const un=unlocked(p,l),n=inLv(l).length;cards+=`<button class="ab-lvl${un?"":" pw-lock"}" data-lv="${l}" type="button" ${un?"":"disabled"}><strong>${un?"🧩":"🔒"} ${l}. ${LVN[l][0]}</strong><span class="ab-lvl-d">${LVN[l][1]}</span><div class="progress"><span style="width:${pct(l)}%"></span></div><span class="small">${doneN(p,l)} de ${n} palavras</span></button>`}
- const acts=[["esc","👂","Qual palavra você ouviu?","Palavras parecidas: GATO, GALO, PATO"],["rr","🔤","RR e SS","Aprenda os sons e a escrita"],["pse","🪄","Palavras inventadas","Leia sem figura e sem decorar"]].map(x=>`<button class="ab-lvl" data-act="${x[0]}" type="button"><strong>${x[1]} ${x[2]}</strong><span class="ab-lvl-d">${x[3]}</span></button>`).join("");
+ let cards="";for(let l=a;l<=b;l++){const un=unlocked(p,l),n=inLv(l).length,ps=un?null:lvStat(p,l-1),pc=UC(p);cards+=`<button class="ab-lvl${un?"":" pw-lock"}" data-lv="${l}" type="button" ${un?"":"disabled"}><strong>${un?"🧩":"🔒"} ${l}. ${LVN[l][0]}</strong><span class="ab-lvl-d">${LVN[l][1]}</span><div class="progress"><span style="width:${pct(l)}%"></span></div><span class="small">${un?doneN(p,l)+" de "+n+" palavras":"Bloqueado · libera com "+pc.min+"% de acertos autônomos em "+ps.need+" palavras do nível "+(l-1)+" (agora: "+(ps.att?ps.acc+"%":"—")+" · "+ps.dom+"/"+ps.need+")"}</span></button>`}
+ const acts=[["esc","👂","Qual palavra você ouviu?","Palavras parecidas: GATO, GALO, PATO"],["rr","🔤","RR e SS","Aprenda os sons e a escrita"],["pse","🪄","Palavras inventadas","Leia sem figura e sem decorar"],["adm","🔓","Adulto: progresso e liberação","Ver desempenho e liberar níveis"]].map(x=>`<button class="ab-lvl" data-act="${x[0]}" type="button"><strong>${x[1]} ${x[2]}</strong><span class="ab-lvl-d">${x[3]}</span></button>`).join("");
  abShell({title:"Sílabas e palavras",sub:grp==="simples_montar"?"🧩 Palavras Simples":"🧩 Palavras Complexas",noSound:true,single:`<div class="ab-board ab-levels" style="overflow-y:auto;align-content:start;grid-template-rows:none;grid-auto-rows:minmax(clamp(96px,22vh,150px),auto)">${cards}${acts}</div>`,msg:"🧩 Escolha um nível ou atividade para jogar",onBack:renderStudentMenu});
  document.querySelectorAll("[data-lv]").forEach(b=>b.onclick=()=>startLv(+b.dataset.lv));
- document.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>b.dataset.act==="rr"?lesson():startQ(b.dataset.act))}
+ document.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>b.dataset.act==="rr"?lesson():b.dataset.act==="adm"?adm():startQ(b.dataset.act))}
+/* ---- painel do adulto: desempenho por nível e liberação manual ---- */
+function adm(){const a=6+Math.floor(Math.random()*4),b=6+Math.floor(Math.random()*4);
+ const r=prompt(`Área do adulto. Para continuar, quanto é ${a} × ${b}?`);if(r===null)return;if(+r!==a*b){alert("Resposta incorreta.");return}admDraw()}
+function admDraw(){say([]);stage="pw-menu";document.body.classList.remove("game-mode");const p=active();if(!p){renderClassDashboard();return}syncUnlock(p);
+ const c=UC(p),u=UM(p),BY={inicial:"inicial",desempenho:"por desempenho",adulto:"pelo adulto"},fd=t=>{try{return new Date(t).toLocaleDateString("pt-BR")}catch(e){return""}};
+ let rows="";for(let l=1;l<=12;l++){const s=lvStat(p,l),un=unlocked(p,l),by=(u[l]||{}).by||"";
+  rows+=`<tr><td><b>${l}. ${esc(LVN[l][0])}</b></td><td>${un?"🔓 liberado"+(by?" ("+BY[by]+")":""):"🔒 bloqueado"}</td><td>${s.dom}/${s.need}</td><td>${s.att?s.acc+"%":"—"}</td><td>${!un?`<button class="secondary" type="button" data-lib="${l}">Liberar</button>`:by==="adulto"?`<button class="secondary" type="button" data-blq="${l}">Bloquear</button>`:""}</td></tr>`}
+ const lg=(D(p).ulog||[]).slice(-8).reverse().map(e=>`<li>${fd(e.at)} · nível ${e.l} ${e.ev} (${BY[e.by]||e.by})</li>`).join("");
+ $("#appMain").innerHTML=`<section class="panel"><div class="topline"><div><div class="muted small">SÍLABAS E PALAVRAS · ADULTO</div><h1>🔓 Progresso e liberação</h1></div><button class="secondary" id="pwB">← Voltar</button></div><p>Participante: <b>${esc(p.name)}</b>. O primeiro nível de cada trilha (1 e 5) já vem liberado. Os demais abrem quando a criança atinge <b>${c.min}%</b> de acertos autônomos e acerta sozinha (sem 💡) ao menos <b>${c.cov}%</b> das palavras do nível anterior (mínimo de 8, ou todas se houver menos). Respostas com ajuda do adulto e demonstrativas não contam. Os percentuais ficam em ⚙️ Configurações do jogo. Você pode liberar um nível manualmente quando achar adequado.</p><div class="table-scroll"><table class="report-table"><thead><tr><th>Nível</th><th>Situação</th><th>Palavras autônomas (meta)</th><th>Acertos autônomos</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>${lg?`<h3>Últimos registros</h3><ul class="small">${lg}</ul>`:""}</section>`;
+ $("#pwB").onclick=()=>trail();
+ document.querySelectorAll("[data-lib]").forEach(b=>b.onclick=()=>{const l=+b.dataset.lib;if(!confirm(`Liberar o nível ${l} (${LVN[l][0]}) para ${p.name}? A liberação fica registrada como feita pelo adulto.`))return;UM(p)[l]={by:"adulto",at:new Date().toISOString()};ulog(p,l,"liberado","adulto");saveProfiles();admDraw()});
+ document.querySelectorAll("[data-blq]").forEach(b=>b.onclick=()=>{const l=+b.dataset.blq;if(!confirm(`Bloquear novamente o nível ${l}? Os registros da criança são mantidos.`))return;delete UM(p)[l];ulog(p,l,"bloqueado","adulto");saveProfiles();admDraw()})}
 /* ---- palavra: etapa 1 ditado, etapa 2 leitura ---- */
 let ST=null;
-function startLv(l){const p=active(),list=inLv(l);let i=list.findIndex(x=>!isDone(p,x));if(i<0)i=0;ST={lv:l,list,i};word1()}
+function startLv(l){const p=active(),list=inLv(l);if(!unlocked(p,l)){alert("Este nível ainda está bloqueado. Ele é liberado quando a criança atinge a meta de acertos autônomos no nível anterior ou quando o adulto o libera.");return}let i=list.findIndex(x=>!isDone(p,x));if(i<0)i=0;ST={lv:l,list,i};word1()}
 function distract(x){const pool=bank().filter(y=>y.lv<=x.lv&&!y.p===!x.p).flatMap(y=>y.s),need=new Set(x.s);
  const sim=distinct(pool).filter(s=>!need.has(s)&&x.s.some(t=>t[0]===s[0]||t.slice(-1)===s.slice(-1)));
  return shuf(sim.length>=2?sim:distinct(pool).filter(s=>!need.has(s))).slice(0,2)}
@@ -4371,18 +4508,18 @@ function draw1(hint){const S=ST,x=S.list[S.i],n=x.s.length;
  document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{if(S.ok)return;const i=+b.dataset.i;S.got.push({s:S.opts[i],i});say([{k:"s",t:S.opts[i]}]);
   if(S.got.length<n){draw1();return}
   const okk=S.got.map(g=>g.s).join("")===x.w;
-  if(okk){S.ok=true;rec(x.w,{att:1,ok:1});celebrateDone();abTick(true);draw1();fb(x.p?"✅ Muito bem! Palavra inventada formada.":"✅ Isso! A palavra é "+x.w+".");setTimeout(()=>say(aW(x.w)),350);nextBtn("Etapa 2 ▶",word2)}
+  if(okk){S.ok=true;rec(x.w,{att:1,ok:1});if(!CFG.med&&S.help===0)rec(x.w,{au:1});const nw=syncUnlock(active());celebrateDone();abTick(true);draw1();fb((x.p?"✅ Muito bem! Palavra inventada formada.":"✅ Isso! A palavra é "+x.w+".")+unlockMsg(nw));setTimeout(()=>say(aW(x.w)),350);nextBtn("Etapa 2 ▶",word2)}
   else{S.err++;rec(x.w,{att:1,err:1});abTick(false);draw1();document.querySelectorAll(".slot2").forEach(e=>e.classList.add("wrong"));fb("❌ Ainda não. O ADULTO DEVE REPETIR A PALAVRA. Tente outra vez.");setTimeout(()=>{if(stage!=="pw"||S.ok)return;S.got=[];draw1();say(aW(x.w))},1000)}})}
 function word2(){const S=ST,x=S.list[S.i],n=x.s.length;S.tap=new Set();S.wt=false;S.logged=false;
  shell(`Palavra ${S.i+1} de ${S.list.length}`,`Etapa 2 de 2 · Leia a palavra`,()=>trail());
- $("#stageBody").innerHTML=`<div class="board win"><div class="win-word">${x.s.map((sy,i)=>`<button type="button" class="pw-sy" data-i="${i}" style="color:${COL[i%4]}">${esc(sy)}</button>`).join("")}</div></div><div class="side"><div>${ori(ori2(null,"Toque em cada sílaba e leia a palavra em voz alta.","Ajude na leitura, se precisar."))}</div><div class="fig-box">${fig(x)}</div></div>`;
+ $("#stageBody").innerHTML=`<div class="board win"><div class="win-word">${x.s.map((sy,i)=>`<button type="button" class="pw-sy" data-i="${i}" style="color:${COL[i%4]}">${esc(sy)}</button>`).join("")}</div></div><div class="side"><div>${ori(ori2(null,"Toque em cada sílaba e leia a palavra em voz alta.","Ajude na leitura, se precisar."))}</div><div id="pwFig"></div></div>`;
  fb("Toque em cada sílaba e leia a palavra.");
- const chk=()=>{if(S.tap.size===n){if(!S.logged){rec(x.w,{n:1});S.logged=true}celebrateDone();fb("🎉 Muito bem! Palavra lida. Aperte o botão para continuar.");const last=S.i+1>=S.list.length;nextBtn(last?"Concluir ▶":"Próxima palavra ▶",()=>{if(last)lvEnd();else{S.i++;word1()}})}};
+ const chk=()=>{if(S.tap.size===n){if(!S.logged){rec(x.w,{n:1});S.logged=true}{const fg=$("#pwFig");if(fg)fg.outerHTML=`<div class="fig-box" id="pwFig">${fig(x)}</div>`}celebrateDone();fb("🎉 Muito bem! Palavra lida. Aperte o botão para continuar.");const last=S.i+1>=S.list.length;nextBtn(last?"Concluir ▶":"Próxima palavra ▶",()=>{if(last)lvEnd();else{S.i++;word1()}})}};
  document.querySelectorAll(".pw-sy").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;S.tap.add(i);b.classList.add("on");say([{k:"s",t:x.s[i]}]);chk()});
  
- {const r=$("#pwRestart");r.classList.remove("hidden");r.onclick=()=>{S.tap=new Set();const nb=$("#nextStage");nb.disabled=true;nb.textContent="Próxima ▶";document.querySelectorAll(".pw-sy").forEach(e=>e.classList.remove("on"));fb("↻ Recomeçando a leitura.")}}
+ {const r=$("#pwRestart");r.classList.remove("hidden");r.onclick=()=>{S.tap=new Set();const nb=$("#nextStage");nb.disabled=true;nb.textContent="Próxima ▶";document.querySelectorAll(".pw-sy").forEach(e=>e.classList.remove("on"));{const fg=$("#pwFig");if(fg)fg.outerHTML='<div id="pwFig"></div>'}fb("↻ Recomeçando a leitura.")}}
  $("#pwHelp").onclick=()=>{S.help++;rec(x.w,{help:1});say(aModel(x));fb("💡 Adulto, leia a palavra devagar, sílaba por sílaba. Agora a criança lê!")}}
-function lvEnd(){const p=active(),l=ST.lv,all=doneN(p,l)>=inLv(l).length;$("#appMain").innerHTML=`<section class="panel" style="text-align:center"><div style="font-size:4rem">🎉</div><h1>${all?"Nível concluído!":"Muito bem!"}</h1><p>${l}. ${LVN[l][0]} — ${doneN(p,l)} de ${inLv(l).length} palavras.</p><div class="row" style="justify-content:center"><button class="primary" id="a1">${all&&l<12?"Próximo nível":"Continuar"}</button><button class="secondary" id="a2">Voltar à trilha</button></div></section>`;document.body.classList.remove("game-mode");
+function lvEnd(){const p=active(),l=ST.lv,all=doneN(p,l)>=inLv(l).length;syncUnlock(p);const nx=l<12&&!unlocked(p,l+1)&&!([4].includes(l)),sn=lvStat(p,l),cm=UC(p);$("#appMain").innerHTML=`<section class="panel" style="text-align:center"><div style="font-size:4rem">🎉</div><h1>${all?"Nível concluído!":"Muito bem!"}</h1><p>${l}. ${LVN[l][0]} — ${doneN(p,l)} de ${inLv(l).length} palavras.</p>${nx?`<p class="small muted">🔒 O próximo nível libera com ${cm.min}% de acertos autônomos em ${sn.need} palavras deste nível (agora: ${sn.att?sn.acc+"%":"—"} · ${sn.dom}/${sn.need}). Respostas com ajuda não contam.</p>`:""}<div class="row" style="justify-content:center"><button class="primary" id="a1">${all&&l<12?"Próximo nível":"Continuar"}</button><button class="secondary" id="a2">Voltar à trilha</button></div></section>`;document.body.classList.remove("game-mode");
  celebrateDone();$("#a1").onclick=()=>all&&l<12&&unlocked(active(),l+1)?startLv(l+1):startLv(l);$("#a2").onclick=()=>trail(l<=4?"simples_montar":"complexas_montar")}
 /* ---- quizzes: escuta com alternativas semelhantes, RR/SS e pseudopalavras ---- */
 function lev(a,b){const m=[];for(let i=0;i<=a.length;i++){m[i]=[i];for(let j=1;j<=b.length;j++)m[i][j]=i?Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]===b[j-1]?0:1)):j}return m[a.length][b.length]}
@@ -4393,11 +4530,11 @@ function makeQs(kind){const p=active(),open=bank().filter(x=>unlocked(p,x.lv));
  const real=open.filter(x=>!x.p);
  if(kind==="esc")return shuf(real).slice(0,10).map(x=>{const d=real.filter(y=>y.w!==x.w&&lev(x.w,y.w)<=2).sort((a,b)=>lev(x.w,a.w)-lev(x.w,b.w)+Math.random()-.5).slice(0,3).map(y=>y.w);
    const f=shuf(real.filter(y=>y.w!==x.w&&!d.includes(y.w))).slice(0,Math.max(0,2-d.length)).map(y=>y.w);return {x,t:x.w,opts:shuf([x.w,...d,...f])}});
- if(kind==="rr")return shuf(bank().filter(x=>!x.p&&/RR|SS/.test(x.w))).slice(0,10).map(x=>({x,t:x.w,opts:shuf([x.w,...distinct([...shuf(spell(x.w)),...bank().filter(y=>!y.p&&y.w!==x.w&&lev(x.w,y.w)<=2).map(y=>y.w),x.w.replace(/RR/,"RH").replace(/SS/,"SC")]).filter(w=>w!==x.w).slice(0,3)])}));
+ if(kind==="rr")return shuf(open.filter(x=>!x.p&&/RR|SS/.test(x.w))).slice(0,10).map(x=>({x,t:x.w,opts:shuf([x.w,...distinct([...shuf(spell(x.w)),...bank().filter(y=>!y.p&&y.w!==x.w&&lev(x.w,y.w)<=2).map(y=>y.w),x.w.replace(/RR/,"RH").replace(/SS/,"SC")]).filter(w=>w!==x.w).slice(0,3)])}));
  const ps=open.filter(x=>x.p);return shuf(ps).slice(0,10).map(x=>{let d=mutate(x.w).filter(w=>!ps.some(y=>y.w===w));d=distinct([...d,...shuf(ps.filter(y=>y.w!==x.w&&y.s.length===x.s.length)).map(y=>y.w)]).slice(0,3);return {x,t:x.w,opts:shuf([x.w,...d])}})}
 const QT={esc:"Qual palavra você ouviu?",rr:"RR e SS: escreva certo",pse:"Palavra inventada"};
 let Q=null;
-function startQ(kind){const qs=makeQs(kind);if(qs.length<3){alert("Ainda há poucas palavras liberadas para esta atividade. Conclua mais palavras da trilha.");return}Q={kind,qs,i:0,ok:0,err:0,help:0,att:0};qn()}
+function startQ(kind){const qs=makeQs(kind);if(qs.length<3){alert("Ainda há poucas palavras liberadas para esta atividade. Conclua mais palavras da trilha ou peça ao adulto para liberar níveis.");return}Q={kind,qs,i:0,ok:0,err:0,help:0,att:0};qn()}
 function qn(){const Z=Q,q=Z.qs[Z.i];Z.first=true;Z.done=false;Z.off=new Set();
  shell(`Pergunta ${Z.i+1} de ${Z.qs.length}`,QT[Z.kind],()=>trail());
  const draw=()=>{$("#stageBody").innerHTML=`<div class="board build"><div class="opts" style="--n:${q.opts.length}">${q.opts.map((o,i)=>`<button type="button" class="opt" data-i="${i}" style="--len:${o.length}" ${Z.done||Z.off.has(i)?"disabled":""}><span class="cell-t">${esc(o)}</span></button>`).join("")}</div></div><div class="side"><div><button class="pw-ear" id="pwEar" type="button">🔊 Ouvir</button>${ori(ori2(`<b class="pw-hl">${esc(q.t)}</b>`,Z.kind==="pse"?"Toque na palavra inventada que o adulto falou.":"Toque na palavra que o adulto falou."))}</div>${Z.done&&Z.kind!=="pse"?`<div class="fig-box">${fig(q.x)}</div>`:"<div></div>"}</div>`;
