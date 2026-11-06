@@ -2092,8 +2092,7 @@ function celebrateDone(msg){
  }catch(e){}}
 const CFG={
  get auto(){const p=active();return !!(p&&p.cfg&&p.cfg.auto)},
- get skip(){const p=active();return !!(p&&p.cfg&&p.cfg.skip)},
- get med(){const p=active();return !!(p&&p.cfg&&p.cfg.med)},
+ get skip(){return false}, /* "Avançar sem selecionar" removido: a seleção das respostas é sempre obrigatória (ignora perfis antigos com skip=true) */
  get letter(){const p=active(),l=p&&p.cfg&&p.cfg.letter;return ["m","u","l","c"].includes(l)?l:"m"},
  get pace(){const p=active(),v=p&&p.cfg&&p.cfg.pace;return ["i","m","a","p"].includes(v)?v:"i"},
  get secs(){const p=active(),v=p&&p.cfg&&+p.cfg.secs;return v>=0.1&&v<=30?v:2},
@@ -2103,25 +2102,23 @@ const CFG={
 };
 
 /* ===== Origem da resposta: autônoma × ajuda do adulto × demonstrativa =====
- Só respostas dadas pela criança, sem a solução fornecida pelo sistema ("Avançar sem selecionar") nem pelo adulto
- (opção "Atividade com ajuda do adulto"), compõem os indicadores de desempenho autônomo (acertos/erros/tentativas).
- As demais são gravadas à parte (p.reg e campos "demo"/"ajuda"/"modo" nos registros). A CONCLUSÃO continua sendo
+ Só respostas dadas pela criança, sem a solução fornecida pelo sistema ("Avançar sem selecionar") nem pelo avanço automático, compõem os indicadores de desempenho autônomo (acertos/erros/tentativas).
+ As demais são gravadas à parte (p.reg e campos "demo"/"modo" nos registros). A CONCLUSÃO continua sendo
  registrada, mas concluir não significa que a criança aprendeu ou domina a habilidade. */
 let AUTO_N=0;
 function isAuto(){return AUTO_N>0}
 function asAuto(fn){AUTO_N++;try{return fn()}finally{AUTO_N--}}
-function recMode(){return AUTO_N>0?"demo":(CFG.med?"ajuda":"auto")}
+function recMode(){return AUTO_N>0?"demo":"auto"}
 function regNA(k){const m=recMode();if(m==="auto")return;const p=active();if(!p)return;const r=p.reg=p.reg||{};const b=r[m]=r[m]||{ac:0,er:0,sess:0};b[k]=(b[k]||0)+1;saveProfiles()}
-function naBox(S){return S.na=S.na||{demo:{ac:0,er:0},ajuda:{ac:0,er:0}}}
+function naBox(S){return S.na=S.na||{demo:{ac:0,er:0}}}
 function cntHit(S){const m=recMode();if(m==="auto")S.hit++;else{naBox(S)[m].ac++;regNA("ac")}}
 function cntErr(S){const m=recMode();if(m==="auto")S.err++;else{naBox(S)[m].er++;regNA("er")}}
-function sessModo(S){const n=S.na||{},d=n.demo?n.demo.ac+n.demo.er:0,h=n.ajuda?n.ajuda.ac+n.ajuda.er:0,au=(S.hit||0)+(S.err||0);if(!d&&!h)return CFG.med?"ajuda":"autonomo";if(au)return "misto";return d?"demonstrativo":"ajuda"}
-function sessExtra(S){const n=S.na||{};return {modo:sessModo(S),demo:n.demo||{ac:0,er:0},ajuda:n.ajuda||{ac:0,er:0}}}
-function regSess(S){const n=S.na;if(!n)return;const p=active();if(!p)return;const r=p.reg=p.reg||{};["demo","ajuda"].forEach(k=>{if(n[k]&&n[k].ac+n[k].er>0){const b=r[k]=r[k]||{ac:0,er:0,sess:0};b.sess=(b.sess||0)+1}})}
-function naKeys(o){if(!CFG.med)return o;const r={};for(const k in o)r[(k==="att"||k==="ok"||k==="err")?"med_"+k:k]=o[k];return r}
+function sessModo(S){const n=S.na||{},d=n.demo?n.demo.ac+n.demo.er:0,au=(S.hit||0)+(S.err||0);if(!d)return "autonomo";if(au)return "misto";return "demonstrativo"}
+function sessExtra(S){const n=S.na||{};return {modo:sessModo(S),demo:n.demo||{ac:0,er:0}}}
+function regSess(S){const n=S.na;if(!n)return;const p=active();if(!p)return;const r=p.reg=p.reg||{};["demo"].forEach(k=>{if(n[k]&&n[k].ac+n[k].er>0){const b=r[k]=r[k]||{ac:0,er:0,sess:0};b.sess=(b.sess||0)+1}})}
 function stgInc(st,k){if(!st)return;const m=recMode();if(m==="auto"){st[k]=(st[k]||0)+1;return}const b=st[m]=st[m]||{attempts:0,correct:0,errors:0};b[k]=(b[k]||0)+1;runFlag(m)}
 function runFlag(m){if(typeof currentRun!=="undefined"&&currentRun){currentRun.modo=currentRun.modo||{};currentRun.modo[m]=true}}
-function runModo(){const m=(typeof currentRun!=="undefined"&&currentRun&&currentRun.modo)||{};return m.demo?"demonstrativo":(m.ajuda||CFG.med)?"ajuda":"autonomo"}
+function runModo(){const m=(typeof currentRun!=="undefined"&&currentRun&&currentRun.modo)||{};return m.demo?"demonstrativo":m.ajuda?"ajuda":"autonomo"}
 /* ===== Cinco níveis de informação em Sílabas e palavras (nunca confundir) =====
  1) Atividade concluída  → run.completed / p.done: só diz que o percurso chegou ao fim.
  2) Resposta correta na interação → stages[k].attempts/correct/errors, SÓ nas etapas com checagem do sistema
@@ -2129,7 +2126,7 @@ function runModo(){const m=(typeof currentRun!=="undefined"&&currentRun&&current
  3) Toque de leitura → stages[k].marks, nas etapas em que a criança apenas toca para marcar o que leu
     (palavras: "Junte os sons" e "Leia a palavra"; famílias: etapas 1, 2 e 4). O app não ouve a criança: não é acerto.
  4) Leitura com autonomia / com ajuda → run.obs.aut ("a" | "h"), informada pelo adulto. A autonomia nunca é presumida;
-    a chave "Atividade com ajuda do adulto" já assinala ajuda e o avanço automático assinala demonstração.
+    o avanço automático assinala demonstração.
  5) Habilidade observada → run.obs.hab ("s" | "p" | "n"), SÓ o adulto registra. Quantidade de toques não é indicador de alfabetização. */
 function runIsFam(r){return !!(r&&(r.kind==="fam"||(r.kind==null&&isFamCat(r.category)&&famOf(r.word))))}
 function runTapKeys(r){return runIsFam(r)?["families","read","picture"]:["families","read"]}
@@ -2165,14 +2162,7 @@ function runSumHTML(p){
  L.forEach(r=>{mk+=runMarks(r);const v=runVerif(r);att+=v.att;ok+=v.ok;if(!r.completed)return;conc++;le[runLeitura(r)]++;const h=r.obs&&r.obs.hab;hb[h==="s"||h==="p"||h==="n"?h:"x"]++});
  return `<div class="cfg-sec"><b>🧮 Sílabas e palavras: o que cada número significa</b><span>1) Atividades concluídas: <b>${conc}</b> — só indica que o percurso terminou.<br>2) Respostas corretas na interação: <b>${ok} de ${att}</b> — apenas nas etapas em que o aplicativo confere a resposta.<br>3) Toques de leitura: <b>${mk}</b> — a criança marca o que leu; o aplicativo não ouve, então isso não é acerto.<br>4) Leitura informada pelo adulto: com autonomia <b>${le.autonomia}</b> • com ajuda <b>${le.ajuda}</b> • sem informação <b>${le.nao}</b> • avançada pelo aplicativo <b>${le.demo}</b>.<br>5) Habilidade observada pelo adulto: observada <b>${hb.s}</b> • em parte <b>${hb.p}</b> • ainda não <b>${hb.n}</b> • sem registro <b>${hb.x}</b>.<br>Quantidade de toques não é indicador de alfabetização.</span></div>`}
 function regConcl(cat,id){const p=active();if(!p)return;p.concl=p.concl||{};p.concl[cat+"|"+id]={modo:runModo(),quando:new Date().toISOString()}}
-function medBadge(){let b=document.getElementById("medBadge");const on=!!active()&&CFG.med;
- if(!on){if(b)b.remove();return}
- if(!b){b=document.createElement("button");b.id="medBadge";b.type="button";b.title="Toque para desligar o registro com ajuda do adulto";
-  b.style.cssText="position:fixed;left:8px;bottom:8px;z-index:60;border:2px solid #f0a000;background:#fff6dc;color:#7a4b00;font:800 .72rem/1.1 inherit;padding:6px 10px;border-radius:999px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.18)";
-  b.onclick=()=>{const q=active();if(q){q.cfg=Object.assign({},q.cfg,{med:false});saveProfiles()}medBadge()};document.body.appendChild(b)}
- b.textContent="🧑‍🏫 Com ajuda do adulto"}
-setInterval(()=>{try{medBadge()}catch(_){}},1500);
-function setCfg(o){const p=active();if(!p)return;p.cfg=Object.assign({},p.cfg,{auto:!!o.auto,skip:!!o.skip,med:!!o.med,letter:["m","u","l","c"].includes(o.letter)?o.letter:"m",delay:[2,4,7].includes(+o.delay)?+o.delay:4});saveProfiles()}
+function setCfg(o){const p=active();if(!p)return;p.cfg=Object.assign({},p.cfg,{auto:!!o.auto,skip:!!o.skip,letter:["m","u","l","c"].includes(o.letter)?o.letter:"m",delay:[2,4,7].includes(+o.delay)?+o.delay:4});delete p.cfg.med;saveProfiles()}
 let noAutoOnce=false;
 function autoNext(extra){
  clearTimeout(autoTimer);if(!CFG.auto)return;
@@ -2191,8 +2181,6 @@ function openCfg(){
  ov.innerHTML=`<div class="cfg-box" role="dialog" aria-modal="true" aria-labelledby="cfgT"><h2 id="cfgT">⚙️ Configurações</h2><p class="muted small" style="margin:0 0 8px">Participante: <b>${esc(pp.name)}</b>. As escolhas ficam salvas só para este participante. Por padrão, tudo fica desligado.</p>
  <label class="cfg-opt"><input type="checkbox" id="cfgAuto" ${CFG.auto?"checked":""}><div><b>⏭️ Transição automática</b><span>Ao concluir cada etapa, o jogo avança sozinho para a próxima etapa, palavra ou texto.</span></div></label>
  <div class="cfg-delay ${CFG.auto?"":"off"}" id="cfgDelay"><span style="margin:0 6px 0 0;font-weight:800;color:#5b6280">Tempo de espera:</span>${[[2,"2 s"],[4,"4 s"],[7,"7 s"]].map(d=>`<label><input type="radio" name="cfgD" value="${d[0]}" ${CFG.delay===d[0]?"checked":""}>${d[1]}</label>`).join("")}</div>
- <label class="cfg-opt"><input type="checkbox" id="cfgSkip" ${CFG.skip?"checked":""}><div><b>👆 Avançar sem selecionar</b><span>Libera o botão de avançar sem precisar tocar em cada sílaba, palavra, letra ou figura. As respostas aparecem prontas na tela. Atividades feitas assim são registradas como <b>demonstrativas</b>: concluem a etapa, mas não contam como acerto, erro nem domínio da habilidade.</span></div></label>
- <label class="cfg-opt"><input type="checkbox" id="cfgMed" ${CFG.med?"checked":""}><div><b>🧑‍🏫 Atividade com ajuda do adulto</b><span>Ligue quando o adulto der a resposta ou realizar a atividade junto. Os registros ficam separados como <b>“com ajuda”</b> e não entram nos indicadores de desempenho autônomo. Desligue para voltar ao registro autônomo.</span></div></label>
  <label class="cfg-opt"><input type="checkbox" id="cfgOri" ${(pp.cfg&&pp.cfg.orient===0)?"":"checked"}><div><b>👩‍🏫 Orientações para o adulto</b><span>Mostra, nas atividades de Sílabas e palavras, do Alfabeto (Sons das letras, Caça-Letras e Qual letra começa?) e da Consciência fonológica, a caixa de orientação do mediador, para o professor ou familiar saber o que pronunciar. A linha da criança fica sempre legível; as dicas do adulto (palavra-alvo, exemplos e respostas) ficam borradas, aparecem por instantes quando a tela muda e podem ser vistas pressionando e segurando a caixa (ícone 👁). O modo de revelação é escolhido em “Dicas da orientação”. Funciona mesmo sem áudio. O jogo não reconhece a fala: a criança responde tocando na tela. Vem ligado.</span></div></label>
  <div class="cfg-sec"><b>🫣 Dicas da orientação</b><span>Como as dicas do adulto (em letras maiúsculas) aparecem na caixa de orientação. A linha da criança nunca fica borrada. Vale só para este participante.</span></div>
  <div class="cfg-delay cfg-letter" id="cfgOriDica">${(()=>{const cur=["t","p","v"].includes((pp.cfg||{}).oriDica)?pp.cfg.oriDica:"t";return [["t","⏱️ Revelar por instantes (padrão)"],["p","👆 Somente ao pressionar"],["v","👁 Sempre visíveis"]].map(d=>`<label><input type="radio" name="cfgOD" value="${d[0]}" ${cur===d[0]?"checked":""}>${d[1]}</label>`).join("")})()}</div>
@@ -2201,9 +2189,8 @@ function openCfg(){
   <label class="cfg-opt"><input type="checkbox" id="cfgAudio" ${soundOn?"checked":""}><div><b>🔊 Áudio do jogo</b><span>Ativa ou desativa todos os sons, inclusive o toque suave ao responder e o estouro de confete da comemoração. A escolha vale para todo o jogo e fica salva neste aparelho para os próximos acessos.</span></div></label>
   <div class="cfg-sec"><b>🔤 Tipo de letra</b><span>Escolha como as letras aparecem nos jogos do Alfabeto. Também dá para trocar durante o jogo, no botão de letras.</span></div>
  <div class="cfg-delay cfg-letter">${[["u","ABC",""],["l","abc",""],["c","Abc","cs"],["m","Misto",""]].map(d=>`<label class="${d[2]}"><input type="radio" name="cfgL" value="${d[0]}" ${CFG.letter===d[0]?"checked":""}>${d[1]}</label>`).join("")}</div>
- ${(()=>{const a=pp.alpha||{},r=pp.reg||{},d=r.demo||{},h=r.ajuda||{};return `<div class="cfg-sec"><b>📊 Origem dos registros</b><span>Autônomas (Alfabeto): ${a.acertos||0} acertos, ${a.erros||0} erros • Com ajuda do adulto: ${h.ac||0} acertos, ${h.er||0} erros • Demonstrativas (automáticas): ${d.ac||0} respostas. Apenas as autônomas compõem os indicadores de desempenho.</span></div>`})()}
  ${runSumHTML(pp)}
-  <div class="cfg-sec"><b>🔓 Desbloqueio de níveis (Sílabas e palavras)</b><span>Meta para liberar o nível seguinte. Conta apenas acerto autônomo, sem ajuda do adulto e sem resposta automática. Níveis já liberados continuam liberados.</span></div>
+  <div class="cfg-sec"><b>🔓 Desbloqueio de níveis (Sílabas e palavras)</b><span>Meta para liberar o nível seguinte. Conta apenas acerto autônomo, sem resposta automática. Níveis já liberados continuam liberados.</span></div>
  <div class="cfg-delay"><label style="display:block;margin:4px 0">Acertos autônomos mínimos: <select id="cfgPwMin">${[60,70,80,90].map(v=>`<option value="${v}" ${(((pp.cfg||{}).pwMin)||80)==v?"selected":""}>${v}%</option>`).join("")}</select></label><label style="display:block;margin:4px 0">Palavras do nível acertadas sozinha: <select id="cfgPwCov">${[30,50,70].map(v=>`<option value="${v}" ${(((pp.cfg||{}).pwCov)||50)==v?"selected":""}>${v}%</option>`).join("")}</select></label></div>
  <div class="cfg-actions"><button class="primary" id="cfgOk" type="button">Salvar</button></div></div>`;
  document.body.appendChild(ov);
@@ -2217,8 +2204,8 @@ function openCfg(){
   const d=ov.querySelector('input[name=cfgD]:checked');
   {const r=ov.querySelector("input[name=cfgOD]:checked");if(r&&["t","p","v"].includes(r.value)){const q=active();q.cfg=Object.assign({},q.cfg,{oriDica:r.value})}}
   {const r=ov.querySelector("input[name=cfgOT]:checked"),nv=ov.querySelector("#cfgOTV"),nu=ov.querySelector("#cfgOTU");if(r&&["d","c","p"].includes(r.value)){let v=Math.round(parseFloat(nv&&nv.value));if(!(v>=1))v=5;if(v>99)v=99;const q=active();q.cfg=Object.assign({},q.cfg,{oriT:r.value,oriTV:v,oriTU:(nu&&nu.value==="m")?"m":"s"})}}
-  {const o=ov.querySelector("#cfgOri");if(o){const q=active();q.cfg=Object.assign({},q.cfg,{orient:o.checked?1:0})}}{const m=ov.querySelector("#cfgPwMin"),v=ov.querySelector("#cfgPwCov");if(m&&v){const q=active();q.cfg=Object.assign({},q.cfg,{pwMin:+m.value,pwCov:+v.value})}}setCfg({auto:au.checked,skip:ov.querySelector("#cfgSkip").checked,med:ov.querySelector("#cfgMed").checked,letter:(ov.querySelector('input[name=cfgL]:checked')||{}).value,delay:d?+d.value:4});
-  close();medBadge();clearTimeout(autoTimer);abApplyCase();if(window.pwRefresh)pwRefresh();
+  {const o=ov.querySelector("#cfgOri");if(o){const q=active();q.cfg=Object.assign({},q.cfg,{orient:o.checked?1:0})}}{const m=ov.querySelector("#cfgPwMin"),v=ov.querySelector("#cfgPwCov");if(m&&v){const q=active();q.cfg=Object.assign({},q.cfg,{pwMin:+m.value,pwCov:+v.value})}}setCfg({auto:au.checked,skip:false,letter:(ov.querySelector('input[name=cfgL]:checked')||{}).value,delay:d?+d.value:4});
+  close();clearTimeout(autoTimer);abApplyCase();if(window.pwRefresh)pwRefresh();
   if(["families","read","build","picture"].includes(stage)&&$("#stageBody")){renderStage()}
   else if(/^fam[1-4]$/.test(stage)&&$("#stageBody")&&typeof fam!=="undefined"&&fam){renderFamStage()}
   else if(stage==="alpha-game"){if($("#lgText")&&typeof LG!=="undefined"&&LG)lgStart(LG.kind,LG.id,LG.i);else if(typeof FL!=="undefined"&&FL&&!FL.finished&&$("#flText"))flStart(FL.text.id);else if(typeof AB!=="undefined"&&AB&&AB.queue&&AB.i<AB.queue.length&&$("#abLeft"))abRound()}
@@ -2974,7 +2961,7 @@ function fnDitR(){
  if(CFG.skip)setTimeout(()=>{if(!abAlive(tok)||done)return;L.forEach((c,i)=>{const t=tiles.find(x=>x.c===c&&!slots.some(s=>s&&s.id===x.id));slots[i]=t});paint();asAuto(chk)},900)}
 function fnFinish(){
  const S=FN,p=active();if(!p)return;const d=fnData(p),key=S.et+"|"+S.k;
- const first=!d.n[key];d.n[key]=(d.n[key]||0)+1;d.h[key]=(d.h[key]||0)+S.hit;if(S.na){d.hna=d.hna||{};const q=d.hna[key]=d.hna[key]||{demo:0,ajuda:0};q.demo+=S.na.demo.ac;q.ajuda+=S.na.ajuda.ac;regSess(S)}d.last={et:S.et,k:S.k,at:new Date().toISOString()};saveProfiles();
+ const first=!d.n[key];d.n[key]=(d.n[key]||0)+1;d.h[key]=(d.h[key]||0)+S.hit;if(S.na){d.hna=d.hna||{};const q=d.hna[key]=d.hna[key]||{demo:0};q.demo+=S.na.demo.ac;regSess(S)}d.last={et:S.et,k:S.k,at:new Date().toISOString()};saveProfiles();
  const order=FN_ET.map(x=>x[0]),idx=order.indexOf(S.et),last=S.et==="rimas"?S.k>=FN_B.length:S.k>=3;
  let nx;
  if(!last)nx=[S.et==="rimas"?"Próximo bloco ▶":"Próximo nível ▶",()=>fnStart(S.et,S.k+1)];
@@ -3055,7 +3042,7 @@ function fnCxBank(q,k){const acc=/[ÁÂÃÉÊÍÓÔÕÚÇ]/,need=q.g.slice(),n=k
  const dg=ok.filter(d=>d.length===2),rs=ok.filter(d=>d.length!==2),pk=(k===3&&dg.length?[dg[0]]:[]).concat(rs,dg).filter((d,i,a)=>a.indexOf(d)===i).slice(0,n);
  return shuffle(need.concat(pk).map((c,i)=>({c,id:i})))}
 /* registro no perfil: acertos (peças certas), erros (peças trocadas) e ajudas (💡 ou avanço automático), por nível e por palavra */
-function fnCxRec(q,k,f){const p=active();if(!p)return;if(recMode()=="ajuda"&&(f==="acertos"||f==="erros"))f=f==="acertos"?"med_ac":"med_er";const d=fnData(p);d.cx=d.cx||{};const key="caixas|"+k,r=d.cx[key]=d.cx[key]||{acertos:0,erros:0,ajudas:0,palavras:0,w:{}};
+function fnCxRec(q,k,f){const p=active();if(!p)return;const d=fnData(p);d.cx=d.cx||{};const key="caixas|"+k,r=d.cx[key]=d.cx[key]||{acertos:0,erros:0,ajudas:0,palavras:0,w:{}};
  const w=r.w[q.w]=r.w[q.w]||{acertos:0,erros:0,ajudas:0,vezes:0};if(f==="palavras"){r.palavras++;w.vezes++}else{r[f]=(r[f]||0)+1;w[f]++}saveProfiles()}
 function fnCxNote(q){const dg=q.g.filter(g=>g.length>1),o=[];
  if(dg.length)o.push(`${dg.map(g=>abHl(g)).join(" e ")} = 2 letras, 1 som: ${dg.length>1?"cada uma ocupa":"ocupa"} 1 caixa`);
@@ -3213,7 +3200,7 @@ function fnJunR(){
  fnBindPics(q.w,()=>{const c=$("#abCap");c.style.visibility="visible";fnCapsRev(q.w,0);$("#fnExp").textContent=sym+" = "+fnExp(q.w);fnOk(tok,`${fnPraise()} ${sym} = ${q.w}!`,abWordSay(q.w))},()=>fnBad("Tente de novo! Peça ao adulto para repetir os sons. 👂"),tok)}
 function fnFinish(){
  const S=FN,p=active();if(!p)return;const d=fnData(p),key=S.et+"|"+S.k;
- const first=!d.n[key];d.n[key]=(d.n[key]||0)+1;d.h[key]=(d.h[key]||0)+S.hit;if(S.na){d.hna=d.hna||{};const q=d.hna[key]=d.hna[key]||{demo:0,ajuda:0};q.demo+=S.na.demo.ac;q.ajuda+=S.na.ajuda.ac;regSess(S)}d.last={et:S.et,k:S.k,at:new Date().toISOString()};saveProfiles();
+ const first=!d.n[key];d.n[key]=(d.n[key]||0)+1;d.h[key]=(d.h[key]||0)+S.hit;if(S.na){d.hna=d.hna||{};const q=d.hna[key]=d.hna[key]||{demo:0};q.demo+=S.na.demo.ac;regSess(S)}d.last={et:S.et,k:S.k,at:new Date().toISOString()};saveProfiles();
  const order=FN_ET.map(x=>x[0]),idx=order.indexOf(S.et),ks=fnKeys(S.et),ki=ks.indexOf(S.k),last=ki>=ks.length-1;let nx;
  if(!last)nx=[S.et==="rimas"?"Próximo bloco ▶":"Próxima atividade ▶",()=>fnStart(S.et,ks[ki+1])];
  else if(idx<order.length-1)nx=[`Etapa ${idx+2} ▶`,()=>fnOpen(order[idx+1])];
@@ -3448,7 +3435,7 @@ function flQuiz(){
   if(o.ok){
    FL.qDone=true;b.classList.add("right");bs.forEach(x=>{if(x!==b){x.disabled=true;x.classList.add("dim")}});
    const p=active();
-   if(p){const r=flAlpha(p).textos[T.id],md=recMode();if(r){if(md==="auto"){r.qOk=(r.qOk||0)+1;r.qErr=(r.qErr||0)+FL.qErr}else{r.qNA=r.qNA||{demo:0,ajuda:0};r.qNA[md]++;regNA("ac")}saveProfiles()}}
+   if(p){const r=flAlpha(p).textos[T.id],md=recMode();if(r){if(md==="auto"){r.qOk=(r.qOk||0)+1;r.qErr=(r.qErr||0)+FL.qErr}else{r.qNA=r.qNA||{demo:0};r.qNA[md]++;regNA("ac")}saveProfiles()}}
    abChime();
    abMsg("Muito bem! 🎉 Resposta certa!"+(FL.lvOk?" 🏆 Nível "+T.lv+" concluído!":""));
    flAdvance();flAfter();autoClick("#abNext");
@@ -3567,7 +3554,7 @@ function flRender(){
 function flComplete(){
  const p=active();const T=FL.text;FL.finished=true;let flN=0;
  const now=new Date().toISOString();
- if(p){const f=flAlpha(p);const r=f.textos[T.id]=f.textos[T.id]||{n:0};r.n=(r.n||0)+1;r.quando=now;if(!r.prim)r.prim=now;delete r.ini;flN=r.n;const fm=FL.demo?"demonstrativo":(CFG.med?"ajuda":"autonomo");if(fm!=="autonomo"){r.nm=(r.nm||0)+1;const q=active();if(q){q.reg=q.reg||{};const b=q.reg[fm=="ajuda"?"ajuda":"demo"]=q.reg[fm=="ajuda"?"ajuda":"demo"]||{ac:0,er:0,sess:0};b.sess=(b.sess||0)+1}}f.sessoes.push({texto:T.id,quando:now,modo:fm});if(f.sessoes.length>60)f.sessoes=f.sessoes.slice(-60);saveProfiles()}
+ if(p){const f=flAlpha(p);const r=f.textos[T.id]=f.textos[T.id]||{n:0};r.n=(r.n||0)+1;r.quando=now;if(!r.prim)r.prim=now;delete r.ini;flN=r.n;const fm=FL.demo?"demonstrativo":"autonomo";if(fm!=="autonomo"){r.nm=(r.nm||0)+1;const q=active();if(q){q.reg=q.reg||{};const b=q.reg.demo=q.reg.demo||{ac:0,er:0,sess:0};b.sess=(b.sess||0)+1}}f.sessoes.push({texto:T.id,quando:now,modo:fm});if(f.sessoes.length>60)f.sessoes=f.sessoes.slice(-60);saveProfiles()}
  const lvl=FL_TEXTS.filter(x=>x.lv===T.lv);
  const n=$("#abNext");if(n){n.disabled=true;n.textContent="Responda ▶"}
  FL.lvOk=!!p&&flN===1&&lvl.every(x=>{const r=flAlpha(p).textos[x.id];return r&&r.n});
@@ -4327,9 +4314,9 @@ function lgFinish(skipped){
  const b=$("#lgPlay");if(b){b.disabled=false;b.textContent="↻ Ler de novo";b.onclick=()=>lgStart(L.kind,L.id,L.i)}
  const p=active(),total=L.u.items.length,last=L.i>=total-1,now=new Date().toISOString();let lgN=0;
  if(p){const d=lgData(p);
-  if(last&&!L.u.custom){const r=d.u[L.u.id]=d.u[L.u.id]||{n:0};r.n=(r.n||0)+1;r.quando=now;if(!r.prim)r.prim=now;lgN=r.n;if(skipped)r.nd=(r.nd||0)+1;else if(CFG.med)r.nm=(r.nm||0)+1;lgHist(d,{q:now,tp:"l",k:L.kind,id:L.u.id})}
+  if(last&&!L.u.custom){const r=d.u[L.u.id]=d.u[L.u.id]||{n:0};r.n=(r.n||0)+1;r.quando=now;if(!r.prim)r.prim=now;lgN=r.n;if(skipped)r.nd=(r.nd||0)+1;lgHist(d,{q:now,tp:"l",k:L.kind,id:L.u.id})}
   if(last&&L.u.custom){if(d.cn==null)d.cn=d.sessoes.filter(s=>/-custom$/.test(s.unidade)).length;d.cn++}
-  const lm=skipped?"demonstrativo":(CFG.med?"ajuda":"autonomo");if(lm!=="autonomo"){const q=p;q.reg=q.reg||{};const b=q.reg[lm==="ajuda"?"ajuda":"demo"]=q.reg[lm==="ajuda"?"ajuda":"demo"]||{ac:0,er:0,sess:0};b.sess=(b.sess||0)+1}d.sessoes.push({unidade:L.u.id,item:L.i,modo:lm,quando:now,ms:skipped?0:Math.round(L.el),ritmo:CFG.pace,palavras:L.words.length});if(d.sessoes.length>60)d.sessoes=d.sessoes.slice(-60);
+  const lm=skipped?"demonstrativo":"autonomo";if(lm!=="autonomo"){const q=p;q.reg=q.reg||{};const b=q.reg.demo=q.reg.demo||{ac:0,er:0,sess:0};b.sess=(b.sess||0)+1}d.sessoes.push({unidade:L.u.id,item:L.i,modo:lm,quando:now,ms:skipped?0:Math.round(L.el),ritmo:CFG.pace,palavras:L.words.length});if(d.sessoes.length>60)d.sessoes=d.sessoes.slice(-60);
   saveProfiles()}
  const nx=lgNextInfo();
  abMsg(last?"Parabéns! 🎉 Você leu tudo"+(skipped?"!":" em "+lgFmt(L.el)+"!")+(L.u.custom?"":repMsg(lgN===1,lgN))+(last&&L.u.q?" • Toque em ❓ Perguntas":""):(L.u.rounds?"Muito bem! 👏 Agora as sílabas embaralhadas":"Muito bem! 👏 Vamos para a próxima frase"));
@@ -4499,7 +4486,7 @@ function D(p){const d=p.pw=p.pw||{};d.w=d.w||{};d.q=d.q||{};return d}
 function isDone(p,w){const s=D(p).w[w.w];if(s&&s.n>0)return true;const c=(p.done||{});return !w.p&&((c.simples_montar||[]).includes(w.w)||(c.complexas_montar||[]).includes(w.w))}
 const doneN=(p,l)=>inLv(l).filter(w=>isDone(p,w)).length;
 /* ---- desbloqueio progressivo dos níveis (1º nível de cada trilha aberto; os demais por desempenho autônomo ou liberação do adulto) ----
-   Só conta como domínio: acerto AUTÔNOMO (campos att/ok, que não recebem respostas com ajuda "med_*" nem demonstrativas) e palavra
+   Só conta como domínio: acerto AUTÔNOMO (campos att/ok, que não recebem respostas demonstrativas) e palavra
    formada sem tocar em 💡 (campo "au"). Perfis antigos sem "au" usam ok>0 e help=0. Registros em p.pw.u (níveis liberados) e p.pw.ulog (histórico). */
 const FIRST=[1,5],UMIN=[60,70,80,90],UCOV=[30,50,70];
 function UC(p){const c=(p&&p.cfg)||{};return {min:UMIN.includes(+c.pwMin)?+c.pwMin:80,cov:UCOV.includes(+c.pwCov)?+c.pwCov:50}}
@@ -4515,8 +4502,8 @@ function syncUnlock(p){if(!p)return[];const u=UM(p),now=new Date().toISOString()
  for(let l=2;l<=12;l++){if(FIRST.includes(l)||u[l]||!unlocked(p,l-1)||!lvMet(p,l-1))continue;const s=lvStat(p,l-1);u[l]={by:"desempenho",at:now,acc:s.acc,dom:s.dom};ulog(p,l,"liberado","desempenho");nw.push(l);ch=true}
  if(ch)saveProfiles();return nw}
 const unlockMsg=nw=>nw.length?" 🔓 Nível "+nw.join(" e ")+" liberado!":"";
-function rec(w,o){const p=active();if(!p)return;const s=D(p).w[w]=D(p).w[w]||{att:0,ok:0,err:0,help:0,n:0};o=naKeys(o);for(const k in o)s[k]=(s[k]||0)+o[k];saveProfiles()}
-function recQ(k,o){const p=active();if(!p)return;const s=D(p).q[k]=D(p).q[k]||{att:0,ok:0,err:0,help:0,n:0};o=naKeys(o);for(const k2 in o)s[k2]=(s[k2]||0)+o[k2];saveProfiles()}
+function rec(w,o){const p=active();if(!p)return;const s=D(p).w[w]=D(p).w[w]||{att:0,ok:0,err:0,help:0,n:0};for(const k in o)s[k]=(s[k]||0)+o[k];saveProfiles()}
+function recQ(k,o){const p=active();if(!p)return;const s=D(p).q[k]=D(p).q[k]||{att:0,ok:0,err:0,help:0,n:0};for(const k2 in o)s[k2]=(s[k2]||0)+o[k2];saveProfiles()}
 /* ---- áudio: gravação do educador (IndexedDB) > voz do aparelho com grafia fonética ---- */
 const REC=new Map();let tok=0,voice=null,idb=null;
 function idbOpen(){return new Promise(r=>{try{const q=indexedDB.open("pwAudio",1);q.onupgradeneeded=()=>q.result.createObjectStore("a");q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}catch(e){r(null)}})}
@@ -4564,7 +4551,7 @@ function admDraw(){say([]);stage="pw-menu";document.body.classList.remove("game-
  let rows="";for(let l=1;l<=12;l++){const s=lvStat(p,l),un=unlocked(p,l),by=(u[l]||{}).by||"";
   rows+=`<tr><td><b>${l}. ${esc(LVN[l][0])}</b></td><td>${un?"🔓 liberado"+(by?" ("+BY[by]+")":""):"🔒 bloqueado"}</td><td>${s.dom}/${s.need}</td><td>${s.att?s.acc+"%":"—"}</td><td>${!un?`<button class="secondary" type="button" data-lib="${l}">Liberar</button>`:by==="adulto"?`<button class="secondary" type="button" data-blq="${l}">Bloquear</button>`:""}</td></tr>`}
  const lg=(D(p).ulog||[]).slice(-8).reverse().map(e=>`<li>${fd(e.at)} · nível ${e.l} ${e.ev} (${BY[e.by]||e.by})</li>`).join("");
- $("#appMain").innerHTML=`<section class="panel"><div class="topline"><div><div class="muted small">SÍLABAS E PALAVRAS · ADULTO</div><h1>🔓 Progresso e liberação</h1></div><button class="secondary" id="pwB">← Voltar</button></div><p>Participante: <b>${esc(p.name)}</b>. O primeiro nível de cada trilha (1 e 5) já vem liberado. Os demais abrem quando a criança atinge <b>${c.min}%</b> de acertos autônomos e acerta sozinha (sem 💡) ao menos <b>${c.cov}%</b> das palavras do nível anterior (mínimo de 8, ou todas se houver menos). Respostas com ajuda do adulto e demonstrativas não contam. Os percentuais ficam em ⚙️ Configurações do jogo. Você pode liberar um nível manualmente quando achar adequado.</p><div class="table-scroll"><table class="report-table"><thead><tr><th>Nível</th><th>Situação</th><th>Palavras autônomas (meta)</th><th>Acertos autônomos</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>${lg?`<h3>Últimos registros</h3><ul class="small">${lg}</ul>`:""}</section>`;
+ $("#appMain").innerHTML=`<section class="panel"><div class="topline"><div><div class="muted small">SÍLABAS E PALAVRAS · ADULTO</div><h1>🔓 Progresso e liberação</h1></div><button class="secondary" id="pwB">← Voltar</button></div><p>Participante: <b>${esc(p.name)}</b>. O primeiro nível de cada trilha (1 e 5) já vem liberado. Os demais abrem quando a criança atinge <b>${c.min}%</b> de acertos autônomos e acerta sozinha (sem 💡) ao menos <b>${c.cov}%</b> das palavras do nível anterior (mínimo de 8, ou todas se houver menos). Respostas demonstrativas não contam. Os percentuais ficam em ⚙️ Configurações do jogo. Você pode liberar um nível manualmente quando achar adequado.</p><div class="table-scroll"><table class="report-table"><thead><tr><th>Nível</th><th>Situação</th><th>Palavras autônomas (meta)</th><th>Acertos autônomos</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>${lg?`<h3>Últimos registros</h3><ul class="small">${lg}</ul>`:""}</section>`;
  $("#pwB").onclick=()=>trail();
  document.querySelectorAll("[data-lib]").forEach(b=>b.onclick=()=>{const l=+b.dataset.lib;if(!confirm(`Liberar o nível ${l} (${LVN[l][0]}) para ${p.name}? A liberação fica registrada como feita pelo adulto.`))return;UM(p)[l]={by:"adulto",at:new Date().toISOString()};ulog(p,l,"liberado","adulto");saveProfiles();admDraw()});
  document.querySelectorAll("[data-blq]").forEach(b=>b.onclick=()=>{const l=+b.dataset.blq;if(!confirm(`Bloquear novamente o nível ${l}? Os registros da criança são mantidos.`))return;delete UM(p)[l];ulog(p,l,"bloqueado","adulto");saveProfiles();admDraw()})}
@@ -4586,7 +4573,7 @@ function draw1(hint){const S=ST,x=S.list[S.i],n=x.s.length;
  document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{if(S.ok)return;const i=+b.dataset.i;S.got.push({s:S.opts[i],i});say([{k:"s",t:S.opts[i]}]);
   if(S.got.length<n){draw1();return}
   const okk=S.got.map(g=>g.s).join("")===x.w;
-  if(okk){S.ok=true;rec(x.w,{att:1,ok:1});if(!CFG.med&&S.help===0)rec(x.w,{au:1});const nw=syncUnlock(active());celebrateDone();abTick(true);draw1();fb((x.p?"✅ Muito bem! Palavra inventada formada.":"✅ Isso! A palavra é "+x.w+".")+unlockMsg(nw));setTimeout(()=>say(aW(x.w)),350);nextBtn("Etapa 2 ▶",word2)}
+  if(okk){S.ok=true;rec(x.w,{att:1,ok:1});if(S.help===0)rec(x.w,{au:1});const nw=syncUnlock(active());celebrateDone();abTick(true);draw1();fb((x.p?"✅ Muito bem! Palavra inventada formada.":"✅ Isso! A palavra é "+x.w+".")+unlockMsg(nw));setTimeout(()=>say(aW(x.w)),350);nextBtn("Etapa 2 ▶",word2)}
   else{S.err++;rec(x.w,{att:1,err:1});abTick(false);draw1();document.querySelectorAll(".slot2").forEach(e=>e.classList.add("wrong"));fb("❌ Ainda não. O ADULTO DEVE REPETIR A PALAVRA. Tente outra vez.");setTimeout(()=>{if(stage!=="pw"||S.ok)return;S.got=[];draw1();say(aW(x.w))},1000)}})}
 function word2(){const S=ST,x=S.list[S.i],n=x.s.length;S.tap=new Set();S.wt=false;S.logged=false;
  shell(`Palavra ${S.i+1} de ${S.list.length}`,`Etapa 2 de 2 · Leia a palavra`,()=>trail());
