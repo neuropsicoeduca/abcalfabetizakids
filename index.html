@@ -1038,6 +1038,13 @@ html[data-ori-m="v"] .pw-ori .pw-hl{transition:none}
 .pw-ori.ori-rev[data-ori-h]::after{opacity:.85}
 html[data-ori-m="v"] .pw-ori[data-ori-h]::after{display:none}
 html[data-ori-m="v"] .pw-ori[data-ori-h]{padding-right:revert!important}
+.cfg-ot{align-items:center}
+.cfg-ot input[type=number]{width:72px;height:36px;padding:0 8px;font:inherit;font-weight:800;border:2px solid #cfd5ea;border-radius:10px;text-align:center}
+.cfg-ot select{height:36px;font:inherit;font-weight:800;border:2px solid #cfd5ea;border-radius:10px;padding:0 8px;background:#fff}
+.cfg-ot .ot-c{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.cfg-ot .ot-c.dis input[type=number],.cfg-ot .ot-c.dis select{opacity:.55}
+.cfg-ot.off{pointer-events:auto}
+@media(max-width:560px){.bottom .hud-right{flex-wrap:wrap}}
 </style>
 </head>
 <body>
@@ -1890,7 +1897,7 @@ function renderFamActivity(){
   <div class="hud-menu hidden" id="hudMenu"><button type="button" data-go="config">📚 Escolher outro grupo</button><button type="button" data-go="student">👤 Menu do participante</button><button type="button" data-go="classes">🏫 Grupos e participantes</button><button type="button" data-go="cfg">⚙️ Configurações do jogo</button><button type="button" data-go="home">⌂ Menu inicial</button><button type="button" data-go="profile">👤 Meu perfil</button><button type="button" data-go="logout">🚪 Sair da conta</button></div>
  </div>
  <div class="stage-body stage-families fam-st" id="stageBody"></div>
- <div class="bottom"><button class="round-btn" id="previousStage" type="button" aria-label="Voltar">◀</button><div class="bottom-text"><div class="feedback" id="feedback" aria-live="polite"></div></div><button class="round-btn" id="restartStage" type="button" aria-label="Reiniciar etapa">↻</button><button class="go-btn" id="nextStage" type="button">Já li ▶</button><div class="hud-right"><button class="hud-btn mini" id="shuffleFamBtn" type="button" aria-label="Embaralhar de novo" title="Embaralhar de novo">🔀</button><button class="hud-btn mini" id="caseBtn" type="button" aria-label="Tipo de letra: maiúscula, minúscula, cursiva" title="Tipo de letra"></button><button class="hud-btn" id="soundBtn" type="button" aria-label="Som" title="Som: ligar ou desligar">${soundOn?"🔊":"🔇"}</button><button class="hud-btn" id="fsBtn" type="button" aria-label="Tela cheia">⛶</button></div></div>
+ <div class="bottom"><button class="round-btn" id="previousStage" type="button" aria-label="Voltar">◀</button><div class="bottom-text"><div class="feedback" id="feedback" aria-live="polite"></div></div><button class="round-btn" id="restartStage" type="button" aria-label="Reiniciar etapa">↻</button><button class="go-btn" id="nextStage" type="button">Já li ▶</button><div class="hud-right"><button class="hud-btn" id="cfgBarBtn" type="button" aria-label="Configurações do jogo" title="Configurações do jogo">⚙️</button><button class="hud-btn mini" id="shuffleFamBtn" type="button" aria-label="Embaralhar de novo" title="Embaralhar de novo">🔀</button><button class="hud-btn mini" id="caseBtn" type="button" aria-label="Tipo de letra: maiúscula, minúscula, cursiva" title="Tipo de letra"></button><button class="hud-btn" id="soundBtn" type="button" aria-label="Som" title="Som: ligar ou desligar">${soundOn?"🔊":"🔇"}</button><button class="hud-btn" id="fsBtn" type="button" aria-label="Tela cheia">⛶</button></div></div>
  </section>`;
  const menu=$("#hudMenu");
  $("#menuBtn").onclick=e=>{e.stopPropagation();menu.classList.toggle("hidden")};
@@ -2189,6 +2196,8 @@ function openCfg(){
  <label class="cfg-opt"><input type="checkbox" id="cfgOri" ${(pp.cfg&&pp.cfg.orient===0)?"":"checked"}><div><b>👩‍🏫 Orientações para o adulto</b><span>Mostra, nas atividades de Sílabas e palavras, do Alfabeto (Sons das letras, Caça-Letras e Qual letra começa?) e da Consciência fonológica, a caixa de orientação do mediador, para o professor ou familiar saber o que pronunciar. A linha da criança fica sempre legível; as dicas do adulto (palavra-alvo, exemplos e respostas) ficam borradas, aparecem por instantes quando a tela muda e podem ser vistas pressionando e segurando a caixa (ícone 👁). O modo de revelação é escolhido em “Dicas da orientação”. Funciona mesmo sem áudio. O jogo não reconhece a fala: a criança responde tocando na tela. Vem ligado.</span></div></label>
  <div class="cfg-sec"><b>🫣 Dicas da orientação</b><span>Como as dicas do adulto (em letras maiúsculas) aparecem na caixa de orientação. A linha da criança nunca fica borrada. Vale só para este participante.</span></div>
  <div class="cfg-delay cfg-letter" id="cfgOriDica">${(()=>{const cur=["t","p","v"].includes((pp.cfg||{}).oriDica)?pp.cfg.oriDica:"t";return [["t","⏱️ Revelar por instantes (padrão)"],["p","👆 Somente ao pressionar"],["v","👁 Sempre visíveis"]].map(d=>`<label><input type="radio" name="cfgOD" value="${d[0]}" ${cur===d[0]?"checked":""}>${d[1]}</label>`).join("")})()}</div>
+ <div class="cfg-sec"><b>⏳ Tempo de revelação das dicas</b><span>Vale quando o modo acima é “Revelar por instantes”. Escolha por quanto tempo as dicas do adulto ficam visíveis quando a tela muda: o padrão (0,6 s), um tempo seu em segundos ou minutos, ou permanente na tela. Vale só para este participante.</span></div>
+ <div class="cfg-delay cfg-letter cfg-ot ${(()=>{const m=["t","p","v"].includes((pp.cfg||{}).oriDica)?pp.cfg.oriDica:"t";return m==="t"?"":"off"})()}" id="cfgOriTempo">${(()=>{const c=pp.cfg||{},cur=["d","c","p"].includes(c.oriT)?c.oriT:"d",v=(+c.oriTV>=1&&+c.oriTV<=99)?Math.round(+c.oriTV):5,u=c.oriTU==="m"?"m":"s";return `<label><input type="radio" name="cfgOT" value="d" ${cur==="d"?"checked":""}>Padrão (0,6 s)</label><span class="ot-c ${cur==="c"?"":"dis"}" id="cfgOTc"><label><input type="radio" name="cfgOT" value="c" ${cur==="c"?"checked":""}>Personalizado:</label><input type="number" id="cfgOTV" min="1" max="99" step="1" value="${v}" aria-label="Tempo de revelação"><select id="cfgOTU" aria-label="Unidade de tempo"><option value="s" ${u==="s"?"selected":""}>segundos</option><option value="m" ${u==="m"?"selected":""}>minutos</option></select></span><label><input type="radio" name="cfgOT" value="p" ${cur==="p"?"checked":""}>Permanente na tela</label>`})()}</div>
   <label class="cfg-opt"><input type="checkbox" id="cfgAudio" ${soundOn?"checked":""}><div><b>🔊 Áudio do jogo</b><span>Ativa ou desativa todos os sons, inclusive o toque suave ao responder e o estouro de confete da comemoração. A escolha vale para todo o jogo e fica salva neste aparelho para os próximos acessos.</span></div></label>
   <div class="cfg-sec"><b>🔤 Tipo de letra</b><span>Escolha como as letras aparecem nos jogos do Alfabeto. Também dá para trocar durante o jogo, no botão de letras.</span></div>
  <div class="cfg-delay cfg-letter">${[["u","ABC",""],["l","abc",""],["c","Abc","cs"],["m","Misto",""]].map(d=>`<label class="${d[2]}"><input type="radio" name="cfgL" value="${d[0]}" ${CFG.letter===d[0]?"checked":""}>${d[1]}</label>`).join("")}</div>
@@ -2199,6 +2208,7 @@ function openCfg(){
  <div class="cfg-actions"><button class="primary" id="cfgOk" type="button">Salvar</button></div></div>`;
  document.body.appendChild(ov);
  const au=ov.querySelector("#cfgAuto");au.onchange=()=>ov.querySelector("#cfgDelay").classList.toggle("off",!au.checked);
+ {const ot=ov.querySelector("#cfgOriTempo"),od=ov.querySelector("#cfgOriDica");if(ot&&od){const upd=()=>{const m=(od.querySelector("input[name=cfgOD]:checked")||{}).value,t=(ot.querySelector("input[name=cfgOT]:checked")||{}).value;ot.classList.toggle("off",m!=="t");const c=ot.querySelector("#cfgOTc");if(c)c.classList.toggle("dis",t!=="c")};od.addEventListener("change",upd);ot.addEventListener("change",upd);const pick=()=>{const rc=ot.querySelector("input[name=cfgOT][value=c]");if(rc&&!rc.checked){rc.checked=true;upd()}};["#cfgOTV","#cfgOTU"].forEach(q=>{const e=ot.querySelector(q);if(e)["focus","click","input","change"].forEach(ev=>e.addEventListener(ev,pick))});upd()}}
  const close=()=>ov.remove();
  ov.onclick=e=>{if(e.target===ov)close()};
  ov.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
@@ -2206,6 +2216,7 @@ function openCfg(){
  ov.querySelector("#cfgOk").onclick=()=>{
   const d=ov.querySelector('input[name=cfgD]:checked');
   {const r=ov.querySelector("input[name=cfgOD]:checked");if(r&&["t","p","v"].includes(r.value)){const q=active();q.cfg=Object.assign({},q.cfg,{oriDica:r.value})}}
+  {const r=ov.querySelector("input[name=cfgOT]:checked"),nv=ov.querySelector("#cfgOTV"),nu=ov.querySelector("#cfgOTU");if(r&&["d","c","p"].includes(r.value)){let v=Math.round(parseFloat(nv&&nv.value));if(!(v>=1))v=5;if(v>99)v=99;const q=active();q.cfg=Object.assign({},q.cfg,{oriT:r.value,oriTV:v,oriTU:(nu&&nu.value==="m")?"m":"s"})}}
   {const o=ov.querySelector("#cfgOri");if(o){const q=active();q.cfg=Object.assign({},q.cfg,{orient:o.checked?1:0})}}{const m=ov.querySelector("#cfgPwMin"),v=ov.querySelector("#cfgPwCov");if(m&&v){const q=active();q.cfg=Object.assign({},q.cfg,{pwMin:+m.value,pwCov:+v.value})}}setCfg({auto:au.checked,skip:ov.querySelector("#cfgSkip").checked,med:ov.querySelector("#cfgMed").checked,letter:(ov.querySelector('input[name=cfgL]:checked')||{}).value,delay:d?+d.value:4});
   close();medBadge();clearTimeout(autoTimer);abApplyCase();if(window.pwRefresh)pwRefresh();
   if(["families","read","build","picture"].includes(stage)&&$("#stageBody")){renderStage()}
@@ -2252,7 +2263,7 @@ function renderActivity(){
   <div class="hud-menu hidden" id="hudMenu"><button type="button" data-go="student">👤 Menu do participante</button><button type="button" data-go="classes">🏫 Grupos e participantes</button><button type="button" data-go="cfg">⚙️ Configurações do jogo</button><button type="button" data-go="home">⌂ Menu inicial</button><button type="button" data-go="profile">👤 Meu perfil</button><button type="button" data-go="logout">🚪 Sair da conta</button></div>
  </div>
  <div class="stage-body" id="stageBody"></div>
- <div class="bottom"><button class="round-btn" id="previousStage" type="button" aria-label="Voltar">◀</button><div class="bottom-text"><div class="feedback" id="feedback" aria-live="polite"></div></div><button class="round-btn" id="restartStage" type="button" aria-label="Reiniciar etapa">↻</button><button class="go-btn" id="nextStage" type="button">Já li ▶</button><div class="hud-right"><button class="hud-btn mini hidden" id="shuffleFamBtn" type="button" aria-label="Embaralhar as sílabas das famílias" title="Embaralhar as sílabas">🔀</button><button class="hud-btn mini" id="caseBtn" type="button" aria-label="Tipo de letra: maiúscula, minúscula, cursiva" title="Tipo de letra"></button><button class="hud-btn" id="soundBtn" type="button" aria-label="Som">${soundOn?"🔊":"🔇"}</button><button class="hud-btn" id="fsBtn" type="button" aria-label="Tela cheia">⛶</button></div></div>
+ <div class="bottom"><button class="round-btn" id="previousStage" type="button" aria-label="Voltar">◀</button><div class="bottom-text"><div class="feedback" id="feedback" aria-live="polite"></div></div><button class="round-btn" id="restartStage" type="button" aria-label="Reiniciar etapa">↻</button><button class="go-btn" id="nextStage" type="button">Já li ▶</button><div class="hud-right"><button class="hud-btn" id="cfgBarBtn" type="button" aria-label="Configurações do jogo" title="Configurações do jogo">⚙️</button><button class="hud-btn mini hidden" id="shuffleFamBtn" type="button" aria-label="Embaralhar as sílabas das famílias" title="Embaralhar as sílabas">🔀</button><button class="hud-btn mini" id="caseBtn" type="button" aria-label="Tipo de letra: maiúscula, minúscula, cursiva" title="Tipo de letra"></button><button class="hud-btn" id="soundBtn" type="button" aria-label="Som">${soundOn?"🔊":"🔇"}</button><button class="hud-btn" id="fsBtn" type="button" aria-label="Tela cheia">⛶</button></div></div>
  </section>`;
  const menu=$("#hudMenu");
  $("#menuBtn").onclick=e=>{e.stopPropagation();menu.classList.toggle("hidden")};
@@ -2484,7 +2495,7 @@ function abShell(c){
   <div class="hud-menu hidden" id="hudMenu"><button type="button" data-go="student">👤 Menu do participante</button><button type="button" data-go="classes">${fam?"👶 Suas crianças":"🏫 Grupos e participantes"}</button><button type="button" data-go="cfg">⚙️ Configurações do jogo</button><button type="button" data-go="home">⌂ Menu inicial</button><button type="button" data-go="profile">👤 Meu perfil</button><button type="button" data-go="logout">🚪 Sair da conta</button></div>
  </div>
  ${c.ori&&c.single?`<div class="stage-body ab-stage ab-single ab-wori">${c.ori}${c.single}</div>`:c.ori?`<div class="stage-body ab-stage ab-wori">${c.ori}<div class="ab-split${c.cls?" "+c.cls:""}">${c.left+c.right}</div></div>`:`<div class="stage-body ab-stage${c.single?" ab-single":""}${c.cls?" "+c.cls:""}">${c.single||(c.left+c.right)}</div>`}
- <div class="bottom${c.bare?" bare":""}"><button class="round-btn" id="abPrev" type="button" aria-label="Voltar">◀</button><div class="bottom-text"><div class="feedback" id="abFb" aria-live="polite">${c.msg||""}</div></div><button class="round-btn" id="abRestart" type="button" aria-label="Recomeçar" style="${c.onRestart?"":"visibility:hidden"}">↻</button>${c.extra||""}<button class="go-btn" id="abNext" type="button" ${c.next?(c.next.disabled?"disabled":""):'style="visibility:hidden" disabled'}>${c.next?c.next.label:"Próxima ▶"}</button><div class="hud-right">${c.lgPace?`<button class="hud-btn mini" id="lgPaceBtn" type="button" aria-label="Nível de leitura: tempo por palavra" title="Nível de leitura: tempo por palavra">${lgPaceBtnTxt()}</button><button class="hud-btn mini${CFG.syl?" on":""}" id="lgSylBtn" type="button" aria-pressed="${CFG.syl?"true":"false"}" aria-label="Destacar sílabas divididas" title="Destacar sílabas, uma de cada vez">Sí·la·bas</button>`:""}${c.caseBtn?'<button class="hud-btn mini" id="caseBtn" type="button" aria-label="Tipo de letra: maiúscula, minúscula, cursiva" title="Tipo de letra"></button>':(c.title&&!c.abCase?"":'<button class="hud-btn mini" id="abCase" type="button" aria-label="Tipo de letra: misto, maiúscula, minúscula, cursiva" title="Tipo de letra"></button>')+(c.noSound?"":`<button class="hud-btn" id="soundBtn" type="button" aria-label="Som" title="Som: ligar ou desligar">${(c.sndGet?c.sndGet():abSound)?"🔊":"🔇"}</button>`)}<button class="hud-btn" id="fsBtn" type="button" aria-label="Tela cheia">⛶</button></div></div>
+ <div class="bottom${c.bare?" bare":""}"><button class="round-btn" id="abPrev" type="button" aria-label="Voltar">◀</button><div class="bottom-text"><div class="feedback" id="abFb" aria-live="polite">${c.msg||""}</div></div><button class="round-btn" id="abRestart" type="button" aria-label="Recomeçar" style="${c.onRestart?"":"visibility:hidden"}">↻</button>${c.extra||""}<button class="go-btn" id="abNext" type="button" ${c.next?(c.next.disabled?"disabled":""):'style="visibility:hidden" disabled'}>${c.next?c.next.label:"Próxima ▶"}</button><div class="hud-right"><button class="hud-btn" id="cfgBarBtn" type="button" aria-label="Configurações do jogo" title="Configurações do jogo">⚙️</button>${c.lgPace?`<button class="hud-btn mini" id="lgPaceBtn" type="button" aria-label="Nível de leitura: tempo por palavra" title="Nível de leitura: tempo por palavra">${lgPaceBtnTxt()}</button><button class="hud-btn mini${CFG.syl?" on":""}" id="lgSylBtn" type="button" aria-pressed="${CFG.syl?"true":"false"}" aria-label="Destacar sílabas divididas" title="Destacar sílabas, uma de cada vez">Sí·la·bas</button>`:""}${c.caseBtn?'<button class="hud-btn mini" id="caseBtn" type="button" aria-label="Tipo de letra: maiúscula, minúscula, cursiva" title="Tipo de letra"></button>':(c.title&&!c.abCase?"":'<button class="hud-btn mini" id="abCase" type="button" aria-label="Tipo de letra: misto, maiúscula, minúscula, cursiva" title="Tipo de letra"></button>')+(c.noSound?"":`<button class="hud-btn" id="soundBtn" type="button" aria-label="Som" title="Som: ligar ou desligar">${(c.sndGet?c.sndGet():abSound)?"🔊":"🔇"}</button>`)}<button class="hud-btn" id="fsBtn" type="button" aria-label="Tela cheia">⛶</button></div></div>
  </section>`;
  const menu=$("#hudMenu");
  $("#menuBtn").onclick=e=>{e.stopPropagation();menu.classList.toggle("hidden")};
@@ -4525,7 +4536,7 @@ const fig=(x,nocap)=>x.p?`<div class="fig-emoji">🪄</div><div class="fig-cap">
 /* ---- casca do jogo (mesmo layout das demais atividades) ---- */
 function shell(title,sub,back){
  document.body.classList.add("game-mode");stage="pw";
- $("#appMain").innerHTML=`<section class="game${caseClass()}" id="game"><div class="hud"><button class="hud-btn" id="menuBtn" type="button" aria-label="Menu">☰</button><div class="hud-title"><strong>${title}</strong><span class="hud-sub">${sub}</span></div><div class="hud-menu hidden" id="hudMenu"><button type="button" data-go="student">👤 Menu do participante</button><button type="button" data-go="classes">🏫 Grupos e participantes</button><button type="button" data-go="cfg">⚙️ Configurações do jogo</button><button type="button" data-go="home">⌂ Menu inicial</button><button type="button" data-go="profile">👤 Meu perfil</button><button type="button" data-go="logout">🚪 Sair da conta</button></div></div><div class="stage-body stage-build" id="stageBody"></div><div class="bottom"><button class="round-btn" id="pwBack" type="button" aria-label="Voltar">◀</button><div class="bottom-text"><div class="feedback" id="feedback" aria-live="polite"></div></div><button class="round-btn hidden" id="pwRestart" type="button" aria-label="Reiniciar" title="Recomeçar esta etapa">↻</button><button class="round-btn hidden" id="pwHelp" type="button" aria-label="Ajuda" title="Ajuda (dica)">💡</button><button class="go-btn" id="nextStage" type="button" disabled>Próxima ▶</button><div class="hud-right"><button class="hud-btn" id="soundBtn" type="button" aria-label="Som">${soundOn?"🔊":"🔇"}</button><button class="hud-btn" id="fsBtn" type="button" aria-label="Tela cheia">⛶</button></div></div></section>`;
+ $("#appMain").innerHTML=`<section class="game${caseClass()}" id="game"><div class="hud"><button class="hud-btn" id="menuBtn" type="button" aria-label="Menu">☰</button><div class="hud-title"><strong>${title}</strong><span class="hud-sub">${sub}</span></div><div class="hud-menu hidden" id="hudMenu"><button type="button" data-go="student">👤 Menu do participante</button><button type="button" data-go="classes">🏫 Grupos e participantes</button><button type="button" data-go="cfg">⚙️ Configurações do jogo</button><button type="button" data-go="home">⌂ Menu inicial</button><button type="button" data-go="profile">👤 Meu perfil</button><button type="button" data-go="logout">🚪 Sair da conta</button></div></div><div class="stage-body stage-build" id="stageBody"></div><div class="bottom"><button class="round-btn" id="pwBack" type="button" aria-label="Voltar">◀</button><div class="bottom-text"><div class="feedback" id="feedback" aria-live="polite"></div></div><button class="round-btn hidden" id="pwRestart" type="button" aria-label="Reiniciar" title="Recomeçar esta etapa">↻</button><button class="round-btn hidden" id="pwHelp" type="button" aria-label="Ajuda" title="Ajuda (dica)">💡</button><button class="go-btn" id="nextStage" type="button" disabled>Próxima ▶</button><div class="hud-right"><button class="hud-btn" id="cfgBarBtn" type="button" aria-label="Configurações do jogo" title="Configurações do jogo">⚙️</button><button class="hud-btn" id="soundBtn" type="button" aria-label="Som">${soundOn?"🔊":"🔇"}</button><button class="hud-btn" id="fsBtn" type="button" aria-label="Tela cheia">⛶</button></div></div></section>`;
  {const sb=$("#stageBody");if(sb)sb.classList.add("pw-top")} const menu=$("#hudMenu");$("#menuBtn").onclick=e=>{e.stopPropagation();menu.classList.toggle("hidden")};
  $("#game").onclick=e=>{if(!menu.contains(e.target))menu.classList.add("hidden")};
  menu.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{const g=b.dataset.go;say([]);if(g==="student")renderStudentMenu();else if(g==="classes")renderClassDashboard();else if(g==="cfg"){menu.classList.add("hidden");openCfg()}else if(g==="home")renderHome();else if(g==="profile")renderProfile();else if(g==="logout"){if(confirm("Deseja sair da conta do responsável?"))logoutTeacher("Você saiu da conta.")}});
@@ -4643,32 +4654,37 @@ window.PW={bank,lvOf,makeQs,resp,LVN,lev};
 })();
 </script>
 <script id="mediador-ori">
-/* Orientação do mediador: dicas borradas, revelação temporária (600 ms), por pressão e modos por participante (p.cfg.oriDica: t | p | v) */
+/* Orientação do mediador: dicas borradas, revelação temporária (padrão 600 ms; personalizável em segundos/minutos ou permanente: p.cfg.oriT d|c|p, oriTV, oriTU s|m), por pressão e modos por participante (p.cfg.oriDica: t | p | v) */
 (function(){
 "use strict";
 if(window.__mediadorOri)return;window.__mediadorOri=1;
 var SEL=".pw-ori",REV=600,MODES={t:1,p:1,v:1};
 var root=document.documentElement,seen=new WeakMap(),timers=new WeakMap(),last=null,hold=null,holdId=null;
+function oriCfg(){try{var p=typeof active==="function"?active():null;return(p&&p.cfg)||{}}catch(e){return{}}}
+function perm(){return mode()==="t"&&oriCfg().oriT==="p"}
+function revMs(){var c=oriCfg();if(c.oriT!=="c")return REV;var v=Math.round(parseFloat(c.oriTV));if(!(v>=1))v=5;if(v>99)v=99;return Math.min(v*(c.oriTU==="m"?60000:1000),3600000)}
 function mode(){var m="t";try{var p=typeof active==="function"?active():null,v=p&&p.cfg&&p.cfg.oriDica;if(MODES[v])m=v}catch(e){}return m}
 function applyMode(){var m=mode();if(root.getAttribute("data-ori-m")!==m)root.setAttribute("data-ori-m",m);return m}
 function hasHints(b){var h=b.querySelectorAll(".pw-hl");for(var i=0;i<h.length;i++){if(!h[i].closest(".ori-k")&&h[i].getClientRects().length)return true}return false}
 function sigOf(b){return(b.textContent||"").replace(/\s+/g," ").trim()}
 function reveal(b){clearTimeout(timers.get(b));b.classList.remove("ori-snap");b.classList.add("ori-rev");
- timers.set(b,setTimeout(function(){timers.delete(b);if(hold!==b)b.classList.remove("ori-rev")},REV))}
+ if(perm()){timers.delete(b);return}
+ timers.set(b,setTimeout(function(){timers.delete(b);if(hold!==b&&!perm())b.classList.remove("ori-rev")},revMs()))}
 function sync(){
- var m=applyMode(),bs=document.querySelectorAll(SEL);
+ var m=applyMode(),pm=perm(),bs=document.querySelectorAll(SEL);
  if(!bs.length){last=null;return}
  for(var i=0;i<bs.length;i++){var b=bs[i];
   if(hasHints(b)){b.setAttribute("data-ori-h","1")}else{b.removeAttribute("data-ori-h");continue}
+  if(pm){b.classList.add("ori-rev")}else if(b.classList.contains("ori-rev")&&!timers.has(b)&&hold!==b){b.classList.remove("ori-rev")}
   var sig=sigOf(b);if(seen.get(b)===sig)continue;
   seen.set(b,sig);
   var again=(sig===last);last=sig;
-  if(m==="t"&&!again)reveal(b)}
+  if(m==="t"&&(!again||pm))reveal(b)}
 }
 function boxOf(e){var t=e.target;if(t&&t.nodeType===3)t=t.parentElement;return t&&t.closest?t.closest(SEL):null}
 function press(b,id){if(applyMode()==="v"||!hasHints(b))return;if(hold&&hold!==b)release();
  clearTimeout(timers.get(b));hold=b;holdId=id;b.classList.remove("ori-snap");b.classList.add("ori-rev")}
-function release(){var b=hold;if(!b)return;hold=null;holdId=null;clearTimeout(timers.get(b));timers.delete(b);b.classList.add("ori-snap");b.classList.remove("ori-rev")}
+function release(){var b=hold;if(!b)return;hold=null;holdId=null;clearTimeout(timers.get(b));timers.delete(b);b.classList.add("ori-snap");if(!perm())b.classList.remove("ori-rev")}
 var opt=true;
 if(window.PointerEvent){
  document.addEventListener("pointerdown",function(e){if(e.pointerType==="mouse"&&e.button!==0)return;var b=boxOf(e);if(b)press(b,e.pointerId)},opt);
@@ -4689,6 +4705,18 @@ new MutationObserver(function(rs){for(var i=0;i<rs.length;i++){if(touches(rs[i])
 var orig=window.pwRefresh;
 window.pwRefresh=function(){var r=typeof orig==="function"?orig.apply(this,arguments):undefined;applyMode();sync();return r};
 applyMode();sync();
+})();
+</script>
+<script id="cfg-barra">
+/* Botão ⚙️ nas barras inferiores de todos os blocos e sublocos: abre Configurações do jogo (mesma janela do menu) */
+(function(){
+"use strict";
+if(window.__cfgBarra)return;window.__cfgBarra=1;
+document.addEventListener("click",function(e){
+ var t=e.target,b=t&&t.closest?t.closest("#cfgBarBtn"):null;if(!b)return;
+ e.preventDefault();e.stopPropagation();
+ try{if(typeof openCfg==="function")openCfg()}catch(err){}
+},true);
 })();
 </script>
 <script type="module">
