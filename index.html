@@ -922,6 +922,7 @@ button.stu-stars:focus-visible{outline:3px solid #3b4fd0;outline-offset:2px}
 .fchip.fl-o.wrong{background:#ffe4e8;color:#9f1239;animation:shake .4s}
 .board.fam-words{grid-template-columns:repeat(var(--cols,2),minmax(0,1fr));grid-template-rows:repeat(var(--r,2),minmax(0,1fr))}
 .cell.fw{gap:.4cqh}
+.cell.fw.wrong{background:#ffe4e8;animation:shake .4s}
 .fw-t{display:flex;gap:.04em;font-weight:900;line-height:1;font-size:min(calc(28cqh / var(--r,2)),calc(78cqw / var(--cols,2) / (var(--len,4) * .62 + .3)))}
 .cell.fw.pseudo{background:#fffaf0}
 .fw-tag{font-size:min(calc(7cqh / var(--r,2)),2.6cqw);font-weight:800;color:#8a6a00}
@@ -936,6 +937,7 @@ button.stu-stars:focus-visible{outline:3px solid #3b4fd0;outline-offset:2px}
 .pw-ear{font:inherit;font-size:clamp(1rem,3.2vh,1.5rem);font-weight:900;border:0;border-radius:18px;padding:.55em 1.1em;margin-bottom:clamp(6px,1.4vh,14px);background:#2f9cf4;color:#fff;box-shadow:0 5px 0 #1b6fb5;cursor:pointer}
 .pw-sy{border:0;background:#fff;font:inherit;font-weight:900;font-size:min(17vh,20vw);line-height:1.1;padding:.05em .18em;margin:0 .04em;border-radius:20px;cursor:pointer;box-shadow:0 5px 0 #e0e4f2}
 .pw-sy.on{background:#e8f7ee;outline:4px solid #22b573}
+.pw-sy.wrong{background:#ffe4e8;outline:4px solid #f43f5e;animation:shake .4s}
 .board.win{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,2vh,22px)}
 .opt.hint{outline:6px solid #ffcf3d;animation:pwp 1s ease-in-out infinite}
 @keyframes pwp{50%{transform:scale(1.06)}}
@@ -955,6 +957,31 @@ button.stu-stars:focus-visible{outline:3px solid #3b4fd0;outline-offset:2px}
 .stage-body.stage-families.fam-st>.board{flex:1 1 0;min-height:0}
 .stage-body.stage-families.fam-st>.fam-ori{flex:0 0 auto;margin:0;max-width:100%;box-sizing:border-box;padding:.4em .9em;font-size:clamp(.8rem,min(2.5vh,4.3vw),1.15rem);line-height:1.25}
 @media(orientation:landscape) and (max-height:520px){.stage-body.stage-families.fam-st>.fam-ori{padding:.22em .7em;border-width:2px;font-size:clamp(.72rem,2.6vh,.95rem)}}
+/* Grupos e participantes: ações no topo (Novo grupo + Página inicial) */
+.topline:has(.topline-actions)>div:first-child{flex:1 1 300px;min-width:0}
+.topline-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end}
+.class-manager:has(.cm-add)>div{flex:1 1 0!important;min-width:260px!important}
+.class-manager>.cm-add{align-self:end}.class-manager>.cm-add .row{align-items:end;flex-wrap:nowrap;margin:0}.class-manager>.cm-add .row>div{flex:1 1 0!important;min-width:0!important}.class-manager>.cm-add .primary{white-space:nowrap;flex:0 0 auto;padding-left:16px;padding-right:16px}
+@media(max-width:760px),(orientation:portrait){.class-manager:has(.cm-add)>div{flex-basis:100%!important;min-width:0!important}.class-manager>.cm-add .row{flex-wrap:wrap}.class-manager>.cm-add .row>div{flex-basis:100%!important}.class-manager>.cm-add .primary{width:100%}}
+.new-class-panel{margin-top:0}.new-class-panel.hidden{display:none}
+/* Tela inicial do responsável: duas colunas (Meus grupos | Novo grupo) */
+.home-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(12px,2.4vw,24px);margin:18px 0 8px;align-items:stretch}
+.home-col{display:flex;flex-direction:column;gap:10px;padding:clamp(14px,2.2vw,22px);border:2px solid #dbe6f0;border-radius:20px;background:#f8faff;min-width:0}
+.home-col-main{border-color:#b9b4f5;background:linear-gradient(145deg,#fff,#f1efff)}
+.home-col h2{margin:0;font-size:clamp(1.1rem,2.2vw,1.4rem);color:#4658bd}
+.home-col p{margin:0}
+.home-col select{min-height:44px;padding:8px 12px;border:1px solid #c7cfe8;border-radius:14px;background:#fff;font:inherit;color:inherit}
+.home-col label{display:block;margin:6px 0 0;font-weight:800}
+.home-col form{display:flex;flex-direction:column;gap:10px}
+.home-col .primary,.home-col .secondary{margin-top:auto;align-self:stretch;text-align:center}
+.home-col-main .primary{margin-top:10px}
+@media(max-width:760px),(orientation:portrait){.home-cols{grid-template-columns:minmax(0,1fr)}}
+/* Orientação ao mediador das atividades de Palavras: no topo, alinhada à esquerda (mesmo modelo de Sílabas) */
+.stage-body.pw-top{display:flex;flex-direction:column;gap:clamp(6px,1.4vh,12px)}
+.stage-body.pw-top>.pw-row{flex:1 1 0;min-height:0;min-width:0;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:clamp(8px,2vw,22px)}
+.stage-body.pw-top>.pw-ori{flex:0 0 auto;margin:0;max-width:100%;box-sizing:border-box;text-align:left;padding:.4em .9em;line-height:1.25}
+@media(orientation:portrait){.stage-body.pw-top>.pw-row{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1.5fr) minmax(0,1fr)}}
+@media(orientation:landscape) and (max-height:520px){.stage-body.pw-top>.pw-ori{padding:.22em .7em;border-width:2px}}
 /* Alfabeto: orientação ao adulto (mesmo modelo de Sílabas e palavras) e botões de áudio */
 .stage-body.ab-wori{display:flex;flex-direction:column;gap:clamp(6px,1.4vh,12px)}
 .ab-split{flex:1 1 0;min-height:0;min-width:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);grid-template-rows:minmax(0,1fr);gap:clamp(8px,2vw,22px)}
@@ -994,6 +1021,23 @@ button.stu-stars:focus-visible{outline:3px solid #3b4fd0;outline-offset:2px}
 .med-btn:hover,.med-btn[aria-expanded="true"]{opacity:1;background:#efe9ff}
 .med-body{margin-top:.3em;padding-top:.25em;border-top:2px dashed #a88be8;font-weight:400}
 .med-wrap.med-closed .med-body{display:none}
+/* Orientação do mediador: caixa neutra, dicas borradas (revelação temporária, por pressão ou sempre visíveis) */
+.pw-inst.pw-ori,.pw-ori{position:relative;background:#f4f5f9!important;border-color:#e4e7f0!important;color:#5d6380!important;font-size:clamp(.72rem,2.1vh,.95rem)!important;filter:grayscale(1);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+.pw-ori .ori-k,.med-wrap .ori-k{color:#5d6380}
+.pw-ori .med-btn{display:none!important}
+.med-wrap.med-closed .med-body{display:block}
+.pw-ori .med-body{border-top-color:#e4e7f0}
+.pw-ori .pw-hl{background:none!important;font-weight:400!important;color:#2b3358;text-transform:uppercase;padding:0 .15em;filter:blur(.32em);transition:filter .5s ease;-webkit-user-select:none;user-select:none}
+.pw-ori .ori-k .pw-hl{filter:none}
+.pw-ori.ori-rev .pw-hl,html[data-ori-m="v"] .pw-ori .pw-hl{filter:none}
+.pw-ori.ori-rev .pw-hl{transition-duration:.15s}
+html[data-ori-m="v"] .pw-ori .pw-hl{transition:none}
+.pw-ori.ori-snap .pw-hl{transition-duration:.1s}
+.pw-ori[data-ori-h]{padding-right:2em!important}
+.pw-ori[data-ori-h]::after{content:"\1F441";position:absolute;top:.25em;right:.6em;font-size:.95em;line-height:1;opacity:.45;pointer-events:none;transition:opacity .15s}
+.pw-ori.ori-rev[data-ori-h]::after{opacity:.85}
+html[data-ori-m="v"] .pw-ori[data-ori-h]::after{display:none}
+html[data-ori-m="v"] .pw-ori[data-ori-h]{padding-right:revert!important}
 </style>
 </head>
 <body>
@@ -1565,8 +1609,7 @@ function renderHome(){
  m.innerHTML=`${isFamily()?`<section class="panel"><div class="auth-hero"><p>Cadastre a criança para começar.</p><p class="muted small">${esc(roleInfo().sub)}</p></div>
  <div class="class-manager"><form id="addKidHome" class="row" style="flex:1;align-items:end;min-width:230px"><div style="flex:1;min-width:180px"><label for="kidNameHome">Nome da criança</label><input id="kidNameHome" maxlength="40" placeholder="${esc(roleInfo().member)}" style="width:100%" required></div><button class="primary" type="submit">+ Cadastrar criança</button></form></div>
  <div class="row" style="justify-content:center;margin-top:20px"><button class="primary" id="openClassDashboard">Continuar para as crianças →</button></div>`:`<section class="panel"><div class="auth-hero"><p>Selecione um grupo ou cadastre um novo para continuar.</p><p class="muted small">${esc(roleInfo().sub)}</p></div>
- <div class="class-manager"><div style="flex:1;min-width:220px"><label for="classSelectHome">Selecionar grupo</label><select id="classSelectHome" style="width:100%" ${ownClasses.length?"":"disabled"}>${ownClasses.map(c=>`<option value="${esc(c.id)}" ${c.id===activeClassId?"selected":""}>${esc(c.name)}</option>`).join("")}</select></div><form id="addClassFormHome" class="row" style="flex:2;align-items:end;min-width:250px"><div style="flex:1;min-width:160px"><label for="classNameHome">Nome do novo grupo</label><input id="classNameHome" maxlength="60" placeholder="${esc(roleInfo().group)}" style="width:100%" required></div><button class="primary" type="submit">+ Cadastrar grupo</button></form></div>
- <div class="row" style="justify-content:center;margin-top:20px"><button class="primary" id="openClassDashboard">Continuar para grupos e participantes →</button></div>`}</section>`;
+ <div class="home-cols"><section class="home-col home-col-main" aria-labelledby="hcMyT"><h2 id="hcMyT">📚 Meus grupos</h2><p class="muted small">Acesse os grupos e as crianças já cadastrados.</p><label for="classSelectHome">Selecionar grupo</label><select id="classSelectHome" style="width:100%" ${ownClasses.length?"":"disabled"}>${ownClasses.length?ownClasses.map(c=>`<option value="${esc(c.id)}" ${c.id===activeClassId?"selected":""}>${esc(c.name)}</option>`).join(""):`<option>Você ainda não tem grupos</option>`}</select><button class="primary" id="openClassDashboard" type="button" ${ownClasses.length?"":"disabled"}>Continuar para grupos e participantes →</button></section><section class="home-col" aria-labelledby="hcNewT"><h2 id="hcNewT">➕ Novo grupo</h2><p class="muted small">Crie um grupo para organizar seus participantes.</p><form id="addClassFormHome"><label for="classNameHome">Nome do novo grupo</label><input id="classNameHome" maxlength="60" placeholder="${esc(roleInfo().group)}" style="width:100%" required><button class="secondary" type="submit">+ Cadastrar grupo</button></form></section></div>`}</section>`;
  const addKid=name=>{name=String(name||"").trim();if(!name)return false;const cl=ownClasses[0];if(!cl)return false;const p={id:makeId(),teacherId:activeTeacherId,classId:cl.id,name,done:{simples:[],complexas:[]},next:{simples:0,complexas:0},last:null,created:new Date().toISOString()};profiles.push(p);allProfiles.push(p);saveProfiles();activeId=p.id;renderStudentMenu();gmOpen(p);return true};
  if($("#addKidHome"))$("#addKidHome").onsubmit=ev=>{ev.preventDefault();addKid($("#kidNameHome").value)};
  if($("#classSelectHome"))$("#classSelectHome").onchange=()=>{activeClassId=$("#classSelectHome").value||null;activeId=null};
@@ -1582,13 +1625,15 @@ function renderClassDashboard(){
  m.innerHTML=`${isFamily()?`<section class="panel"><div class="topline"><div><h1>Suas crianças 👋</h1><p class="muted">Cadastre cada criança e acompanhe o progresso individual.</p></div><button class="secondary" id="backToClassHome">← Página inicial</button></div>
  <h2 id="currentClassTitle">Crianças</h2>
  <div class="row"><div style="flex:1;min-width:220px"><label for="playerName">Nome da criança</label><input id="playerName" placeholder="${esc(roleInfo().member)}" maxlength="40" style="width:100%"></div><button class="primary" id="addPlayer">+ Cadastrar criança</button></div>
- <div class="profiles" id="profiles"></div><div id="selectedInfo" class="muted"></div>`:`<section class="panel"><div class="topline"><div><h1>Grupos e participantes 👋</h1><p class="muted">Selecione um grupo para ver seus participantes, cadastrar novos participantes e acompanhar o progresso individual.</p></div><button class="secondary" id="backToClassHome">← Página inicial</button></div>
- <div class="class-manager"><div style="flex:1;min-width:180px"><label for="classSelect">Grupo selecionado</label><div class="grp-pick"><select id="classSelect" style="width:100%" ${ownClasses.length?"":"disabled"}>${ownClasses.map(c=>`<option value="${esc(c.id)}" ${c.id===activeClassId?"selected":""}>${esc(c.name)}</option>`).join("")}</select><button class="ghost danger-action" id="deleteClass" type="button" ${ownClasses.length?"":"disabled"} title="Excluir grupo selecionado" aria-label="Excluir grupo selecionado">🗑️ Excluir</button></div></div><form id="addClassForm" class="row" style="flex:2;align-items:end;min-width:230px"><div style="flex:1;min-width:140px"><label for="className">Nome do novo grupo</label><input id="className" maxlength="60" placeholder="${esc(roleInfo().group)}" style="width:100%" required></div><button class="primary" type="submit">+ Cadastrar grupo</button></form></div>
- <h2 id="currentClassTitle">Participantes${ownClasses.length?" — "+esc((ownClasses.find(c=>c.id===activeClassId)||ownClasses[0]).name):""}</h2>
- <div class="row"><div style="flex:1;min-width:220px"><label for="playerName">Nome do participante</label><input id="playerName" placeholder="${esc(roleInfo().member)}" maxlength="40" style="width:100%"></div><button class="primary" id="addPlayer">+ Cadastrar participante</button></div>
- <div class="profiles" id="profiles"></div><div id="selectedInfo" class="muted"></div>`}</section>`;
+ <div class="profiles" id="profiles"></div><div id="selectedInfo" class="muted"></div>`:`<section class="panel"><div class="topline"><div><h1>Grupos e participantes 👋</h1><p class="muted">Selecione um grupo para ver seus participantes, cadastrar novos participantes e acompanhar o progresso individual.</p></div><div class="topline-actions"><button class="primary" id="toggleNewClass" type="button" aria-expanded="false" aria-controls="addClassForm">+ Novo grupo</button><button class="secondary" id="backToClassHome">← Página inicial</button></div></div>
+ <form id="addClassForm" class="class-manager new-class-panel hidden"><div style="flex:1;min-width:180px"><label for="className">Nome do novo grupo</label><input id="className" maxlength="60" placeholder="${esc(roleInfo().group)}" style="width:100%" required></div><button class="primary" type="submit">+ Cadastrar grupo</button></form>
+ <div class="class-manager"><div style="flex:1;min-width:180px"><label for="classSelect">Grupo selecionado</label><div class="grp-pick"><select id="classSelect" style="width:100%" ${ownClasses.length?"":"disabled"}>${ownClasses.map(c=>`<option value="${esc(c.id)}" ${c.id===activeClassId?"selected":""}>${esc(c.name)}</option>`).join("")}</select><button class="ghost danger-action" id="deleteClass" type="button" ${ownClasses.length?"":"disabled"} title="Excluir grupo selecionado" aria-label="Excluir grupo selecionado">🗑️ Excluir</button></div></div><div class="cm-add" style="flex:1;min-width:260px"><div class="row"><div style="flex:1;min-width:220px"><label for="playerName">Novo Aprendente</label><input id="playerName" placeholder="${esc(roleInfo().member)}" maxlength="40" style="width:100%"></div><button class="primary" id="addPlayer">+ Cadastrar participante</button></div></div></div>
+ <h2 id="currentClassTitle">Aprendentes${ownClasses.length?" — "+esc((ownClasses.find(c=>c.id===activeClassId)||ownClasses[0]).name):""}</h2>
+ <div class="profiles" id="profiles"></div>
+ <div id="selectedInfo" class="muted"></div>`}</section>`;
  $("#backToClassHome").onclick=renderHome;
  renderProfiles();
+ if($("#toggleNewClass"))$("#toggleNewClass").onclick=()=>{const f=$("#addClassForm"),o=f.classList.contains("hidden");f.classList.toggle("hidden",!o);$("#toggleNewClass").setAttribute("aria-expanded",o?"true":"false");if(o)$("#className").focus()};
  if($("#deleteClass"))$("#deleteClass").onclick=()=>{const selected=classes.find(c=>c.id===activeClassId&&c.teacherId===activeTeacherId);if(!selected)return;const n=profiles.filter(p=>p.classId===selected.id).length;if(!confirm(`Excluir o grupo “${selected.name}” e ${n} participante(s) vinculado(s)? Essa ação não poderá ser desfeita.`))return;classes=classes.filter(c=>c.id!==selected.id);saveClasses();profiles=profiles.filter(p=>p.classId!==selected.id);allProfiles=allProfiles.filter(p=>!(p.teacherId===activeTeacherId&&p.classId===selected.id));saveProfiles();activeId=null;activeClassId=null;const remaining=ensureTeacherClasses(activeTeacherId);activeClassId=remaining.length?remaining[0].id:null;renderClassDashboard()};
  if($("#classSelect"))$("#classSelect").onchange=()=>{activeClassId=$("#classSelect").value;activeId=null;renderClassDashboard()};
  if($("#addClassForm"))$("#addClassForm").onsubmit=ev=>{ev.preventDefault();const name=$("#className").value.trim();if(!name)return;if(classes.some(c=>c.teacherId===activeTeacherId&&c.name.toLocaleLowerCase("pt-BR")===name.toLocaleLowerCase("pt-BR"))){alert("Você já cadastrou um grupo com esse nome.");return}const c={id:makeId(),teacherId:activeTeacherId,name,created:new Date().toISOString()};classes.push(c);saveClasses();activeClassId=c.id;activeId=null;renderClassDashboard()};
@@ -1596,7 +1641,7 @@ function renderClassDashboard(){
 }
 function renderProfiles(){
  let el=$("#profiles");if(!el)return;
- const classProfiles=isFamily()?profiles:profiles.filter(p=>p.classId===activeClassId);
+ const classProfiles=(isFamily()?profiles:profiles.filter(p=>p.classId===activeClassId)).slice().sort((x,y)=>String(x.name||"").localeCompare(String(y.name||""),"pt-BR",{sensitivity:"base",numeric:true}));
  el.innerHTML=classProfiles.length?classProfiles.map(p=>`<div class="profile-wrap profile-name-row"><button class="profile ${p.id===activeId?"active":""}" data-id="${p.id}" aria-label="Abrir atividades de ${esc(p.name)}"><strong>👤 ${esc(p.name)}</strong></button><button class="ghost delete-student-btn compact-delete" data-delete-student="${p.id}" type="button" aria-label="Excluir ${esc(p.name)}" title="Excluir participante">🗑️</button></div>`).join(""):(isFamily()?'<p class="muted">Nenhuma criança cadastrada ainda. Use o campo acima para cadastrar a primeira.</p>':(activeClassId?'<p class="muted">Este grupo ainda não tem participantes. Use o campo acima para cadastrar o primeiro.</p>':'<p class="muted">Cadastre um grupo para começar a adicionar participantes.</p>'));
  el.querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>{activeId=b.dataset.id;renderStudentMenu()});
  el.querySelectorAll("[data-delete-student]").forEach(b=>b.onclick=ev=>{ev.stopPropagation();const id=b.dataset.deleteStudent;const student=profiles.find(p=>p.id===id);if(!student)return;if(!confirm(`Excluir o participante “${student.name}” e todo o seu progresso? Essa ação não poderá ser desfeita.`))return;profiles=profiles.filter(p=>p.id!==id);allProfiles=allProfiles.filter(p=>!(p.teacherId===activeTeacherId&&p.id===id));if(activeId===id)activeId=null;saveProfiles();renderClassDashboard()})
@@ -1824,7 +1869,7 @@ function famStart(cfg){
 /* Etapas 1 e 2: Etapa 1 segue a configuração; Etapa 2 é sempre embaralhada. Nunca duplica nem remove sílabas. */
 function famSetView(){const f=famCur();fam.shuf=fam.step===2||fam.order==="e";fam.view=fam.shuf?shuffleDiff(f.syl):[...f.syl]}
 function famL3Init(){const f=famCur();fam.l3={order:shuffle([...f.syl]),opts:shuffleDiff(f.syl),i:0}}
-function famPrepStep(){if(fam.step<=2)famSetView();else if(fam.step===3)famL3Init();else fam.wview=shuffle([...fam.words])}
+function famPrepStep(){if(fam.step<=2)famSetView();else if(fam.step===3)famL3Init();else{fam.wview=shuffle([...fam.words]);fam.l4={order:shuffle(fam.words.map(w=>w.t)),i:0}}}
 function famBegin(){
  clearTimeout(autoTimer);const p=active(),f=famCur();
  fam.step=1;fam.done={1:false,2:false,3:false,4:false};fam.ok=false;lockInput=false;
@@ -1927,6 +1972,11 @@ function renderFamStage(){
   const cnt=()=>{const c=$("#flCount");if(c)c.textContent=alreadyDone||fam.done[3]?`${total} de ${total}`:`${Math.min(L.i+1,total)} de ${total}`;const o=body.querySelector(".fam-ori");if(o&&!(alreadyDone||fam.done[3])){o.innerHTML=medInner(famOri3(L.order[L.i]));o.classList.add("med-closed")}};
   cnt();
   const say=()=>famSpeak(L.order[L.i]);
+  /* Após cada acerto: reembaralha todas as opções (nenhuma na mesma posição, sempre que possível) sem remover nem duplicar sílabas */
+  const reshuffle=()=>{const box=body.querySelector(".fl-opts");if(!box)return;const els=[...box.children],n=els.length;if(n<2)return;
+   let perm=null;for(let t=0;t<40&&!perm;t++){const c=shuffle(els.map((_,i)=>i));if(c.every((v,i)=>v!==i))perm=c}
+   if(!perm){const k=1+Math.floor(Math.random()*(n-1));perm=els.map((_,i)=>(i+k)%n)}
+   const nx=perm.map(i=>els[i]);nx.forEach(e=>box.appendChild(e));L.opts=nx.map(e=>e.dataset.s)};
   $("#famEar").onclick=()=>{};
   const opts=[...body.querySelectorAll(".fl-o")];
   opts.forEach(b=>b.onclick=()=>{
@@ -1936,7 +1986,7 @@ function renderFamStage(){
     if(st){stgInc(st,"correct");save()}
     lockInput=true;b.classList.add("right");L.i++;
     if(L.i>=total){fam.done[3]=true;lockInput=false;opts.forEach(o=>{o.classList.remove("right");o.classList.add("marked")});cnt();finishStep();celebrateDone();autoNext()}
-    else{setFb(`✅ Isso mesmo! ${L.i} de ${total}.`);setTimeout(()=>{b.classList.remove("right");lockInput=false;if(stage!=="fam3")return;cnt();say()},900)}
+    else{setFb(`✅ Isso mesmo! ${L.i} de ${total}.`);setTimeout(()=>{b.classList.remove("right");lockInput=false;if(stage!=="fam3")return;reshuffle();cnt();say()},900)}
    }else{
     if(st){stgInc(st,"errors");save()}
     b.classList.add("wrong");setFb("Quase! O ADULTO DEVE REPETIR A SÍLABA. Tente outra.");
@@ -1948,16 +1998,30 @@ function renderFamStage(){
    else{setFb("Toque na sílaba que o adulto falou")}}
  }else{
   const W=fam.wview,{cols,rws}=famGrid(W.length>4?6:W.length);
-  body.innerHTML=`${famOri(ori2(W.map(w=>abHl(w.t)).join(" · "),"Leia cada palavra juntando as sílabas e toque nela."+(W.some(w=>w.pseudo)?" As com ✨ são inventadas.":"")))}<div class="board fam-words" style="--rows:${rws};--r:${rws};--cols:${cols}">${W.map(w=>`<button type="button" class="cell fw${w.pseudo?" pseudo":""}" style="--len:${w.t.length}" aria-pressed="false"><span class="fw-t">${w.s.map((sy,i)=>`<span style="color:${PALETTE[i%PALETTE.length]}">${esc(sy)}</span>`).join("")}</span>${w.pseudo?'<span class="fw-tag">✨ inventada</span>':""}<span class="chk">✓</span></button>`).join("")}</div>`;
+  /* Etapa 4: o mediador vê só a palavra pedida; a cada acerto todas as palavras são reembaralhadas e vem a próxima solicitação */
+  const L4=fam.l4||(fam.l4={order:shuffle(fam.words.map(w=>w.t)),i:0}),total=L4.order.length;
+  const c4="Leia cada palavra juntando as sílabas e toque nela."+(W.some(w=>w.pseudo)?" As com ✨ são inventadas.":"");
+  const ori4=()=>ori2(abHl(L4.order[L4.i]),c4);
+  body.innerHTML=`${famOri(alreadyDone?ori2("a palavra pedida",c4):ori4())}<div class="board fam-words" style="--rows:${rws};--r:${rws};--cols:${cols}">${W.map(w=>`<button type="button" class="cell fw${w.pseudo?" pseudo":""}" data-t="${esc(w.t)}" style="--len:${w.t.length}" aria-pressed="false"><span class="fw-t">${w.s.map((sy,i)=>`<span style="color:${PALETTE[i%PALETTE.length]}">${esc(sy)}</span>`).join("")}</span>${w.pseudo?'<span class="fw-tag">✨ inventada</span>':""}<span class="chk">✓</span></button>`).join("")}</div>`;
   const els=[...body.querySelectorAll(".fw")];
-  els.forEach((b,i)=>b.onclick=()=>{
-   if(stage!=="fam4"||b.classList.contains("marked"))return;
-   b.classList.add("marked");b.setAttribute("aria-pressed","true");famSpeak(W[i].t);
-   if(stat()){stgInc(stat(),"marks");save()}
-   const dn=els.filter(x=>x.classList.contains("marked")).length;
-   if(dn===els.length){finishStep();celebrateDone();autoNext()}
-   else setFb(`Muito bem! ${dn} de ${els.length}.`)});
   const markAll=()=>els.forEach(b=>{b.classList.add("marked");b.setAttribute("aria-pressed","true")});
+  /* reembaralha: nenhuma palavra fica na posição anterior (sempre que possível); nada é removido nem duplicado */
+  const reshuffle4=()=>{const box=body.querySelector(".fam-words");if(!box)return;const cur=[...box.children],n=cur.length;if(n<2)return;
+   let perm=null;for(let t=0;t<40&&!perm;t++){const c=shuffle(cur.map((_,i)=>i));if(c.every((v,i)=>v!==i))perm=c}
+   if(!perm){const k=1+Math.floor(Math.random()*(n-1));perm=cur.map((_,i)=>(i+k)%n)}
+   const nx=perm.map(i=>cur[i]);nx.forEach(e=>box.appendChild(e));W.splice(0,W.length,...nx.map(e=>fam.words.find(w=>w.t===e.dataset.t)))};
+  els.forEach(b=>b.onclick=()=>{
+   if(lockInput||stage!=="fam4"||fam.done[4])return;
+   const target=L4.order[L4.i];
+   if(b.dataset.t===target){
+    if(stat()){stgInc(stat(),"marks");save()}
+    lockInput=true;b.classList.add("marked");b.setAttribute("aria-pressed","true");famSpeak(b.dataset.t);L4.i++;
+    if(L4.i>=total){fam.done[4]=true;lockInput=false;markAll();finishStep();celebrateDone();autoNext()}
+    else{setFb(`✅ Isso mesmo! ${L4.i} de ${total}.`);setTimeout(()=>{lockInput=false;if(stage!=="fam4")return;b.classList.remove("marked");b.setAttribute("aria-pressed","false");reshuffle4();const o=body.querySelector(".fam-ori");if(o){o.innerHTML=medInner(ori4());o.classList.add("med-closed")}},900)}
+   }else{
+    b.classList.add("wrong");setFb("Quase! O ADULTO DEVE REPETIR A PALAVRA. Tente outra.");
+    setTimeout(()=>b.classList.remove("wrong"),650)}
+  });
   if(alreadyDone){markAll();next.disabled=false;setFb(doneMsg)}
   else{next.disabled=true;setFb(W.some(w=>w.pseudo)?"Leia cada palavra. As com ✨ são inventadas: junte os sons!":"Leia cada palavra juntando as sílabas");
    if(CFG.skip){runFlag("demo");markAll();finishStep();autoNext()}}
@@ -2122,7 +2186,9 @@ function openCfg(){
  <div class="cfg-delay ${CFG.auto?"":"off"}" id="cfgDelay"><span style="margin:0 6px 0 0;font-weight:800;color:#5b6280">Tempo de espera:</span>${[[2,"2 s"],[4,"4 s"],[7,"7 s"]].map(d=>`<label><input type="radio" name="cfgD" value="${d[0]}" ${CFG.delay===d[0]?"checked":""}>${d[1]}</label>`).join("")}</div>
  <label class="cfg-opt"><input type="checkbox" id="cfgSkip" ${CFG.skip?"checked":""}><div><b>👆 Avançar sem selecionar</b><span>Libera o botão de avançar sem precisar tocar em cada sílaba, palavra, letra ou figura. As respostas aparecem prontas na tela. Atividades feitas assim são registradas como <b>demonstrativas</b>: concluem a etapa, mas não contam como acerto, erro nem domínio da habilidade.</span></div></label>
  <label class="cfg-opt"><input type="checkbox" id="cfgMed" ${CFG.med?"checked":""}><div><b>🧑‍🏫 Atividade com ajuda do adulto</b><span>Ligue quando o adulto der a resposta ou realizar a atividade junto. Os registros ficam separados como <b>“com ajuda”</b> e não entram nos indicadores de desempenho autônomo. Desligue para voltar ao registro autônomo.</span></div></label>
- <label class="cfg-opt"><input type="checkbox" id="cfgOri" ${(pp.cfg&&pp.cfg.orient===0)?"":"checked"}><div><b>👩‍🏫 Orientações para o adulto</b><span>Mostra, nas atividades de Sílabas e palavras, do Alfabeto (Sons das letras, Caça-Letras e Qual letra começa?) e da Consciência fonológica, o botão “Orientação do mediador”, que abre e fecha o texto de orientação para o professor ou familiar saber o que pronunciar (palavra-alvo, exemplos e respostas ficam escondidos da criança até o adulto abrir). Funciona mesmo sem áudio. O jogo não reconhece a fala: a criança responde tocando na tela. Vem ligado.</span></div></label>
+ <label class="cfg-opt"><input type="checkbox" id="cfgOri" ${(pp.cfg&&pp.cfg.orient===0)?"":"checked"}><div><b>👩‍🏫 Orientações para o adulto</b><span>Mostra, nas atividades de Sílabas e palavras, do Alfabeto (Sons das letras, Caça-Letras e Qual letra começa?) e da Consciência fonológica, a caixa de orientação do mediador, para o professor ou familiar saber o que pronunciar. A linha da criança fica sempre legível; as dicas do adulto (palavra-alvo, exemplos e respostas) ficam borradas, aparecem por instantes quando a tela muda e podem ser vistas pressionando e segurando a caixa (ícone 👁). O modo de revelação é escolhido em “Dicas da orientação”. Funciona mesmo sem áudio. O jogo não reconhece a fala: a criança responde tocando na tela. Vem ligado.</span></div></label>
+ <div class="cfg-sec"><b>🫣 Dicas da orientação</b><span>Como as dicas do adulto (em letras maiúsculas) aparecem na caixa de orientação. A linha da criança nunca fica borrada. Vale só para este participante.</span></div>
+ <div class="cfg-delay cfg-letter" id="cfgOriDica">${(()=>{const cur=["t","p","v"].includes((pp.cfg||{}).oriDica)?pp.cfg.oriDica:"t";return [["t","⏱️ Revelar por instantes (padrão)"],["p","👆 Somente ao pressionar"],["v","👁 Sempre visíveis"]].map(d=>`<label><input type="radio" name="cfgOD" value="${d[0]}" ${cur===d[0]?"checked":""}>${d[1]}</label>`).join("")})()}</div>
   <label class="cfg-opt"><input type="checkbox" id="cfgAudio" ${soundOn?"checked":""}><div><b>🔊 Áudio do jogo</b><span>Ativa ou desativa todos os sons, inclusive o toque suave ao responder e o estouro de confete da comemoração. A escolha vale para todo o jogo e fica salva neste aparelho para os próximos acessos.</span></div></label>
   <div class="cfg-sec"><b>🔤 Tipo de letra</b><span>Escolha como as letras aparecem nos jogos do Alfabeto. Também dá para trocar durante o jogo, no botão de letras.</span></div>
  <div class="cfg-delay cfg-letter">${[["u","ABC",""],["l","abc",""],["c","Abc","cs"],["m","Misto",""]].map(d=>`<label class="${d[2]}"><input type="radio" name="cfgL" value="${d[0]}" ${CFG.letter===d[0]?"checked":""}>${d[1]}</label>`).join("")}</div>
@@ -2139,6 +2205,7 @@ function openCfg(){
  {const ca=ov.querySelector("#cfgAudio");if(ca)ca.onchange=()=>kaSet(ca.checked)}
  ov.querySelector("#cfgOk").onclick=()=>{
   const d=ov.querySelector('input[name=cfgD]:checked');
+  {const r=ov.querySelector("input[name=cfgOD]:checked");if(r&&["t","p","v"].includes(r.value)){const q=active();q.cfg=Object.assign({},q.cfg,{oriDica:r.value})}}
   {const o=ov.querySelector("#cfgOri");if(o){const q=active();q.cfg=Object.assign({},q.cfg,{orient:o.checked?1:0})}}{const m=ov.querySelector("#cfgPwMin"),v=ov.querySelector("#cfgPwCov");if(m&&v){const q=active();q.cfg=Object.assign({},q.cfg,{pwMin:+m.value,pwCov:+v.value})}}setCfg({auto:au.checked,skip:ov.querySelector("#cfgSkip").checked,med:ov.querySelector("#cfgMed").checked,letter:(ov.querySelector('input[name=cfgL]:checked')||{}).value,delay:d?+d.value:4});
   close();medBadge();clearTimeout(autoTimer);abApplyCase();if(window.pwRefresh)pwRefresh();
   if(["families","read","build","picture"].includes(stage)&&$("#stageBody")){renderStage()}
@@ -4459,7 +4526,7 @@ const fig=(x,nocap)=>x.p?`<div class="fig-emoji">🪄</div><div class="fig-cap">
 function shell(title,sub,back){
  document.body.classList.add("game-mode");stage="pw";
  $("#appMain").innerHTML=`<section class="game${caseClass()}" id="game"><div class="hud"><button class="hud-btn" id="menuBtn" type="button" aria-label="Menu">☰</button><div class="hud-title"><strong>${title}</strong><span class="hud-sub">${sub}</span></div><div class="hud-menu hidden" id="hudMenu"><button type="button" data-go="student">👤 Menu do participante</button><button type="button" data-go="classes">🏫 Grupos e participantes</button><button type="button" data-go="cfg">⚙️ Configurações do jogo</button><button type="button" data-go="home">⌂ Menu inicial</button><button type="button" data-go="profile">👤 Meu perfil</button><button type="button" data-go="logout">🚪 Sair da conta</button></div></div><div class="stage-body stage-build" id="stageBody"></div><div class="bottom"><button class="round-btn" id="pwBack" type="button" aria-label="Voltar">◀</button><div class="bottom-text"><div class="feedback" id="feedback" aria-live="polite"></div></div><button class="round-btn hidden" id="pwRestart" type="button" aria-label="Reiniciar" title="Recomeçar esta etapa">↻</button><button class="round-btn hidden" id="pwHelp" type="button" aria-label="Ajuda" title="Ajuda (dica)">💡</button><button class="go-btn" id="nextStage" type="button" disabled>Próxima ▶</button><div class="hud-right"><button class="hud-btn" id="soundBtn" type="button" aria-label="Som">${soundOn?"🔊":"🔇"}</button><button class="hud-btn" id="fsBtn" type="button" aria-label="Tela cheia">⛶</button></div></div></section>`;
- const menu=$("#hudMenu");$("#menuBtn").onclick=e=>{e.stopPropagation();menu.classList.toggle("hidden")};
+ {const sb=$("#stageBody");if(sb)sb.classList.add("pw-top")} const menu=$("#hudMenu");$("#menuBtn").onclick=e=>{e.stopPropagation();menu.classList.toggle("hidden")};
  $("#game").onclick=e=>{if(!menu.contains(e.target))menu.classList.add("hidden")};
  menu.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{const g=b.dataset.go;say([]);if(g==="student")renderStudentMenu();else if(g==="classes")renderClassDashboard();else if(g==="cfg"){menu.classList.add("hidden");openCfg()}else if(g==="home")renderHome();else if(g==="profile")renderProfile();else if(g==="logout"){if(confirm("Deseja sair da conta do responsável?"))logoutTeacher("Você saiu da conta.")}});
  $("#soundBtn").onclick=()=>kaSet(!soundOn);$("#fsBtn").onclick=toggleFullscreen;
@@ -4502,7 +4569,7 @@ function word1(){const S=ST,x=S.list[S.i];S.got=[];S.ok=false;S.err=0;S.help=0;S
  $("#pwHelp").onclick=()=>{if(S.ok)return;S.help++;rec(x.w,{help:1});const k=S.opts.findIndex((o,i)=>o===x.s[S.got.length]&&!S.got.some(g=>g.i===i));draw1(k);say([...aW(x.w),{gap:300},...aS(x.s)]);fb("💡 O ADULTO DEVE REPETIR A PALAVRA. A sílaba brilhando é a próxima.")}}
 function draw1(hint){const S=ST,x=S.list[S.i],n=x.s.length;
  const slots=x.s.map((sy,i)=>{const g=S.got[i];return `<div class="slot-wrap"><button type="button" class="slot2 ${S.ok?"ok":g?"fill":"empty"}" data-slot="${i}" style="${S.ok?"color:"+COL[i%4]:""}">${S.ok?esc(sy):g?esc(g.s):"&nbsp;"}</button></div>`}).join("");
- $("#stageBody").innerHTML=`<div class="board build"><div class="opts" style="--n:${S.opts.length}">${S.opts.map((o,i)=>`<button type="button" class="opt${hint===i?" hint":""}" data-i="${i}" style="--len:${o.length}" ${S.ok||S.got.some(g=>g.i===i)?"disabled":""}><span class="cell-t">${esc(o)}</span></button>`).join("")}</div></div><div class="side"><div><button class="pw-ear" id="pwEar" type="button">🔊 Ouvir a palavra</button>${ori(x.p?ori2(`<b class="pw-hl">${esc(x.w)}</b>`,"Toque nas sílabas, na ordem, para formar a palavra."):ori2(`<b class="pw-hl">${esc(x.s.join(" – "))}</b>`,"Toque nas sílabas que formam a palavra, na ordem."))}<div class="slots" style="--n:${n}">${slots}</div></div>${S.ok?`<div class="fig-box">${fig(x)}</div>`:`<div></div>`}</div>`;
+ $("#stageBody").innerHTML=`${ori(x.p?ori2(`<b class="pw-hl">${esc(x.w)}</b>`,"Toque nas sílabas, na ordem, para formar a palavra."):ori2(`<b class="pw-hl">${esc(x.s.join(" – "))}</b>`,"Toque nas sílabas que formam a palavra, na ordem."))}<div class="pw-row"><div class="board build"><div class="opts" style="--n:${S.opts.length}">${S.opts.map((o,i)=>`<button type="button" class="opt${hint===i?" hint":""}" data-i="${i}" style="--len:${o.length}" ${S.ok||S.got.some(g=>g.i===i)?"disabled":""}><span class="cell-t">${esc(o)}</span></button>`).join("")}</div></div><div class="side"><div><button class="pw-ear" id="pwEar" type="button">🔊 Ouvir a palavra</button><div class="slots" style="--n:${n}">${slots}</div></div>${S.ok?`<div class="fig-box">${fig(x)}</div>`:`<div></div>`}</div></div>`;
  $("#pwEar").onclick=()=>say(aW(x.w));
  document.querySelectorAll("[data-slot]").forEach(b=>b.onclick=()=>{if(S.ok)return;const i=+b.dataset.slot;if(!S.got[i])return;S.got.length=i;draw1()});
  document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{if(S.ok)return;const i=+b.dataset.i;S.got.push({s:S.opts[i],i});say([{k:"s",t:S.opts[i]}]);
@@ -4512,10 +4579,12 @@ function draw1(hint){const S=ST,x=S.list[S.i],n=x.s.length;
   else{S.err++;rec(x.w,{att:1,err:1});abTick(false);draw1();document.querySelectorAll(".slot2").forEach(e=>e.classList.add("wrong"));fb("❌ Ainda não. O ADULTO DEVE REPETIR A PALAVRA. Tente outra vez.");setTimeout(()=>{if(stage!=="pw"||S.ok)return;S.got=[];draw1();say(aW(x.w))},1000)}})}
 function word2(){const S=ST,x=S.list[S.i],n=x.s.length;S.tap=new Set();S.wt=false;S.logged=false;
  shell(`Palavra ${S.i+1} de ${S.list.length}`,`Etapa 2 de 2 · Leia a palavra`,()=>trail());
- $("#stageBody").innerHTML=`<div class="board win"><div class="win-word">${x.s.map((sy,i)=>`<button type="button" class="pw-sy" data-i="${i}" style="color:${COL[i%4]}">${esc(sy)}</button>`).join("")}</div></div><div class="side"><div>${ori(ori2(null,"Toque em cada sílaba e leia a palavra em voz alta.","Ajude na leitura, se precisar."))}</div><div id="pwFig"></div></div>`;
+ $("#stageBody").innerHTML=`${ori(ori2(null,"Toque em cada sílaba e leia a palavra em voz alta.","Ajude na leitura, se precisar."))}<div class="pw-row"><div class="board win"><div class="win-word">${x.s.map((sy,i)=>`<button type="button" class="pw-sy" data-i="${i}" style="color:${COL[i%4]}">${esc(sy)}</button>`).join("")}</div></div><div class="side"><div></div><div id="pwFig"></div></div></div>`;
  fb("Toque em cada sílaba e leia a palavra.");
  const chk=()=>{if(S.tap.size===n){if(!S.logged){rec(x.w,{n:1});S.logged=true}{const fg=$("#pwFig");if(fg)fg.outerHTML=`<div class="fig-box" id="pwFig">${fig(x)}</div>`}celebrateDone();fb("🎉 Muito bem! Palavra lida. Aperte o botão para continuar.");const last=S.i+1>=S.list.length;nextBtn(last?"Concluir ▶":"Próxima palavra ▶",()=>{if(last)lvEnd();else{S.i++;word1()}})}};
- document.querySelectorAll(".pw-sy").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;S.tap.add(i);b.classList.add("on");say([{k:"s",t:x.s[i]}]);chk()});
+ document.querySelectorAll(".pw-sy").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(S.tap.has(i)||S.tap.size>=n)return;const nx=S.tap.size;
+  if(i!==nx&&x.s[i]!==x.s[nx]){b.classList.add("wrong");setTimeout(()=>b.classList.remove("wrong"),450);fb("❌ Ainda não. Toque nas sílabas na ordem em que a palavra é escrita, da esquerda para a direita.");return}
+  S.tap.add(i);b.classList.add("on");fb("Toque em cada sílaba e leia a palavra.");say([{k:"s",t:x.s[i]}]);chk()});
  
  {const r=$("#pwRestart");r.classList.remove("hidden");r.onclick=()=>{S.tap=new Set();const nb=$("#nextStage");nb.disabled=true;nb.textContent="Próxima ▶";document.querySelectorAll(".pw-sy").forEach(e=>e.classList.remove("on"));{const fg=$("#pwFig");if(fg)fg.outerHTML='<div id="pwFig"></div>'}fb("↻ Recomeçando a leitura.")}}
  $("#pwHelp").onclick=()=>{S.help++;rec(x.w,{help:1});say(aModel(x));fb("💡 Adulto, leia a palavra devagar, sílaba por sílaba. Agora a criança lê!")}}
@@ -4537,7 +4606,7 @@ let Q=null;
 function startQ(kind){const qs=makeQs(kind);if(qs.length<3){alert("Ainda há poucas palavras liberadas para esta atividade. Conclua mais palavras da trilha ou peça ao adulto para liberar níveis.");return}Q={kind,qs,i:0,ok:0,err:0,help:0,att:0};qn()}
 function qn(){const Z=Q,q=Z.qs[Z.i];Z.first=true;Z.done=false;Z.off=new Set();
  shell(`Pergunta ${Z.i+1} de ${Z.qs.length}`,QT[Z.kind],()=>trail());
- const draw=()=>{$("#stageBody").innerHTML=`<div class="board build"><div class="opts" style="--n:${q.opts.length}">${q.opts.map((o,i)=>`<button type="button" class="opt" data-i="${i}" style="--len:${o.length}" ${Z.done||Z.off.has(i)?"disabled":""}><span class="cell-t">${esc(o)}</span></button>`).join("")}</div></div><div class="side"><div><button class="pw-ear" id="pwEar" type="button">🔊 Ouvir</button>${ori(ori2(`<b class="pw-hl">${esc(q.t)}</b>`,Z.kind==="pse"?"Toque na palavra inventada que o adulto falou.":"Toque na palavra que o adulto falou."))}</div>${Z.done&&Z.kind!=="pse"?`<div class="fig-box">${fig(q.x)}</div>`:"<div></div>"}</div>`;
+ const draw=()=>{$("#stageBody").innerHTML=`${ori(ori2(`<b class="pw-hl">${esc(q.t)}</b>`,Z.kind==="pse"?"Toque na palavra inventada que o adulto falou.":"Toque na palavra que o adulto falou."))}<div class="pw-row"><div class="board build"><div class="opts" style="--n:${q.opts.length}">${q.opts.map((o,i)=>`<button type="button" class="opt" data-i="${i}" style="--len:${o.length}" ${Z.done||Z.off.has(i)?"disabled":""}><span class="cell-t">${esc(o)}</span></button>`).join("")}</div></div><div class="side"><div><button class="pw-ear" id="pwEar" type="button">🔊 Ouvir</button></div>${Z.done&&Z.kind!=="pse"?`<div class="fig-box">${fig(q.x)}</div>`:"<div></div>"}</div></div>`;
   $("#pwEar").onclick=()=>say(aW(q.t));
   document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;Z.att++;
    if(q.opts[i]===q.t){Z.done=true;if(Z.first)Z.ok++;abTick(true);draw();fb("✅ Isso mesmo: "+q.t+"!");setTimeout(()=>say(aW(q.t)),300);const last=Z.i+1>=Z.qs.length;nextBtn(last?"Ver resultado ▶":"Próxima ▶",()=>{if(last)qEnd();else{Z.i++;qn()}})}
@@ -4571,6 +4640,55 @@ const _ct=window.catTotal,_cp=window.catProgress;
 window.catTotal=function(c){if(GRP[c]){const[a,b]=GRP[c];let n=0;for(let l=a;l<=b;l++)n+=inLv(l).length;return n}return _ct.apply(this,arguments)};
 window.catProgress=function(p,c){if(GRP[c]){const[a,b]=GRP[c];let n=0;for(let l=a;l<=b;l++)n+=doneN(p,l);return n}return _cp.apply(this,arguments)};
 window.PW={bank,lvOf,makeQs,resp,LVN,lev};
+})();
+</script>
+<script id="mediador-ori">
+/* Orientação do mediador: dicas borradas, revelação temporária (600 ms), por pressão e modos por participante (p.cfg.oriDica: t | p | v) */
+(function(){
+"use strict";
+if(window.__mediadorOri)return;window.__mediadorOri=1;
+var SEL=".pw-ori",REV=600,MODES={t:1,p:1,v:1};
+var root=document.documentElement,seen=new WeakMap(),timers=new WeakMap(),last=null,hold=null,holdId=null;
+function mode(){var m="t";try{var p=typeof active==="function"?active():null,v=p&&p.cfg&&p.cfg.oriDica;if(MODES[v])m=v}catch(e){}return m}
+function applyMode(){var m=mode();if(root.getAttribute("data-ori-m")!==m)root.setAttribute("data-ori-m",m);return m}
+function hasHints(b){var h=b.querySelectorAll(".pw-hl");for(var i=0;i<h.length;i++){if(!h[i].closest(".ori-k")&&h[i].getClientRects().length)return true}return false}
+function sigOf(b){return(b.textContent||"").replace(/\s+/g," ").trim()}
+function reveal(b){clearTimeout(timers.get(b));b.classList.remove("ori-snap");b.classList.add("ori-rev");
+ timers.set(b,setTimeout(function(){timers.delete(b);if(hold!==b)b.classList.remove("ori-rev")},REV))}
+function sync(){
+ var m=applyMode(),bs=document.querySelectorAll(SEL);
+ if(!bs.length){last=null;return}
+ for(var i=0;i<bs.length;i++){var b=bs[i];
+  if(hasHints(b)){b.setAttribute("data-ori-h","1")}else{b.removeAttribute("data-ori-h");continue}
+  var sig=sigOf(b);if(seen.get(b)===sig)continue;
+  seen.set(b,sig);
+  var again=(sig===last);last=sig;
+  if(m==="t"&&!again)reveal(b)}
+}
+function boxOf(e){var t=e.target;if(t&&t.nodeType===3)t=t.parentElement;return t&&t.closest?t.closest(SEL):null}
+function press(b,id){if(applyMode()==="v"||!hasHints(b))return;if(hold&&hold!==b)release();
+ clearTimeout(timers.get(b));hold=b;holdId=id;b.classList.remove("ori-snap");b.classList.add("ori-rev")}
+function release(){var b=hold;if(!b)return;hold=null;holdId=null;clearTimeout(timers.get(b));timers.delete(b);b.classList.add("ori-snap");b.classList.remove("ori-rev")}
+var opt=true;
+if(window.PointerEvent){
+ document.addEventListener("pointerdown",function(e){if(e.pointerType==="mouse"&&e.button!==0)return;var b=boxOf(e);if(b)press(b,e.pointerId)},opt);
+ var up=function(e){if(hold&&(holdId===null||e.pointerId===holdId))release()};
+ document.addEventListener("pointerup",up,opt);document.addEventListener("pointercancel",up,opt);
+}else{
+ document.addEventListener("mousedown",function(e){if(e.button!==0)return;var b=boxOf(e);if(b)press(b,"m")},opt);
+ document.addEventListener("mouseup",function(){release()},opt);
+ document.addEventListener("touchstart",function(e){var b=boxOf(e);if(b)press(b,"t")},opt);
+ document.addEventListener("touchend",function(){release()},opt);document.addEventListener("touchcancel",function(){release()},opt);
+}
+["contextmenu","selectstart","dragstart"].forEach(function(n){document.addEventListener(n,function(e){if(boxOf(e))e.preventDefault()},opt)});
+window.addEventListener("blur",release);document.addEventListener("visibilitychange",function(){if(document.hidden)release()});
+function inBox(n){if(n&&n.nodeType===3)n=n.parentElement;return !!(n&&n.closest&&n.closest(SEL))}
+function hasBox(n){return n.nodeType===1&&(n.matches(SEL)||!!n.querySelector(SEL))}
+function touches(r){if(inBox(r.target))return true;var a=r.addedNodes,d=r.removedNodes,i;for(i=0;i<a.length;i++)if(hasBox(a[i]))return true;for(i=0;i<d.length;i++)if(hasBox(d[i]))return true;return false}
+new MutationObserver(function(rs){for(var i=0;i<rs.length;i++){if(touches(rs[i])){sync();return}}}).observe(document.body||root,{childList:true,subtree:true,characterData:true});
+var orig=window.pwRefresh;
+window.pwRefresh=function(){var r=typeof orig==="function"?orig.apply(this,arguments):undefined;applyMode();sync();return r};
+applyMode();sync();
 })();
 </script>
 <script type="module">
