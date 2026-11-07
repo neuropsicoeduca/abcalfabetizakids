@@ -988,6 +988,11 @@ button.stu-stars:focus-visible{outline:3px solid #3b4fd0;outline-offset:2px}
 @media(orientation:portrait){.ab-split,.ab-split.ab-letters{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1.25fr)}}
 .ab-ori{flex:0 0 auto;margin:0;max-width:100%;box-sizing:border-box;padding:.4em .9em;font-size:clamp(.8rem,min(2.5vh,4.3vw),1.15rem);line-height:1.25}
 @media(orientation:landscape) and (max-height:520px){.ab-ori{padding:.22em .7em;border-width:2px;font-size:clamp(.72rem,2.6vh,.95rem)}}
+/* Alfabeto: orientações em 3 linhas (criança, Orientações, Mediador); rolagem interna se a tela for muito baixa */
+.pw-ori.ab-ori3{max-height:44%;overflow:auto;text-align:left;line-height:1.22;padding-right:2.2em}
+.ab-ori3 .ori-l{margin:.12em 0}
+.ab-ori3 .med-body{border-top:0!important;margin-top:0;padding-top:0}
+@media(orientation:landscape) and (max-height:520px){.pw-ori.ab-ori3{max-height:48%;font-size:clamp(.64rem,2.4vh,.82rem)!important;padding:.2em 2em .2em .6em;line-height:1.18}}
 .ab-left.ab-wbtn{padding-bottom:clamp(46px,10.5vh,78px);box-sizing:border-box}
 .ab-left.ab-wbtn .ab-letter{font-size:min(21cqh,32cqw)}
 .ab-left.ab-wbtn .ab-fig{font-size:min(30cqh,54cqw)}
@@ -1925,6 +1930,7 @@ function renderFamActivity(){
 }
 function famOriOn(){return true}
 function famOri3(s){return ori2("<b class=\"pw-hl\">"+esc(s)+"</b>","Toque nessa sílaba entre as opções.")}
+function ori3(o,m){return `<div class="ori-l">👩‍🏫 <b>Orientações:</b> ${o}</div><div class="ori-l ori-m">🗣️ <b>Mediador:</b> ${m}</div>`}
 function ori2(f,c,a){return `<div class="ori-k">👆 ${c}</div><div class="ori-l">👩‍🏫 <b>ORIENTAÇÃO:</b> ${f!=null?`🗣️ <b>FALE:</b> ${f}.`:(a||"")}</div>`}
 /* Orientação do mediador: a instrução da criança (ori-k) fica sempre visível; o restante (palavra-alvo, exemplos, respostas) fica atrás do botão */
 function medInner(h){const re=/<div class="ori-k">[\s\S]*?<\/div>/g,ks=h.match(re)||[],body=h.replace(re,""),on=famOriOn();
@@ -2464,6 +2470,10 @@ function abMast(a,l){const r=(a.let||{})[l]||{};return (r.o||0)>=2&&(r.o||0)>(r.
 function abLog(l,ok){const p=active();if(!p||!l)return;if(recMode()!=="auto")return;const a=abAlpha(p);a.let=a.let||{};const r=a.let[l]=a.let[l]||{o:0,e:0};ok?r.o++:r.e++;saveProfiles()}
 const abHl=t=>`<b class="pw-hl">${esc(t)}</b>`;
 function abOri(h){return medBox("ab-ori",h)}
+/* Texto do mediador: letra normal do alfabeto (sem acento) + palavra como se escreve; pronúncia só quando difere da escrita (ex.: WAFFLE) */
+function abWTxt(w){const x=abWordSay(w);return w+(x!==String(w).toLowerCase()?" ("+x+")":"")}
+function abLetTxt(l,w){return String(l).toUpperCase()+" de "+abWTxt(w)}
+function abOri3(h){return medBox("ab-ori ab-ori3",h)}
 function abOriLetter(l,ex){return `Letra ${abHl(l)}`+(ex?` de ${abHl(ex.toLowerCase())}`:` — diga ${abHl(abLetterName(l))}`)+"."}
 function abBtns(list){return `<div class="ab-sbtns">${list.map((x,i)=>`<button type="button" class="ab-sbtn" data-sb="${i}">${x[0]}</button>`).join("")}</div>`}
 function abBindBtns(list){/* botões de voz desativados */}
@@ -2559,7 +2569,7 @@ function sgRound(){
  
  abShell({say,sub:`${SG_NAME[S.kind]} • ${S.i+1} de ${S.queue.length}`,left,
   right:`<div class="ab-board"><div class="ab-opts" style="--n:${opts.length}">${opts.map((o,i)=>`<button class="ab-opt" type="button" data-i="${i}" aria-label="Opção ${i+1}">${o.html}</button>`).join("")}</div></div>`,
-  ori:abOri(S.game==="ouvir"?ori2(abHl(l)+" (grupo: "+stg+")","Procure e toque nessa letra na tela."):ori2(abHl(l),"Toque na figura que começa com essa letra.")),
+  ori:abOri3(S.game==="ouvir"?ori3(`Grupo: ${stg}. A criança procura entre ${opts.length} letras e toca. Não aponte nem mostre a letra.`,`Fale “Encontre a letra ${abHl(l)}” (nome da letra). Se errar, aguarde um instante e repita só o nome. Ao acertar, diga a letra e a palavra que aparece.`):ori3(`Grupo: ${stg}. A letra está na tela; a criança observa as ${opts.length} figuras e escolhe. Não nomeie as figuras.`,`Fale “Encontre a figura que começa com a letra ${abHl(l)}”. Se errar, repita só o nome da letra; se travar, dê apenas o som. Ao acertar, diga a letra e a palavra.`)),
   msg,next:{label:isLast?"Concluir ▶":"Próxima ▶",disabled:true},
   onBack:()=>abSoundMode(S.kind),onRestart:()=>sgStart(S.kind,S.game)});
  abBindBtns(btns);
@@ -2610,7 +2620,7 @@ function abVoiceTest(kind){
  abShell({sub:"Sons das letras • "+({vogais:"Vogais",consoantes:"Consoantes",completo:"Alfabeto completo"})[kind],cls:"ab-letters",
   left:grid(),
   right:`<div id="abPanel" class="ab-panelwrap">${panel(null)}</div>`,
-  ori:abOri(ori2("a letra e o som que aparecem na tela","Toque numa letra para ver a figura.")),msg:"Toque numa letra para ver a figura",onBack:()=>abSoundMode(kind),onRestart:()=>abVoiceTest(kind),
+  ori:abOri3(ori3(`A criança escolhe ${kind==="vogais"?"a vogal":"a letra"} que quiser, sem ordem fixa. Tocar de novo na mesma mostra outra figura; ao tocar todas, o Concluir é liberado.`,`<span id="abMedT">Aguarde o toque. Depois, fale o nome e o som da letra e a palavra da figura, e convide a criança a repetir.</span>`)),msg:"Toque numa letra para ver a figura",onBack:()=>abSoundMode(kind),onRestart:()=>abVoiceTest(kind),
   extra:'<button class="round-btn" id="abShuf" type="button" aria-label="Embaralhar as letras" title="Embaralhar as letras">🔀</button>',
   next:{label:"Concluir ▶",disabled:true}});
  {const tk=abTok;setTimeout(()=>{if(abAlive(tk))abSpeak(AB_INS.con)},450)}
@@ -2622,7 +2632,7 @@ function abVoiceTest(kind){
   $("#abPanel").innerHTML=panel(l);
   const f=AB_FIG[l][picks[l]%AB_FIG[l].length];
   const say=abLetterName(l)+" de "+abWordSay(f[0]);
-  {const pl=document.querySelector("#abPanel .ab-left");if(pl)pl.onclick=()=>abSpeak(say)}{const o=document.querySelector(".ab-ori-t");if(o)o.innerHTML=abOriLetter(l,f[0])}
+  {const pl=document.querySelector("#abPanel .ab-left");if(pl)pl.onclick=()=>abSpeak(say)}{const mt=$("#abMedT");if(mt){const nm=abLetterName(l),sm=abSoundSay(l),ls=abLetTxt(l,f[0]);mt.innerHTML=(sm!==nm?`Fale o nome da letra ${abHl(l)}, o som ${abHl(sm)} e ${abHl(ls)}`:`Fale ${abHl(ls)}`)+". Peça que a criança repita; se errar, repita o som com calma, sem cobrar."}}
   abSpeak(say);abMsg(l+" de "+f[0].charAt(0)+f[0].slice(1).toLowerCase());
  };
  const bind=()=>document.querySelectorAll(".ab-tile[data-l]").forEach(b=>b.onclick=()=>pick(b.dataset.l));
@@ -2669,7 +2679,7 @@ function abCacaRound(){
   :`<div class="ab-left ab-tap" id="abLeft" role="button" tabindex="0" aria-label="${lbl}"><span class="ab-hear-ic" aria-hidden="true">🔊</span><div class="ab-letter">${abPair(t,L===1)}</div><div class="ab-figwrap"><div class="ab-fig">${fig[1]}</div><div class="ab-cap"><b>${esc(fig[0].charAt(0))}</b>${esc(fig[0].slice(1))}</div></div></div>`;
  abShell({say,sub:`Caça-Letras • ${som?"pelo som":"pela vista"} • ${S.i+1} de ${S.queue.length}`,left,
   right:`<div class="ab-board"><div class="ab-grid" style="--cols:${cfg.cols};--rows:${rows}">${tiles.map((x,i)=>`<button class="ab-tile" type="button" data-i="${i}" aria-label="Letra ${x.c}">${x.c}</button>`).join("")}</div></div>`,
-  ori:abOri(som?ori2(abHl(say),"Procure e toque em todas as letras que fazem esse som."):ori2(abHl(t),"Procure e toque em todas as letras iguais.")),
+  ori:abOri3(som?ori3(["A letra não aparece. A criança ouve e toca em todas as letras desse som, todas em maiúscula.","A letra não aparece. A criança ouve e toca em todas as letras desse som, em maiúscula e minúscula.","A letra não aparece. Há letras parecidas: dê tempo para a criança comparar e decidir sozinha."][L-1],`Fale ${abHl("AEIOU".includes(t)?abLetTxt(t,fig[0]):abSoundSay(t)+", de "+abWTxt(fig[0]))} sem apontar a letra. Se errar, repita o som mais devagar; só diga a palavra se continuar errando. Ao achar todas, diga junto a letra e a palavra.`):ori3(["Aponte a letra do quadro. A criança procura as letras iguais, todas em maiúscula, e toca em cada uma.","Aponte a letra do quadro. A criança procura a mesma letra em maiúscula e minúscula e toca em todas.","Aponte a letra do quadro. Há letras parecidas (b, d, p, q…): dê tempo para a criança comparar e decidir sozinha."][L-1],`Fale ${abHl(abLetTxt(t,fig[0]))}. A cada acerto, incentive; ao errar, repita só o nome da letra e deixe a criança corrigir sozinha.`)),
   msg:hdr+" • 0 de "+cfg.nT,
   next:{label:isLast?"Concluir ▶":"Próxima ▶",disabled:true},
   onBack:()=>abLevels("caca"),onRestart:()=>abStart("caca",L)});
@@ -2702,7 +2712,7 @@ function abInicialRound(){
  abShell({say,sub:`Letra inicial • etapa ${abTier(w)+1} de 3 • ${S.i+1} de ${S.queue.length}`,
   left:`<div class="ab-left ab-tap" id="abLeft" role="button" tabindex="0" aria-label="Ouvir o nome da figura de novo"><span class="ab-hear-ic" aria-hidden="true">🔊</span><div class="ab-figwrap"><div class="ab-fig">${w.e}</div><div class="ab-cap" id="abCap"><span class="ab-q">?</span></div></div></div>`,
   right:`<div class="ab-board"><div class="ab-opts" style="--n:${n}">${opts.map(o=>`<button class="ab-opt" type="button" data-ch="${o.ch}" aria-label="Letra ${o.show}">${o.show}</button>`).join("")}</div></div>`,
-  ori:abOri(ori2(abHl(w.w),"Toque na letra com que o nome da figura começa.")),
+  ori:abOri3(ori3(`Aponte a figura. A criança escolhe, entre ${n} letras${L===1?" maiúsculas":L===2?" minúsculas":" (maiúsculas e minúsculas, algumas parecidas)"}, a que começa o nome.`+(abTier(w)>0?" O som inicial pode não ser o nome da letra.":""),`Fale ${abHl(w.w)} e não diga a letra. Se errar, repita devagar, alongando o 1º som; `+(c==="H"?"o H não tem som próprio: não destaque o começo. ":`depois, se precisar, só o som ${abHl("AEIOU".includes(c)?c:abIniSay(w))}. `)+`Ao acertar, diga a letra e a palavra.`)),
   msg:"O adulto fala a palavra: com que som ela começa? Toque na letra.",
   next:{label:isLast?"Concluir ▶":"Próxima ▶",disabled:true},
   onBack:()=>abLevels("inicial"),onRestart:()=>abStart("inicial",L)});
