@@ -1044,6 +1044,9 @@ html[data-ori-m="v"] .pw-ori[data-ori-h]{padding-right:revert!important}
 .cfg-ot .ot-c.dis input[type=number],.cfg-ot .ot-c.dis select{opacity:.55}
 .cfg-ot.off{pointer-events:auto}
 @media(max-width:560px){.bottom .hud-right{flex-wrap:wrap}}
+#cfgOv .cfg-opt span,#cfgOv .cfg-sec>span{font-weight:400}
+/* Tela principal de cada bloco: só o título de cada cartão (Nível 1, 2, 3…) e a barra de progresso */
+.rp-main .ab-lvl .ab-lvl-d,.rp-main .ab-lvl .ab-lvl-s,.rp-main .ab-lvl .small{display:none}
 </style>
 </head>
 <body>
@@ -1831,7 +1834,7 @@ function renderFamConfig(cat){
   return `<button class="ab-lvl" data-g="${g}" type="button" title="${esc(G.goal)}"><strong>${icons[i]||"🌳"} ${esc(G.name)}</strong><span class="ab-lvl-d">${esc(G.letters)}</span><span class="ab-lvl-s">${esc(G.title)}</span><span class="small">${gd} de ${gl.length} famílias concluídas</span></button>`}).join("");
  const ord=()=>famCfgGet(p).order;
  const msg=()=>`${cat==="simples"?"📘":"📗"} Escolha um grupo para jogar · ordem ${ord()==="e"?"embaralhada":"tradicional"}`;
- abShell({title:cat==="simples"?"Sílabas Simples":"Sílabas Complexas",sub:cat==="simples"?"📘 Famílias silábicas":"📗 Famílias silábicas",noSound:true,single:`<div class="ab-board ab-levels fc-lv${groups.length===2?" fc-two":groups.length>3?" fc-many":""}">${cards}</div>`,msg:msg(),onBack:renderStudentMenu});
+ abShell({title:cat==="simples"?"Sílabas Simples":"Sílabas Complexas",rp:"cat:"+cat,sub:cat==="simples"?"📘 Famílias silábicas":"📗 Famílias silábicas",noSound:true,single:`<div class="ab-board ab-levels fc-lv${groups.length===2?" fc-two":groups.length>3?" fc-many":""}">${cards}</div>`,msg:msg(),onBack:renderStudentMenu});
  /* botão de embaralhar, embaixo, como nos outros jogos */
  const hr=document.querySelector(".bottom .hud-right"),fs=$("#fsBtn");
  const sb=document.createElement("button");sb.type="button";sb.id="fcShuf";sb.className="hud-btn mini";sb.textContent="🔀";
@@ -2177,17 +2180,19 @@ function openCfg(){
  if(document.getElementById("cfgOv"))return;
  const pp=active();if(!pp){alert("Selecione um participante para configurar o jogo.");return}
  const ov=document.createElement("div");ov.className="cfg-ov";ov.id="cfgOv";
- ov.innerHTML=`<div class="cfg-box" role="dialog" aria-modal="true" aria-labelledby="cfgT"><h2 id="cfgT">⚙️ Configurações</h2><p class="muted small" style="margin:0 0 8px">Participante: <b>${esc(pp.name)}</b>. As escolhas ficam salvas só para este participante. Por padrão, tudo fica desligado.</p>
- <label class="cfg-opt"><input type="checkbox" id="cfgAuto" ${CFG.auto?"checked":""}><div><b>⏭️ Transição automática</b><span>Ao concluir cada etapa, o jogo avança sozinho para a próxima etapa, palavra ou texto.</span></div></label>
+ ov.innerHTML=`<div class="cfg-box" role="dialog" aria-modal="true" aria-labelledby="cfgT"><h2 id="cfgT">⚙️ Configurações</h2><p class="muted small" style="margin:0 0 8px">Participante: <b>${esc(pp.name)}</b>. As escolhas valem só para este participante.</p>
+ <label class="cfg-opt"><input type="checkbox" id="cfgAuto" ${CFG.auto?"checked":""}><div><b>⏭️ Transição automática</b><span>Ao concluir uma etapa, avança sozinho para a próxima.</span></div></label>
  <div class="cfg-delay ${CFG.auto?"":"off"}" id="cfgDelay"><span style="margin:0 6px 0 0;font-weight:800;color:#5b6280">Tempo de espera:</span>${[[2,"2 s"],[4,"4 s"],[7,"7 s"]].map(d=>`<label><input type="radio" name="cfgD" value="${d[0]}" ${CFG.delay===d[0]?"checked":""}>${d[1]}</label>`).join("")}</div>
  
- <div class="cfg-sec"><b>🫣 Dicas da orientação</b><span>Como as dicas do adulto (em letras maiúsculas) aparecem na caixa de orientação. A linha da criança nunca fica borrada. Vale só para este participante.</span></div>
+ <div class="cfg-sec"><b>🫣 Dicas da orientação</b><span>Como as dicas do adulto aparecem na caixa de orientação. A linha da criança nunca fica borrada.</span></div>
  <div class="cfg-delay cfg-letter" id="cfgOriDica">${(()=>{const cur=["t","p","v"].includes((pp.cfg||{}).oriDica)?pp.cfg.oriDica:"t";return [["t","⏱️ Revelar por instantes (padrão)"],["p","👆 Somente ao pressionar"],["v","👁 Sempre visíveis"]].map(d=>`<label><input type="radio" name="cfgOD" value="${d[0]}" ${cur===d[0]?"checked":""}>${d[1]}</label>`).join("")})()}</div>
- <div class="cfg-sec"><b>⏳ Tempo de revelação das dicas</b><span>Vale quando o modo acima é “Revelar por instantes”. Escolha por quanto tempo as dicas do adulto ficam visíveis quando a tela muda: o padrão (0,6 s), um tempo seu em segundos ou minutos, ou permanente na tela. Vale só para este participante.</span></div>
+ <div class="cfg-sec"><b>⏳ Tempo de revelação das dicas</b><span>Vale para “Revelar por instantes”: por quanto tempo as dicas ficam visíveis.</span></div>
  <div class="cfg-delay cfg-letter cfg-ot ${(()=>{const m=["t","p","v"].includes((pp.cfg||{}).oriDica)?pp.cfg.oriDica:"t";return m==="t"?"":"off"})()}" id="cfgOriTempo">${(()=>{const c=pp.cfg||{},cur=["d","c","p"].includes(c.oriT)?c.oriT:"d",v=(+c.oriTV>=1&&+c.oriTV<=99)?Math.round(+c.oriTV):5,u=c.oriTU==="m"?"m":"s";return `<label><input type="radio" name="cfgOT" value="d" ${cur==="d"?"checked":""}>Padrão (0,6 s)</label><span class="ot-c ${cur==="c"?"":"dis"}" id="cfgOTc"><label><input type="radio" name="cfgOT" value="c" ${cur==="c"?"checked":""}>Personalizado:</label><input type="number" id="cfgOTV" min="1" max="99" step="1" value="${v}" aria-label="Tempo de revelação"><select id="cfgOTU" aria-label="Unidade de tempo"><option value="s" ${u==="s"?"selected":""}>segundos</option><option value="m" ${u==="m"?"selected":""}>minutos</option></select></span><label><input type="radio" name="cfgOT" value="p" ${cur==="p"?"checked":""}>Permanente na tela</label>`})()}</div>
-  <label class="cfg-opt"><input type="checkbox" id="cfgAudio" ${soundOn?"checked":""}><div><b>🔊 Áudio do jogo</b><span>Ativa ou desativa todos os sons, inclusive o toque suave ao responder e o estouro de confete da comemoração. A escolha vale para todo o jogo e fica salva neste aparelho para os próximos acessos.</span></div></label>
-  <div class="cfg-sec"><b>🔤 Tipo de letra</b><span>Escolha como as letras aparecem nos jogos do Alfabeto. Também dá para trocar durante o jogo, no botão de letras.</span></div>
+  <label class="cfg-opt"><input type="checkbox" id="cfgAudio" ${soundOn?"checked":""}><div><b>🔊 Áudio do jogo</b><span>Liga ou desliga os sons do jogo neste aparelho.</span></div></label>
+  <div class="cfg-sec"><b>🔤 Tipo de letra</b><span>Como as letras aparecem nos jogos do Alfabeto.</span></div>
  <div class="cfg-delay cfg-letter">${[["u","ABC",""],["l","abc",""],["c","Abc","cs"],["m","Misto",""]].map(d=>`<label class="${d[2]}"><input type="radio" name="cfgL" value="${d[0]}" ${CFG.letter===d[0]?"checked":""}>${d[1]}</label>`).join("")}</div>
+ <div class="cfg-sec"><b>🔓 Etapas dos jogos</b><span>Todas liberadas por padrão. Ou mantenha o bloqueio: cada etapa abre quando a anterior é concluída.</span></div>
+ <div class="cfg-delay cfg-letter" id="cfgSeq">${(()=>{const cur=(pp.cfg&&pp.cfg.seqFree===false)?"b":"f";return [["f","🔓 Liberar tudo (padrão)"],["b","🔒 Manter o bloqueio"]].map(d=>`<label><input type="radio" name="cfgSeq" value="${d[0]}" ${cur===d[0]?"checked":""}>${d[1]}</label>`).join("")})()}</div>
  <div class="cfg-actions"><button class="primary" id="cfgOk" type="button">Salvar</button></div></div>`;
  document.body.appendChild(ov);
  const au=ov.querySelector("#cfgAuto");au.onchange=()=>ov.querySelector("#cfgDelay").classList.toggle("off",!au.checked);
@@ -2200,8 +2205,10 @@ function openCfg(){
   const d=ov.querySelector('input[name=cfgD]:checked');
   {const r=ov.querySelector("input[name=cfgOD]:checked");if(r&&["t","p","v"].includes(r.value)){const q=active();q.cfg=Object.assign({},q.cfg,{oriDica:r.value})}}
   {const r=ov.querySelector("input[name=cfgOT]:checked"),nv=ov.querySelector("#cfgOTV"),nu=ov.querySelector("#cfgOTU");if(r&&["d","c","p"].includes(r.value)){let v=Math.round(parseFloat(nv&&nv.value));if(!(v>=1))v=5;if(v>99)v=99;const q=active();q.cfg=Object.assign({},q.cfg,{oriT:r.value,oriTV:v,oriTU:(nu&&nu.value==="m")?"m":"s"})}}
+  {const r=ov.querySelector("input[name=cfgSeq]:checked");if(r){const q=active();q.cfg=Object.assign({},q.cfg,{seqFree:r.value==="f"})}}
   setCfg({auto:au.checked,skip:false,letter:(ov.querySelector('input[name=cfgL]:checked')||{}).value,delay:d?+d.value:4});
   close();clearTimeout(autoTimer);abApplyCase();if(window.pwRefresh)pwRefresh();
+  if(window.seqRefresh)seqRefresh();
   if(["families","read","build","picture"].includes(stage)&&$("#stageBody")){renderStage()}
   else if(/^fam[1-4]$/.test(stage)&&$("#stageBody")&&typeof fam!=="undefined"&&fam){renderFamStage()}
   else if(stage==="alpha-game"){if($("#lgText")&&typeof LG!=="undefined"&&LG)lgStart(LG.kind,LG.id,LG.i);else if(typeof FL!=="undefined"&&FL&&!FL.finished&&$("#flText"))flStart(FL.text.id);else if(typeof AB!=="undefined"&&AB&&AB.queue&&AB.i<AB.queue.length&&$("#abLeft"))abRound()}
@@ -2470,7 +2477,7 @@ function abShell(c){
  document.body.classList.add("game-mode");
  const fam=isFamily();
  const m=$("#appMain");
- m.innerHTML=`<section class="game" id="game">
+ m.innerHTML=`<section class="game${c.rp?" rp-main":""}" id="game">
  <div class="hud">
   <button class="hud-btn" id="menuBtn" type="button" aria-label="Menu">☰</button>
   <div class="hud-title"><strong>${c.title||"Alfabeto"}</strong><span class="hud-sub">${c.sub||""}</span></div>
@@ -2478,7 +2485,7 @@ function abShell(c){
   <div class="hud-menu hidden" id="hudMenu"><button type="button" data-go="student">👤 Menu do participante</button><button type="button" data-go="classes">${fam?"👶 Suas crianças":"🏫 Grupos e participantes"}</button><button type="button" data-go="cfg">⚙️ Configurações do jogo</button><button type="button" data-go="home">⌂ Menu inicial</button><button type="button" data-go="profile">👤 Meu perfil</button><button type="button" data-go="logout">🚪 Sair da conta</button></div>
  </div>
  ${c.ori&&c.single?`<div class="stage-body ab-stage ab-single ab-wori">${c.ori}${c.single}</div>`:c.ori?`<div class="stage-body ab-stage ab-wori">${c.ori}<div class="ab-split${c.cls?" "+c.cls:""}">${c.left+c.right}</div></div>`:`<div class="stage-body ab-stage${c.single?" ab-single":""}${c.cls?" "+c.cls:""}">${c.single||(c.left+c.right)}</div>`}
- <div class="bottom${c.bare?" bare":""}"><button class="round-btn" id="abPrev" type="button" aria-label="Voltar">◀</button><div class="bottom-text"><div class="feedback" id="abFb" aria-live="polite">${c.msg||""}</div></div><button class="round-btn" id="abRestart" type="button" aria-label="Recomeçar" style="${c.onRestart?"":"visibility:hidden"}">↻</button>${c.extra||""}<button class="go-btn" id="abNext" type="button" ${c.next?(c.next.disabled?"disabled":""):'style="visibility:hidden" disabled'}>${c.next?c.next.label:"Próxima ▶"}</button><div class="hud-right"><button class="hud-btn" id="cfgBarBtn" type="button" aria-label="Configurações do jogo" title="Configurações do jogo">⚙️</button>${c.lgPace?`<button class="hud-btn mini" id="lgPaceBtn" type="button" aria-label="Nível de leitura: tempo por palavra" title="Nível de leitura: tempo por palavra">${lgPaceBtnTxt()}</button><button class="hud-btn mini${CFG.syl?" on":""}" id="lgSylBtn" type="button" aria-pressed="${CFG.syl?"true":"false"}" aria-label="Destacar sílabas divididas" title="Destacar sílabas, uma de cada vez">Sí·la·bas</button>`:""}${c.caseBtn?'<button class="hud-btn mini" id="caseBtn" type="button" aria-label="Tipo de letra: maiúscula, minúscula, cursiva" title="Tipo de letra"></button>':(c.title&&!c.abCase?"":'<button class="hud-btn mini" id="abCase" type="button" aria-label="Tipo de letra: misto, maiúscula, minúscula, cursiva" title="Tipo de letra"></button>')+(c.noSound?"":`<button class="hud-btn" id="soundBtn" type="button" aria-label="Som" title="Som: ligar ou desligar">${(c.sndGet?c.sndGet():abSound)?"🔊":"🔇"}</button>`)}<button class="hud-btn" id="fsBtn" type="button" aria-label="Tela cheia">⛶</button></div></div>
+ <div class="bottom${c.bare?" bare":""}"><button class="round-btn" id="abPrev" type="button" aria-label="Voltar">◀</button><div class="bottom-text"><div class="feedback" id="abFb" aria-live="polite">${c.msg||""}</div></div><button class="round-btn" id="abRestart" type="button" aria-label="Recomeçar" style="${c.onRestart?"":"visibility:hidden"}">↻</button>${c.extra||""}<button class="go-btn" id="abNext" type="button" ${c.next?(c.next.disabled?"disabled":""):'style="visibility:hidden" disabled'}>${c.next?c.next.label:"Próxima ▶"}</button><div class="hud-right"><button class="hud-btn" id="cfgBarBtn" type="button" aria-label="Configurações do jogo" title="Configurações do jogo">⚙️</button>${c.rp?`<button class="hud-btn" id="rpBtn" type="button" data-rp="${c.rp}" aria-label="Reiniciar o progresso deste bloco" title="Reiniciar o progresso deste bloco">🗑️</button>`:""}${c.lgPace?`<button class="hud-btn mini" id="lgPaceBtn" type="button" aria-label="Nível de leitura: tempo por palavra" title="Nível de leitura: tempo por palavra">${lgPaceBtnTxt()}</button><button class="hud-btn mini${CFG.syl?" on":""}" id="lgSylBtn" type="button" aria-pressed="${CFG.syl?"true":"false"}" aria-label="Destacar sílabas divididas" title="Destacar sílabas, uma de cada vez">Sí·la·bas</button>`:""}${c.caseBtn?'<button class="hud-btn mini" id="caseBtn" type="button" aria-label="Tipo de letra: maiúscula, minúscula, cursiva" title="Tipo de letra"></button>':(c.title&&!c.abCase?"":'<button class="hud-btn mini" id="abCase" type="button" aria-label="Tipo de letra: misto, maiúscula, minúscula, cursiva" title="Tipo de letra"></button>')+(c.noSound?"":`<button class="hud-btn" id="soundBtn" type="button" aria-label="Som" title="Som: ligar ou desligar">${(c.sndGet?c.sndGet():abSound)?"🔊":"🔇"}</button>`)}<button class="hud-btn" id="fsBtn" type="button" aria-label="Tela cheia">⛶</button></div></div>
  </section>`;
  const menu=$("#hudMenu");
  $("#menuBtn").onclick=e=>{e.stopPropagation();menu.classList.toggle("hidden")};
@@ -2504,14 +2511,14 @@ function abLevels(game){
  const total=caca?26:AB_POOL.length;
  const lv=caca?[["Letras maiúsculas","Encontre a letra entre as outras.","Poucas letras","Encontre a letra entre as outras."],["Maiúsculas e minúsculas","A mesma letra pode ser grande ou pequena.","Mais letras","Encontre todas as letras iguais."],["Letras parecidas","Cuidado com b, d, p, q e outras!","Letras parecidas","Cuidado com b, d, p, q e outras!"]]:[["2 opções de letra","Escolha entre duas letras.","2 opções de letra","Escolha entre duas letras."],["3 opções de letra","Agora em letras minúsculas.","3 opções de letra","Agora com três letras."],["4 opções de letra","Maiúsculas e minúsculas misturadas.","4 opções de letra","Agora com quatro letras, algumas parecidas."]];
  const cards=lv.map((x,i)=>{const L=i+1;const n=caca?(a.caca[L]||[]).length:(a.inicial[L]||[]).filter(w=>AB_POOL.some(q=>q.w===w)).length;return `<button class="ab-lvl" data-lv="${L}" type="button"><strong>${["🌱","🌿","🌳"][i]} Nível ${L}</strong><span class="ab-lvl-d"><span class="dm">${x[0]}</span><span class="df">${x[2]}</span></span><span class="ab-lvl-s"><span class="dm">${x[1]}</span><span class="df">${x[3]}</span></span><div class="progress"><span style="width:${Math.min(100,Math.round(n/Math.max(1,total)*100))}%"></span></div><span class="small">${n} de ${total} ${caca?"letras":"palavras"}</span></button>`}).join("");
- abShell({sub:caca?"Caça-Letras":"Qual letra começa?",single:`<div class="ab-board ab-levels">${cards}</div>`,msg:caca?"🔍 Escolha um nível para caçar letras":"🅰️ Escolha um nível para descobrir a letra",onBack:renderStudentMenu});
+ abShell({sub:caca?"Caça-Letras":"Qual letra começa?",rp:"ab:"+game,single:`<div class="ab-board ab-levels">${cards}</div>`,msg:caca?"🔍 Escolha um nível para caçar letras":"🅰️ Escolha um nível para descobrir a letra",onBack:renderStudentMenu});
  document.querySelectorAll(".ab-lvl").forEach(b=>b.onclick=()=>abStart(game,+b.dataset.lv));
 }
 function abSoundMenu(){
  const p=active();if(!p){renderClassDashboard();return}
  const cats=[["vogais","🔴","Vogais","A, E, I, O, U","5 letras"],["consoantes","🔵","Consoantes","B, C, D, F, G… e as demais","21 letras"],["completo","🔤","Alfabeto completo","De A até Z","26 letras"]];
  const cards=cats.map(c=>`<button class="ab-lvl" data-snd="${c[0]}" type="button"><strong>${c[1]} ${c[2]}</strong><span class="ab-lvl-d">${c[3]}</span><span class="ab-lvl-s">${c[4]}</span></button>`).join("");
- abShell({sub:"Sons das letras",noSound:true,single:`<div class="ab-board ab-levels">${cards}</div>`,msg:"Escolha o grupo de letras",onBack:renderStudentMenu});
+ abShell({sub:"Sons das letras",rp:"ab:teste",noSound:true,single:`<div class="ab-board ab-levels">${cards}</div>`,msg:"Escolha o grupo de letras",onBack:renderStudentMenu});
  document.querySelectorAll("[data-snd]").forEach(b=>b.onclick=()=>abSoundMode(b.dataset.snd));
 }
 const SG_NAME={vogais:"Vogais",consoantes:"Consoantes",completo:"Alfabeto completo"};
@@ -2855,7 +2862,7 @@ const fnTitle="Consciência fonológica";
 function fnBlocks(){
  const p=active();if(!p){renderClassDashboard();return}
  const cards=FN_B.map((b,i)=>`<button class="ab-lvl" data-b="${i+1}" type="button"><strong>🎵 Bloco ${i+1}</strong><span class="ab-lvl-d">${b.length} palavras para treinar</span><span class="ab-lvl-s">${fnN(p,"rimas",i+1)} rodadas</span></button>`).join("");
- abShell({title:fnTitle,sub:"🎵 Rimas",noSound:true,ori:fnStageOri("rimas"),single:`<div class="ab-board fn-blocks">${cards}</div>`,msg:"🎵 Escolha o bloco de rimas para jogar",onBack:renderStudentMenu});
+ abShell({title:fnTitle,sub:"🎵 Rimas",rp:"fn:rimas",noSound:true,ori:fnStageOri("rimas"),single:`<div class="ab-board fn-blocks">${cards}</div>`,msg:"🎵 Escolha o bloco de rimas para jogar",onBack:renderStudentMenu});
  document.querySelectorAll("[data-b]").forEach(b=>b.onclick=()=>fnStart("rimas",+b.dataset.b))}
 function fnLevels(et){
  const p=active();if(!p){renderClassDashboard();return}const E=FN_ET.find(x=>x[0]===et);
@@ -3103,7 +3110,7 @@ function fnMenuMarkup(p){
 function fnLevels(et){
  const p=active();if(!p){renderClassDashboard();return}const E=FN_ET.find(x=>x[0]===et),ord=fnKeys(et),big=ord.length>3;
  const cards=ord.map(k=>{const c=fnCard(et,k);return `<button class="ab-lvl" data-lv="${k}" type="button"><strong>${c[0]}</strong><span class="ab-lvl-d">${c[1]}</span><span class="ab-lvl-s">${c[2]} • ${fnN(p,et,k)} rodadas</span></button>`}).join("");
- abShell({title:fnTitle,sub:E[1]+" "+E[2],noSound:true,ori:fnStageOri(et),single:big?`<div class="ab-board fn-blocks fn-r${Math.ceil(ord.length/(et==="ditado"?2:3))}${et==="ditado"?" fn-c2":""}">${cards}</div>`:`<div class="ab-board ab-levels">${cards}</div>`,msg:E[1]+" Escolha uma atividade para jogar",onBack:renderStudentMenu});
+ abShell({title:fnTitle,sub:E[1]+" "+E[2],rp:"fn:"+et,noSound:true,ori:fnStageOri(et),single:big?`<div class="ab-board fn-blocks fn-r${Math.ceil(ord.length/(et==="ditado"?2:3))}${et==="ditado"?" fn-c2":""}">${cards}</div>`:`<div class="ab-board ab-levels">${cards}</div>`,msg:E[1]+" Escolha uma atividade para jogar",onBack:renderStudentMenu});
  document.querySelectorAll("[data-lv]").forEach(b=>b.onclick=()=>fnStart(et,+b.dataset.lv))}
 /* ---- escolha das perguntas ---- */
 function fnSilQs(k){const L=x=>x.s.length,by=n=>FN_SIL.filter(x=>L(x)===n),pk=(a,n)=>shuffle(a.slice()).slice(0,n);let C,P;
@@ -3489,7 +3496,7 @@ function flTexts(cat){
  const lvs=cat===1?[1,2,3,4]:[5,6,7,8,9,10,11,12];
  const cards=lvs.map(n=>{const l=FL_TEXTS.filter(x=>x.lv===n),c=l.filter(x=>f.textos[x.id]&&f.textos[x.id].n).length,I=flLvInfo(n),ok=l.length>0&&c===l.length,S=flStats(l,f);
   return `<button class="ab-lvl fl-lvl${ok?" lido":""}" data-flv="${n}" type="button"><strong>${ok?"✅":"📖"} Nível ${n}</strong><span class="ab-lvl-d">${esc(I[0])}</span><span class="ab-lvl-s">${esc(I[1])}</span><span class="small">${c} de ${l.length} textos concluídos (${S.pct}%)</span><div class="progress"><span style="width:${S.pct}%"></span></div>${S.rel?`<span class="small">🔁 ${S.rel} ${S.rel===1?"releitura":"releituras"}</span>`:""}</button>`}).join("");
- abShell({title:"Treino de Leitura Livre",sub:cat===1?"📘 Textos com palavras simples":"📗 Textos com palavras complexas",noSound:true,
+ abShell({title:"Treino de Leitura Livre",rp:"fl:"+cat,sub:cat===1?"📘 Textos com palavras simples":"📗 Textos com palavras complexas",noSound:true,
   single:`<div class="ab-board ab-levels fl-lv-board${cat===1?" fc-two":" fc-many"}">${cards}</div>`,
   msg:"Escolha um nível para ver os textos",onBack:renderStudentMenu});
  document.querySelectorAll("[data-flv]").forEach(b=>b.onclick=()=>flTextList(+b.dataset.flv));
@@ -3855,7 +3862,7 @@ function lgGroup(g){
   const DSM={p:"p",f:"f",tc:"t"}[g],DSN={p:["📖","Desafio de palavras","Palavras novas, sem ver antes"],f:["💬","Desafio de frases","Frases novas, no nível escolhido"],t:["📄","Desafio de textos","Textos novos, com perguntas"]}[DSM],DSR=dsData(p).regs.filter(r=>r.m===DSM).length;
   const des=`<button class="ab-lvl lg-gcard lg-des" data-des="${DSM}" type="button"><strong>🏆 ${DSN[1]}</strong><span class="ab-lvl-d">${DSN[2]}</span><span class="small">${dsCountTxt(DSR)}</span></button>`;
   const cu=G.custom?`<button class="ab-lvl lg-gcard lg-custom" data-custom="1" type="button"><strong>✏️ Personalizado</strong><span class="ab-lvl-d">Escolha o tipo e a quantidade de palavras</span><span class="small">Misture simples e complexas</span></button>`:"";
-  abShell({title:"Treino de Fluência Leitora",abCase:true,lgPace:true,sub:G.t.replace(/^\S+\s/,""),
+  abShell({title:"Treino de Fluência Leitora",rp:"lg:"+g,abCase:true,lgPace:true,sub:G.t.replace(/^\S+\s/,""),
    single:`<div class="ab-board ab-levels" style="overflow-y:auto;align-content:start;grid-template-rows:none;grid-auto-rows:minmax(clamp(96px,22vh,150px),auto)">${cards}${cu}${des}</div>`,
    msg:`${g==="f"?"💬":"📖"} Escolha um bloco para treinar • ${pc.e} ${pc.n} (${lgSecTxt(pc.s)}) — mude no botão 🕒`,noSound:true,onBack:renderStudentMenu});
   document.querySelectorAll(".lg-gcard").forEach(b=>b.onclick=()=>b.dataset.des?dsLevels(b.dataset.des):b.dataset.custom?lgCustomOpen(G.kinds[0]):lgMenu(b.dataset.k));
@@ -4519,7 +4526,7 @@ function trail(g){say([]);grp=g||grp;const p=active();if(!p){renderClassDashboar
  const [a,b]=GRP[grp],pct=l=>Math.round(doneN(p,l)/inLv(l).length*100);
  let cards="";for(let l=a;l<=b;l++){const n=inLv(l).length;cards+=`<button class="ab-lvl" data-lv="${l}" type="button"><strong>🧩 ${l}. ${LVN[l][0]}</strong><span class="ab-lvl-d">${LVN[l][1]}</span><div class="progress"><span style="width:${pct(l)}%"></span></div><span class="small">${doneN(p,l)+" de "+n+" palavras"}</span></button>`}
  const acts=[["esc","👂","Qual palavra você ouviu?","Palavras parecidas: GATO, GALO, PATO"],["rr","🔤","RR e SS","Aprenda os sons e a escrita"],["pse","🪄","Palavras inventadas","Leia sem figura e sem decorar"]].map(x=>`<button class="ab-lvl" data-act="${x[0]}" type="button"><strong>${x[1]} ${x[2]}</strong><span class="ab-lvl-d">${x[3]}</span></button>`).join("");
- abShell({title:"Sílabas e palavras",sub:grp==="simples_montar"?"🧩 Palavras Simples":"🧩 Palavras Complexas",noSound:true,single:`<div class="ab-board ab-levels" style="overflow-y:auto;align-content:start;grid-template-rows:none;grid-auto-rows:minmax(clamp(96px,22vh,150px),auto)">${cards}${acts}</div>`,msg:"🧩 Escolha um nível ou atividade para jogar",onBack:renderStudentMenu});
+ abShell({title:"Sílabas e palavras",rp:"cat:"+grp,sub:grp==="simples_montar"?"🧩 Palavras Simples":"🧩 Palavras Complexas",noSound:true,single:`<div class="ab-board ab-levels" style="overflow-y:auto;align-content:start;grid-template-rows:none;grid-auto-rows:minmax(clamp(96px,22vh,150px),auto)">${cards}${acts}</div>`,msg:"🧩 Escolha um nível ou atividade para jogar",onBack:renderStudentMenu});
  document.querySelectorAll("[data-lv]").forEach(b=>b.onclick=()=>startLv(+b.dataset.lv));
  document.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>b.dataset.act==="rr"?lesson():startQ(b.dataset.act))}
 /* ---- palavra: etapa 1 ditado, etapa 2 leitura ---- */
@@ -4604,7 +4611,11 @@ const _sc=window.startCategory;window.startCategory=function(c){if(GRP[c]){if(!a
 const _ct=window.catTotal,_cp=window.catProgress;
 window.catTotal=function(c){if(GRP[c]){const[a,b]=GRP[c];let n=0;for(let l=a;l<=b;l++)n+=inLv(l).length;return n}return _ct.apply(this,arguments)};
 window.catProgress=function(p,c){if(GRP[c]){const[a,b]=GRP[c];let n=0;for(let l=a;l<=b;l++)n+=doneN(p,l);return n}return _cp.apply(this,arguments)};
-window.PW={bank,lvOf,makeQs,resp,LVN,lev};
+function resetGrp(p,g){if(!GRP[g]||!p)return;const[a,b]=GRP[g],W={};for(let l=a;l<=b;l++)inLv(l).forEach(x=>{W[x.w]=1});
+ const d=D(p);Object.keys(d.w).forEach(w=>{if(W[w])delete d.w[w]});
+ p.done=p.done||{};["simples_montar","complexas_montar"].forEach(k=>{p.done[k]=(p.done[k]||[]).filter(x=>!W[x])});
+ p.next=p.next||{};p.next[g]=0}
+window.PW={bank,lvOf,makeQs,resp,LVN,lev,resetGrp};
 })();
 </script>
 <script id="mediador-ori">
@@ -4673,6 +4684,78 @@ document.addEventListener("click",function(e){
 },true);
 })();
 </script>
+<script id="reiniciar-bloco">
+/* Botão 🗑️ na barra inferior da tela inicial de cada bloco: reinicia só o progresso daquele bloco (todos os seus subblocos) do participante ativo.
+   O reinício geral de todas as etapas continua no menu do participante ("Reiniciar progresso deste participante"). */
+(function(){
+"use strict";
+if(window.__rpBloco)return;window.__rpBloco=1;
+function drop(o,test){if(!o||typeof o!=="object")return;Object.keys(o).forEach(function(k){if(test(k))delete o[k]})}
+function rAb(p,g){/* g: caca | inicial | sons */
+ var a=p.alpha;if(!a)return;var sons=g==="sons";
+ var m=function(j){j=String(j||"");return sons?j.indexOf("sons_")===0:j===g};
+ if(!sons)a[g]={1:[],2:[],3:[]};
+ var hit=0,err=0;
+ a.sessoes=(Array.isArray(a.sessoes)?a.sessoes:[]).filter(function(x){if(x&&m(x.jogo)){hit+=+x.acertos||0;err+=+x.erros||0;return false}return true});
+ a.acertos=Math.max(0,(+a.acertos||0)-hit);a.erros=Math.max(0,(+a.erros||0)-err);
+ drop(a.exec,function(k){return m(k.split("|")[0])});drop(a.sg,function(k){return m(k.split("|")[0])})
+}
+function rCat(p,c){
+ if(window.PW&&PW.resetGrp&&/_montar$/.test(c))PW.resetGrp(p,c);
+ p.done=p.done||{};p.done[c]=[];p.next=p.next||{};p.next[c]=0;
+ if(p.last&&p.last.category===c)delete p.last
+}
+function rFn(p,et){
+ var d=p.fono;if(!d)return;
+ ["n","h","hna","cx"].forEach(function(f){drop(d[f],function(k){return k.indexOf(et+"|")===0})});
+ if(d.last&&d.last.et===et)delete d.last
+}
+function rFl(p,cat){
+ var f=p.fluencia;if(!f)return;var lo=cat===1?1:5,hi=cat===1?4:12,ids={};
+ FL_TEXTS.forEach(function(t){if(t.lv>=lo&&t.lv<=hi)ids[t.id]=1});
+ drop(f.textos,function(id){return ids[id]});
+ f.sessoes=(Array.isArray(f.sessoes)?f.sessoes:[]).filter(function(s){return !(s&&ids[s.texto])})
+}
+function rLg(p,g){
+ var d=p.leitura,G=LG_GROUPS[g];if(!d||!G)return;var ids={};
+ G.kinds.forEach(function(k){lgUnitsAll(k).forEach(function(u){ids[u.id]=1})});
+ drop(d.u,function(id){return ids[id]});
+ var grp=function(s){var u=String(s&&s.unidade||""),m=/^([a-z]+)-/.exec(u);if(!m)return null;if(ids[u])return g;var k=m[1];if(k==="fs"||k==="fc")return"f";if(k==="tc")return"tc";return lgGroupOf(k)};
+ d.sessoes=(Array.isArray(d.sessoes)?d.sessoes:[]).filter(function(s){return grp(s)!==g});
+ var M={p:"p",f:"f",tc:"t"}[g];
+ if(d.des){
+  if(Array.isArray(d.des.regs))d.des.regs=d.des.regs.filter(function(r){return r&&r.m!==M});
+  if(d.des.seen)(DS_LV[M]||[]).forEach(function(x){delete d.des.seen[x[0]]})
+ }
+}
+function plain(t){return String(t||"").replace(/^\S+\s/,"")}
+function spec(key){
+ var i=key.indexOf(":"),t=key.slice(0,i),v=key.slice(i+1);
+ if(t==="ab"){var N={teste:"Sons das letras",caca:"Caça-Letras",inicial:"Qual letra começa?"};if(!N[v])return null;
+  return{name:N[v],run:function(p){rAb(p,v==="teste"?"sons":v)},back:function(){v==="teste"?abSoundMenu():abLevels(v)}}}
+ if(t==="cat"){if(["simples","complexas","simples_montar","complexas_montar"].indexOf(v)<0)return null;
+  return{name:plain(catLabel(v)),run:function(p){rCat(p,v)},back:function(){/_montar$/.test(v)?startCategory(v):renderFamConfig(v)}}}
+ if(t==="fn"){var E=FN_ET.find(function(e){return e[0]===v});if(!E)return null;
+  return{name:E[1]+" "+E[2],run:function(p){rFn(p,v)},back:function(){v==="rimas"?fnBlocks():fnLevels(v)}}}
+ if(t==="fl"){var n=+v;if(n!==1&&n!==2)return null;
+  return{name:n===1?"Textos com palavras simples":"Textos com palavras complexas",run:function(p){rFl(p,n)},back:function(){flTexts(n)}}}
+ if(t==="lg"){if(!LG_GROUPS[v])return null;
+  return{name:plain(LG_GROUPS[v].t),run:function(p){rLg(p,v)},back:function(){lgGroup(v)}}}
+ return null
+}
+document.addEventListener("click",function(e){
+ var b=e.target&&e.target.closest?e.target.closest("#rpBtn"):null;if(!b)return;
+ e.preventDefault();e.stopPropagation();
+ try{
+  var p=active(),sp=spec(String(b.getAttribute("data-rp")||""));
+  if(!p||!sp)return;
+  if(!confirm("Deseja reiniciar o progresso de “"+sp.name+"” de "+p.name+"?\n\nSó este bloco será reiniciado; os outros blocos continuam como estão."))return;
+  sp.run(p);saveProfiles();sp.back();
+  if(typeof abMsg==="function")abMsg("♻️ Progresso de “"+sp.name+"” reiniciado.")
+ }catch(err){console.error("Reiniciar bloco",err)}
+},true);
+})();
+</script>
 <style id="seq-gate-css">
 .seq-locked{position:relative;opacity:.62;filter:grayscale(.6);cursor:pointer}
 .seq-locked .seq-lock-ic{position:absolute;top:8px;right:10px;font-size:1.3rem;line-height:1;pointer-events:none}
@@ -4727,11 +4810,16 @@ function lockEl(el,id){
  el.classList.add("seq-locked");el.setAttribute("data-seq-lock",id);el.setAttribute("aria-disabled","true");
  el.setAttribute("aria-label",t+" — bloqueada. Conclua a etapa anterior.");
  var s=document.createElement("span");s.className="seq-lock-ic";s.setAttribute("aria-hidden","true");s.textContent="🔒";el.appendChild(s)}
+var last=null;
 function run(root,scope,specs,ctx){
  var p=P();if(!p||!root)return;
  var U=(p.seqUnlock&&typeof p.seqUnlock==="object")?p.seqUnlock:{};
+ var free=!(p.cfg&&p.cfg.seqFree===false);/* Configurações > Etapas dos jogos: padrão = liberar tudo; só bloqueia se "Manter o bloqueio" for escolhido (seqFree:false) */
+ last={scope:scope,specs:specs,ctx:ctx,probe:null};
  specs.forEach(function(sp){
   var els=[].slice.call(root.querySelectorAll(sp.q));if(!els.length)return;
+  if(!last.probe)last.probe=els[0];
+  if(free){els.forEach(unlockEl);return}
   var st=els.map(function(el){return stateOf(sp,el,p,ctx)}),li=-1;
   st.forEach(function(s,i){if(s.d||s.s)li=i});
   els.forEach(function(el,i){
@@ -4741,7 +4829,13 @@ function run(root,scope,specs,ctx){
    if(U[id])return;
    lockEl(el,id)})})}
 /* continha do adulto */
-function mk(){var a=12+Math.floor(Math.random()*8),b=3+Math.floor(Math.random()*7),c=11+Math.floor(Math.random()*39);return{q:a+" × "+b+" + "+c,r:a*b+c}}
+/* Conta do adulto: apenas soma ou subtração, alternando (soma, subtração, soma...). Subtração sempre com resultado positivo. */
+var nextSub=false;
+function rnd(lo,hi){return lo+Math.floor(Math.random()*(hi-lo+1))}
+function mk(){
+ var sub=nextSub,a,b;nextSub=!nextSub;
+ if(!sub){a=rnd(23,79);b=rnd(17,68);return{q:a+" + "+b,r:a+b}}
+ a=rnd(61,99);b=rnd(14,48);return{q:a+" − "+b,r:a-b}}
 function ask(el){
  var p=P();if(!p||document.getElementById("seqOv"))return;
  var id=el.getAttribute("data-seq-lock"),prob=mk();
@@ -4777,6 +4871,7 @@ document.addEventListener("click",function(e){
  var t=e.target,el=t&&t.closest?t.closest("[data-seq-lock]"):null;if(!el)return;
  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();ask(el)},true);
 function wrap(name,fn){var o=window[name];if(typeof o!=="function")return;window[name]=function(){var r=o.apply(this,arguments);try{fn.apply(null,arguments)}catch(err){console.error("seq-gate",err)}return r}}
+window.seqRefresh=function(){try{if(last&&last.probe&&document.body.contains(last.probe))run(document.getElementById("appMain"),last.scope,last.specs,last.ctx)}catch(err){console.error("seq-gate",err)}};
 wrap("renderStudentMenu",function(){run(document.getElementById("appMain"),"menu",MENU,{})});
 wrap("abShell",function(c){run(document.getElementById("appMain"),((c&&c.title)||"")+"|"+((c&&c.sub)||""),SHELL,{kind:kindOf(c&&c.sub)})});
 })();
