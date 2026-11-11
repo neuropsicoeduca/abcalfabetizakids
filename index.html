@@ -1068,6 +1068,8 @@ html[data-ori-m="v"] .pw-ori[data-ori-h]{padding-right:revert!important}
 #cfgOv .cfg-opt span,#cfgOv .cfg-sec>span{font-weight:400}
 /* Tela principal de cada bloco: só o título de cada cartão (Nível 1, 2, 3…) e a barra de progresso */
 .rp-main .ab-lvl .ab-lvl-d,.rp-main .ab-lvl .ab-lvl-s,.rp-main .ab-lvl .small{display:none}
+/* Consciência fonológica (telas de 3 níveis): cartões compactos, mesmo desenho do Alfabeto (título + barra de progresso, centralizados no quadro) */
+.stage-body.ab-wori.ab-single .ab-levels.fn-lv3{grid-template-rows:none;grid-auto-rows:max-content;align-content:center}
 </style>
 </head>
 <body>
@@ -2225,7 +2227,7 @@ function openCfg(){
  <div class="cfg-delay cfg-letter cfg-ot ${(()=>{const m=["t","p","v"].includes((pp.cfg||{}).oriDica)?pp.cfg.oriDica:"t";return m==="t"?"":"off"})()}" id="cfgOriTempo">${(()=>{const c=pp.cfg||{},cur=["d","c","p"].includes(c.oriT)?c.oriT:"d",v=(+c.oriTV>=1&&+c.oriTV<=99)?Math.round(+c.oriTV):5,u=c.oriTU==="m"?"m":"s";return `<label><input type="radio" name="cfgOT" value="d" ${cur==="d"?"checked":""}>Padrão (0,6 s)</label><span class="ot-c ${cur==="c"?"":"dis"}" id="cfgOTc"><label><input type="radio" name="cfgOT" value="c" ${cur==="c"?"checked":""}>Personalizado:</label><input type="number" id="cfgOTV" min="1" max="99" step="1" value="${v}" aria-label="Tempo de revelação"><select id="cfgOTU" aria-label="Unidade de tempo"><option value="s" ${u==="s"?"selected":""}>segundos</option><option value="m" ${u==="m"?"selected":""}>minutos</option></select></span><label><input type="radio" name="cfgOT" value="p" ${cur==="p"?"checked":""}>Permanente na tela</label>`})()}</div>
   <label class="cfg-opt"><input type="checkbox" id="cfgAudio" ${soundOn?"checked":""}><div><b>🔊 Áudio do jogo</b><span>Liga ou desliga os sons do jogo neste aparelho.</span></div></label>
   <div class="cfg-sec"><b>🔤 Tipo de letra</b><span>Como as letras aparecem nos jogos do Alfabeto.</span></div>
- <div class="cfg-delay cfg-letter">${[["u","ABC",""],["l","abc",""],["c","Abc","cs"],["m","Misto",""]].map(d=>`<label class="${d[2]}"><input type="radio" name="cfgL" value="${d[0]}" ${CFG.letter===d[0]?"checked":""}>${d[1]}</label>`).join("")}</div>
+ <div class="cfg-delay cfg-letter">${[["u","ABC",""],["l","abc",""],["c","Abc","cs"],["m","Misto",""]].filter(d=>!(d[0]==="m"&&fnCtx())).map(d=>`<label class="${d[2]}"><input type="radio" name="cfgL" value="${d[0]}" ${(fnCtx()&&CFG.letter==="m"?"u":CFG.letter)===d[0]?"checked":""}>${d[1]}</label>`).join("")}</div>
  <div class="cfg-sec"><b>🔓 Etapas dos jogos</b><span>Todas liberadas por padrão. Ou mantenha o bloqueio: cada etapa abre quando a anterior é concluída.</span></div>
  <div class="cfg-delay cfg-letter" id="cfgSeq">${(()=>{const cur=(pp.cfg&&pp.cfg.seqFree===false)?"b":"f";return [["f","🔓 Liberar tudo (padrão)"],["b","🔒 Manter o bloqueio"]].map(d=>`<label><input type="radio" name="cfgSeq" value="${d[0]}" ${cur===d[0]?"checked":""}>${d[1]}</label>`).join("")})()}</div>
  <div class="cfg-actions"><button class="primary" id="cfgOk" type="button">Salvar</button></div></div>`;
@@ -2462,7 +2464,8 @@ function abUnion(o,valid){const s=new Set();Object.values(o||{}).forEach(arr=>(a
 function abInicialDone(a){return abUnion(a.inicial,new Set(AB_POOL.map(x=>x.w)))}
 let abSound=soundOn;
 /* Tipo de letra nos jogos do Alfabeto: m=misto (como era), u=MAIÚSCULAS, l=minúsculas, c=cursiva */
-let abCase="m";function abLoadCase(){try{abCase=CFG.letter}catch(e){abCase="m"}}
+function fnCtx(){return !!document.querySelector("#game.fn-ctx")}
+let abCase="m";function abLoadCase(){try{abCase=CFG.letter}catch(e){abCase="m"}if(abCase==="m"&&fnCtx())abCase="u"}
 const AB_CASE_LBL={m:"Aa",u:"ABC",l:"abc",c:"Abc"},AB_CASE_NAME={m:"misto",u:"maiúsculas",l:"minúsculas",c:"cursiva"},AB_CASE_NEXT={m:"u",u:"l",l:"c",c:"m"};
 function abPair(t,solo){return `<span class="ab-pair${solo?" solo":""}"><span class="lp-u">${t}</span><span class="lp-s"> </span><span class="lp-l">${t.toLowerCase()}</span></span>`}
 function abTgt(t,solo){abLoadCase();return abCase==="u"?t.toUpperCase():abCase==="l"?t.toLowerCase():solo?t:t+" "+t.toLowerCase()}
@@ -2516,7 +2519,7 @@ function abShell(c){
  document.body.classList.add("game-mode");
  const fam=isFamily();
  const m=$("#appMain");
- m.innerHTML=`<section class="game${c.rp?" rp-main":""}" id="game">
+ m.innerHTML=`<section class="game${c.rp?" rp-main":""}${(c.fn||c.title===fnTitle)?" fn-ctx":""}" id="game">
  <div class="hud">
   <button class="hud-btn" id="menuBtn" type="button" aria-label="Menu">☰</button>
   <div class="hud-title"><strong>${c.title||"Alfabeto"}</strong><span class="hud-sub">${c.sub||""}</span></div>
@@ -2532,7 +2535,7 @@ function abShell(c){
  menu.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{const g=b.dataset.go;if(g==="student")renderStudentMenu();else if(g==="classes")renderClassDashboard();else if(g==="cfg"){menu.classList.add("hidden");openCfg()}else if(g==="home")renderHome();else if(g==="profile")renderProfile();else if(g==="logout"){if(confirm("Deseja sair da conta do responsável?"))logoutTeacher("Você saiu da conta. Entre novamente para acessar seus participantes.")}});
  if($("#soundBtn"))$("#soundBtn").onclick=()=>kaSet(!soundOn);
  $("#fsBtn").onclick=toggleFullscreen;
- if($("#abCase"))$("#abCase").onclick=e=>{e.stopPropagation();abSetCase(AB_CASE_NEXT[abCase])};
+ if($("#abCase"))$("#abCase").onclick=e=>{e.stopPropagation();abSetCase(fnCtx()&&abCase==="c"?"u":AB_CASE_NEXT[abCase])};
  if($("#lgPaceBtn"))$("#lgPaceBtn").onclick=e=>{e.stopPropagation();lgPaceOpen()};
  if($("#lgSylBtn"))$("#lgSylBtn").onclick=e=>{e.stopPropagation();const p=active();if(!p)return;const nv=!CFG.syl;p.cfg=Object.assign({},p.cfg,{syl:nv});saveProfiles();e.currentTarget.classList.toggle("on",nv);e.currentTarget.setAttribute("aria-pressed",nv?"true":"false")};
  abApplyCase();
@@ -2903,7 +2906,7 @@ function fnOpen(et){et==="rimas"?fnBlocks():fnLevels(et)}
 const fnTitle="Consciência fonológica";
 function fnBlocks(){
  const p=active();if(!p){renderClassDashboard();return}
- const cards=FN_B.map((b,i)=>`<button class="ab-lvl" data-b="${i+1}" type="button"><strong>🎵 Bloco ${i+1}</strong><span class="ab-lvl-d">${b.length} palavras para treinar</span><span class="ab-lvl-s">${fnN(p,"rimas",i+1)} rodadas</span></button>`).join("");
+ const cards=FN_B.map((b,i)=>`<button class="ab-lvl" data-b="${i+1}" type="button"><strong>🎵 Bloco ${i+1}</strong><span class="ab-lvl-d">${b.length} palavras para treinar</span><span class="ab-lvl-s">${fnN(p,"rimas",i+1)} rodadas</span><div class="progress"><span style="width:${fnN(p,"rimas",i+1)>0?100:0}%"></span></div></button>`).join("");
  abShell({title:fnTitle,sub:"🎵 Rimas",rp:"fn:rimas",noSound:true,ori:fnStageOri("rimas"),single:`<div class="ab-board fn-blocks">${cards}</div>`,msg:"🎵 Escolha o bloco de rimas para jogar",onBack:renderStudentMenu});
  document.querySelectorAll("[data-b]").forEach(b=>b.onclick=()=>fnStart("rimas",+b.dataset.b))}
 function fnLevels(et){
@@ -2924,11 +2927,11 @@ function fnIniOk(q,lvl){const t=q[0];
  if(lvl===2)return !!FN_F[t]&&FN_F[t]===FN_F[q[1]]&&q[2].split(",").every(w=>FN_F[w]&&FN_F[w]!==FN_F[t]);
  const f=FN_L[t];return !!f&&FN_F[q[2]]===f&&q[3].split(",").every(w=>FN_F[w]&&FN_F[w]!==f)}
 function fnRound(){const S=FN;S.re=0;({rimas:fnRimaR,silabas:fnSilR,inicial:fnIniR,ditado:fnDitR})[S.et]()}
-function fnHead(o){const S=FN,E=FN_ET.find(x=>x[0]===S.et);return{title:`Pergunta ${S.i+1} de ${S.qs.length}`,sub:`${E[1]} ${S.et==="rimas"?"Rimas "+S.k:E[2]} • acertos de primeira: ${S.hit}`,abCase:true,noSound:true,ori:o?fnOri(o):""}}
+function fnHead(o){const S=FN,E=FN_ET.find(x=>x[0]===S.et);return{title:`Pergunta ${S.i+1} de ${S.qs.length}`,sub:`${E[1]} ${S.et==="rimas"?"Rimas "+S.k:E[2]} • acertos de primeira: ${S.hit}`,abCase:true,fn:true,noSound:true,ori:o?fnOri(o):""}}
 function fnSub(){const s=document.querySelector(".hud-sub");if(s)s.textContent=fnHead().sub}
 function fnBackFn(){return FN.et==="rimas"?fnBlocks:()=>fnLevels(FN.et)}
 function fnNextLbl(){return FN.i+1>=FN.qs.length?"Concluir ▶":"Próxima ▶"}
-function fnOk(tok,msg,sayT){const S=FN;if(S.re===0&&S.hc!==S.i){cntHit(S);S.hc=S.i}fnSub();abMsg(msg);
+function fnOk(tok,msg,sayT){const S=FN;if(S.re===0&&S.hc!==S.i){cntHit(S);S.hc=S.i}fnSub();abMsg(msg);celebrateDone();
  abEnableNext(fnNextLbl(),()=>{if(!abAlive(tok))return;S.i++;S.i>=S.qs.length?fnFinish():fnRound()})}
 function fnBad(msg){FN.err++;FN.re++;abMsg(msg)}
 const fnPraise=()=>["Muito bem! 🎉","Isso mesmo! ⭐","Acertou! 🌟"][abRnd(3)];
@@ -3085,7 +3088,7 @@ function fnCxBank(q,k){const acc=/[ÁÂÃÉÊÍÓÔÕÚÇ]/,need=q.g.slice(),n=k
  let ok=shuffle(pool.filter(d=>!need.includes(d)&&(k===3||d.length===1)&&(acc.test(q.w)||!acc.test(d))));
  shuffle("A E I O U B C D F G J L M N P R S T V Z".split(" ")).forEach(d=>{if(!need.includes(d)&&!ok.includes(d))ok.push(d)});
  const dg=ok.filter(d=>d.length===2),rs=ok.filter(d=>d.length!==2),pk=(k===3&&dg.length?[dg[0]]:[]).concat(rs,dg).filter((d,i,a)=>a.indexOf(d)===i).slice(0,n);
- return shuffle(need.concat(pk).map((c,i)=>({c,id:i})))}
+ return fnUnhintT(shuffle(need.concat(pk).map((c,i)=>({c,id:i}))),need.length)}
 /* registro no perfil: acertos (peças certas), erros (peças trocadas) e ajudas (💡 ou avanço automático), por nível e por palavra */
 function fnCxRec(q,k,f){const p=active();if(!p)return;const d=fnData(p);d.cx=d.cx||{};const key="caixas|"+k,r=d.cx[key]=d.cx[key]||{acertos:0,erros:0,ajudas:0,palavras:0,w:{}};
  const w=r.w[q.w]=r.w[q.w]||{acertos:0,erros:0,ajudas:0,vezes:0};if(f==="palavras"){r.palavras++;w.vezes++}else{r[f]=(r[f]||0)+1;w[f]++}saveProfiles()}
@@ -3093,8 +3096,8 @@ function fnCxNote(q){const dg=q.g.filter(g=>g.length>1),o=[];
  if(dg.length)o.push(`${dg.map(g=>abHl(g)).join(" e ")} = 2 letras, 1 som: ${dg.length>1?"cada uma ocupa":"ocupa"} 1 caixa`);
  if(/[ÃÕÁÉÍÓÚÂÊÔÇ]/.test(q.w))o.push("a letra com sinal (til, acento ou cedilha) é outra letra");
  return o.length?fnOL("🔤",dg.length?"Dígrafo:":"Sinais:",o.join("; ")+"."):""}
-function fnCxOri(q){const sn=q.ph.map(x=>FN_CXD[x]||x);
- return fnOriBox(ori2(abHl(q.w)+", devagar, e depois cada som, um de cada vez: "+sn.map(x=>abHl(x)).join(" – "),"Toque ou arraste a letra de cada som para a caixa, na ordem.")+fnCxNote(q))}
+function fnCxOri(q){const Y=abHl,sn=q.ph.map(x=>FN_CXD[x]||x).map(x=>{const m=/^(\S+)(.*)$/.exec(x);return Y("/"+m[1]+"/")+m[2]});
+ return fnOriBox(ori3("Fale o nome da figura e os sons de cada letra. Peça ao aprendente que selecione as letras correspondentes.",`Fale ${Y(q.w)} e, em seguida, pronuncie lentamente os sons: ${sn.join(" – ")}.`)+fnCxNote(q))}
 function fnCxR(){
  const S=FN,q=S.qs[S.i],tok=abTok+1,n=q.g.length,k=S.k,tiles=fnCxBank(q,k),slots=q.g.map(()=>null),cols=tiles.length<=6?3:4,rows=Math.ceil(tiles.length/cols);
  let done=false,pop=-1,hintT=0,skipUntil=0,drag=null;const ord=i=>(i+1)+"º",T=id=>tiles.find(t=>t.id===id);
@@ -3151,8 +3154,8 @@ function fnMenuMarkup(p){
  return `<h2 style="margin-top:22px">🧠 Consciência fonológica</h2><div class="category-grid">${FN_ET.map(card).join("")}</div>`}
 function fnLevels(et){
  const p=active();if(!p){renderClassDashboard();return}const E=FN_ET.find(x=>x[0]===et),ord=fnKeys(et),big=ord.length>3;
- const cards=ord.map(k=>{const c=fnCard(et,k);return `<button class="ab-lvl" data-lv="${k}" type="button"><strong>${c[0]}</strong><span class="ab-lvl-d">${c[1]}</span><span class="ab-lvl-s">${c[2]} • ${fnN(p,et,k)} rodadas</span></button>`}).join("");
- abShell({title:fnTitle,sub:E[1]+" "+E[2],rp:"fn:"+et,noSound:true,ori:fnStageOri(et),single:big?`<div class="ab-board fn-blocks fn-r${Math.ceil(ord.length/(et==="ditado"?2:3))}${et==="ditado"?" fn-c2":""}">${cards}</div>`:`<div class="ab-board ab-levels">${cards}</div>`,msg:E[1]+" Escolha uma atividade para jogar",onBack:renderStudentMenu});
+ const cards=ord.map(k=>{const c=fnCard(et,k);return `<button class="ab-lvl" data-lv="${k}" type="button"><strong>${c[0]}</strong><span class="ab-lvl-d">${c[1]}</span><span class="ab-lvl-s">${c[2]} • ${fnN(p,et,k)} rodadas</span><div class="progress"><span style="width:${fnN(p,et,k)>0?100:0}%"></span></div></button>`}).join("");
+ abShell({title:fnTitle,sub:E[1]+" "+E[2],rp:"fn:"+et,noSound:true,ori:fnStageOri(et),single:big?`<div class="ab-board fn-blocks fn-r${Math.ceil(ord.length/(et==="ditado"?2:3))}${et==="ditado"?" fn-c2":""}">${cards}</div>`:`<div class="ab-board ab-levels fn-lv3">${cards}</div>`,msg:E[1]+" Escolha uma atividade para jogar",onBack:renderStudentMenu});
  document.querySelectorAll("[data-lv]").forEach(b=>b.onclick=()=>fnStart(et,+b.dataset.lv))}
 /* ---- escolha das perguntas ---- */
 function fnSilQs(k){const L=x=>x.s.length,by=n=>FN_SIL.filter(x=>L(x)===n),pk=(a,n)=>shuffle(a.slice()).slice(0,n);let C,P;
@@ -3189,11 +3192,14 @@ function fnRimaR(){
  fnBindPics(q.a,()=>{const c=$("#abLeft .ab-cap");if(c){c.style.visibility="visible";c.innerHTML=fnRimaHL(q.t)}fnCapsRev(q.a,0,fnRimaHL);
   fnOk(tok,`${fnPraise()} ${q.t} e ${q.a} rimam: terminam em ${rimaTxt(q.a)}`+(rimaTxt(q.a)!==rimaTxt(q.t)?" (mesmo som, escritas diferentes)":""),abWordSay(q.t)+" e "+abWordSay(q.a)+" rimam")},()=>fnBad("Tente de novo! O(A) MEDIADOR(A) DEVE REPETIR AS PALAVRAS. 👂"),tok)}
 /* ---- 2. Conte as sílabas: contagem e sílaba inicial/medial/final ---- */
+/* Anti-dica de ordem: as peças que pertencem à palavra nunca aparecem na mesma ordem em que ocorrem nela */
+function fnUnhint(a,ref){const r=ref.filter(x=>a.includes(x));if(r.length<2)return a;let t=0;while(a.filter(x=>r.includes(x)).join("|")===r.join("|")&&t++<60)shuffle(a);return a}
+function fnUnhintT(a,n){if(n<2)return a;const asc=()=>{const x=a.filter(t=>t.id<n).map(t=>t.id);return x.every((v,i)=>i===0||v>x[i-1])};let t=0;while(asc()&&t++<60)shuffle(a);return a}
 function fnSilR(){
  const S=FN,q=S.qs[S.i],tok=abTok+1,n=q.s.length,say=abWordSay(q.w),P=q.p,ix=P==="i"?0:P==="f"?n-1:1,ans=P?q.s[ix]:null;
  const qt=P?`Qual é a sílaba ${{i:"inicial (a primeira)",m:"medial (a do meio)",f:"final (a última)"}[P]} desta palavra?`:"Quantas sílabas tem esta palavra?";
- let opts=[];if(P){const pool=[...new Set(FN_SIL.flatMap(x=>x.s))].filter(x=>!q.s.includes(x)),own=[...new Set(q.s)].filter(x=>x!==ans);opts=shuffle([ans,...shuffle(own).slice(0,2),...shuffle(pool)].filter((x,i,a)=>a.indexOf(x)===i).slice(0,S.k===1?3:4))}
- const right=`<div class="ab-board"><div class="ab-opts" style="--n:${P?opts.length:4}">${P?opts.map(s=>`<button class="ab-opt" type="button" data-s="${esc(s)}">${abPair(esc(s).toUpperCase(),false)}</button>`).join(""):[1,2,3,4].map(x=>`<button class="ab-opt" type="button" data-n="${x}" aria-label="${x}">${x}</button>`).join("")}</div></div>`;
+ let opts=[];if(P){const pool=[...new Set(FN_SIL.flatMap(x=>x.s))].filter(x=>!q.s.includes(x)),own=[...new Set(q.s)].filter(x=>x!==ans);opts=fnUnhint(shuffle([ans,...shuffle(own).slice(0,2),...shuffle(pool)].filter((x,i,a)=>a.indexOf(x)===i).slice(0,S.k===1?3:4)),[...new Set(q.s)])}
+ const right=`<div class="ab-board"><div class="ab-opts" style="--n:${P?opts.length:4}">${P?opts.map(s=>`<button class="ab-opt" type="button" data-s="${esc(s)}">${abPair(esc(s).toUpperCase(),true)}</button>`).join(""):[1,2,3,4].map(x=>`<button class="ab-opt" type="button" data-n="${x}" aria-label="${x}">${x}</button>`).join("")}</div></div>`;
  abShell(Object.assign(fnHead(opts),{say,left:fnLeft(`<div class="ab-figwrap"><div class="ab-fig">${figureMarkup({w:q.w,e:q.e,img:null})}</div><div class="ab-cap" id="abCap" style="visibility:hidden">${esc(q.w)}</div></div>`),right,msg:"👏 "+qt,next:{label:fnNextLbl(),disabled:true},onBack:fnBackFn(),onRestart:fnRound}));
  fnBindLeft(say,tok,[say,qt+" Bata palmas a cada pedacinho."]);let solved=false;const bs=[...document.querySelectorAll(".ab-opt")],good=b=>P?b.dataset.s===ans:+b.dataset.n===n;
  bs.forEach(b=>b.onclick=()=>{if(!abAlive(tok)||solved||b.disabled)return;
@@ -3207,9 +3213,9 @@ function fnIniR(){
  const S=FN,q=S.qs[S.i],tok=abTok+1,L=(S.k-1)%3+1,e=q.e,words=shuffle(q.o.slice());
  const snd=e.v?["Qual figura começa com este som?",e.v]:["Escute o começo desta palavra:",abWordSay(q.model),"Qual figura começa com o mesmo som?"];
  let big,seq,msgQ;
- if(L===1){big=abPair(q.syl,false);seq=["Qual figura começa com a sílaba",{t:q.syl.toLowerCase(),sel:"#abLeft .ab-letter"},"Toque na figura certa."];msgQ=`🔤 Qual figura começa com a sílaba ${q.syl}?`}
+ if(L===1){big=abPair(q.syl,true);seq=["Qual figura começa com a sílaba",{t:q.syl.toLowerCase(),sel:"#abLeft .ab-letter"},"Toque na figura certa."];msgQ=`🔤 Qual figura começa com a sílaba ${q.syl}?`}
  else if(L===2){big="👂";seq=snd;msgQ="🔤 O(a) mediador(a) fala o som: qual figura começa com ele?"}
- else{big=abPair(e.g,false);seq=["Olhe a letra.",...snd];msgQ=`🔤 Qual figura começa com o som da letra ${e.g}?`}
+ else{big=abPair(e.g,true);seq=["Olhe a letra.",...snd];msgQ=`🔤 Qual figura começa com o som da letra ${e.g}?`}
  abShell(Object.assign(fnHead(words),{say:seq[0],left:fnLeft(`<div class="ab-figwrap"><div class="ab-letter">${big}</div></div>`),right:fnPicOpts(words,"h"),msg:msgQ,next:{label:fnNextLbl(),disabled:true},onBack:fnBackFn(),onRestart:fnRound}));
  fnBindLeft(seq[0],tok,seq);
  fnBindPics(q.w,()=>{fnCapsRev(q.w,L===1?q.syl.length:q.w.match(/^(CH|QU|GU|[^])/)[0].length);
@@ -3217,7 +3223,7 @@ function fnIniR(){
 /* ---- 4. Ditado com letras: oral (sem figura nem escrita) e com figura ---- */
 function fnDitR(){
  const S=FN,q=S.qs[S.i],tok=abTok+1,w=q.w,L=[...w],say=abWordSay(w),oral=!!q.oral,lv=S.k%10;
- const tiles=shuffle([...L,...fnDecoys(w,lv===1?2:3)].map((c,i)=>({c,id:i})));
+ const tiles=fnUnhintT(shuffle([...L,...fnDecoys(w,lv===1?2:3)].map((c,i)=>({c,id:i}))),L.length);
  const slots=L.map(()=>null),cols=tiles.length<=6?3:4,rows=Math.ceil(tiles.length/cols),fig=figureMarkup({w,e:q.e,img:q.e?null:IMAGENS_NOVAS[w]});
  abShell(Object.assign(fnHead([]),{say,
   left:fnLeft(`<div class="ab-figwrap fn-dit"><div class="ab-fig" id="fnFig"${oral?' style="font-size:min(20cqh,32cqw)"':""}>${oral?"👂":fig}</div><div class="fn-slots" id="fnSlots" style="--n:${L.length}"></div><button class="round-btn fn-erase" id="fnErase" type="button" aria-label="Apagar a última letra">⌫</button><div class="fn-tip" id="fnExp"></div></div>`),
@@ -3259,7 +3265,7 @@ function fnFinish(){
 
 /* ===== Consciência fonológica v3: SEM ÁUDIO — o(a) mediador(a) apresenta oralmente os estímulos; orientações visíveis (realce amarelo) ===== */
 const fnOL=(ic,t,b)=>`<div class="fn-ori-l">${ic} <b>${t}</b> ${b}</div>`;
-const fnOriBox=h=>medBox("ab-ori fn-ori",h);
+const fnOriBox=h=>abOri3(h);
 const FN_PHL={"ʃ":"ch","ʒ":"j","ɛ":"é","ɔ":"ó","ʎ":"lh","ɲ":"nh","k":"c","ʁ":"rr"},fnPhL=x=>FN_PHL[x]||x;
 const FN_SNM={CH:"CH (xxxx)",J:"J (jjjj)",R:"R forte (rrrr)",C:"C (como em CASA)",G:"G (como em GATO)"},fnSn=e=>FN_SNM[e.g]||e.g;
 function fnDgLine(w){const d=[...new Set(w.match(/CH|LH|NH|QU|RR|SS/g)||[])],o=[];
@@ -3270,30 +3276,25 @@ const fnNm=a=>a.map(abHl).join(" · ");
 const fnSom={CH:"xxxx",J:"jjjj",R:"rrrr",C:"k (curtinho)",G:"g (curtinho)"};
 function fnSomTxt(e){return e.v?abHl(e.v):abHl(fnSom[e.g]||e.g.toLowerCase())}
 function fnOri(opts){
- const S=FN,q=S.qs[S.i],et=S.et,Y=abHl,names=(opts||[]).length?fnNm(opts):"";
- const nm=names?" e depois "+names:"",sy=q.w?((FNW[q.w]&&FNW[q.w].s||"").toUpperCase()):"";
- if(et==="rimas")return fnOriBox(ori2(Y(q.t)+nm,"Toque na figura cujo nome termina com o mesmo som."));
+ const S=FN,q=S.qs[S.i],et=S.et,Y=abHl,list=(opts||[]).length?(opts||[]).map(Y).join(", "):"";
+ const sy=q.w?((FNW[q.w]&&FNW[q.w].s||"").toUpperCase()):"";
+ if(et==="rimas")return fnOriBox(ori3("Observe a figura principal (dica), fale o nome dela e, em seguida, os nomes das demais figuras. Peça ao aprendente que toque na figura cujo nome termina com o mesmo som da figura principal.",`Fale ${Y(q.t)}`+(list?` e, depois, ${list}`:"")+"."));
  if(et==="silabas"){
-  if(!q.p)return fnOriBox(ori2(Y((sy||q.w).replace(/-/g," – "))+", marcando cada sílaba","Conte quantas sílabas tem a palavra e toque na resposta."));
-  const pn={i:"inicial (a primeira)",m:"medial (a do meio)",f:"final (a última)"}[q.p];
-  return fnOriBox(ori2(Y(q.w)+", devagar"+(names?" e as opções: "+fnNm((opts||[]).map(x=>x.toUpperCase())):""),"Toque na sílaba "+pn+" da palavra."))}
- if(et==="inicial"){const Lv=(S.k-1)%3+1,e=q.e;
-  if(Lv===1)return fnOriBox(ori2(Y(q.syl)+nm,"Procure a figura cujo nome começa com essa sílaba."));
-  if(Lv===2)return fnOriBox(ori2((e.v?"só o som "+fnSomTxt(e):"o som "+fnSomTxt(e)+" (como em "+Y(q.model)+")")+nm,"Procure a figura cujo nome começa com esse som."));
-  return fnOriBox(ori2("o som da letra "+Y(e.g)+": "+fnSomTxt(e)+nm,"Procure a figura cujo nome começa com o som dessa letra."))}
- if(et==="ditado")return fnOriBox(ori2(Y(q.w)+", devagar e, se necessário, por sílabas"+(sy?": "+Y(sy.replace(/-/g," – ")):""),"Monte a palavra tocando nas letras, na ordem."));
+  if(!q.p)return fnOriBox(ori3("Fale a palavra-dica devagar e peça ao aprendente que a repita. Em seguida, solicite que selecione a quantidade de sílabas da palavra. Se necessário, oriente-o a bater palmas enquanto ouve ou repete a palavra.",`Fale: ${Y(sy||q.w)}.`));
+  const pos={i:"PRIMEIRA",m:"MEDIAL",f:"FINAL"}[q.p];
+  return fnOriBox(`<div class="ori-l">👩‍🏫 <b>Orientações:</b> Fale a palavra indicada e peça ao aprendente que identifique a posição da sílaba solicitada.</div><div class="ori-l">📍 <b>Posição da sílaba:</b> ${Y(pos)}</div><div class="ori-l ori-m">🗣️ <b>Mediador:</b> Fale: ${Y(sy||q.w)}.</div>`)}
+ if(et==="inicial"){const Lv=(S.k-1)%3+1,e=q.e,fg=list?` e depois ${list}`:"";
+  if(Lv===1)return fnOriBox(ori3(`Selecione a figura cujo nome começa com a seguinte sílaba: ${Y(q.syl)}`,`FALE: ${Y(q.syl)}${fg}.`));
+  if(Lv===2)return fnOriBox(ori3(`Selecione a figura cujo nome começa com o seguinte som: ${Y(fnSn(e))}`,`FALE: o som da letra ${Y(fnSn(e))}${fg}.`));
+  return fnOriBox(ori3("Procure a figura cujo nome começa com o som dessa letra.",`FALE: o som da letra ${Y(fnSn(e))}${fg}.`))}
+ if(et==="ditado"){
+  if(q.oral)return fnOriBox(ori3("Pronuncie a palavra-dica por sílabas e peça ao aprendente que selecione as letras na ordem correta para formar a palavra.",`Fale: ${Y(q.w)}.`));
+  return fnOriBox(ori3("Peça ao aprendente que nomeie a figura apresentada e, em seguida, que selecione as letras na ordem correta para formar seu nome.",`Fale: ${Y(q.w)}.`+(sy?` Se necessário, pronuncie a palavra por sílabas: ${Y(sy)}.`:"")))}
  if(et==="caixas")return fnCxOri(q);
  const pn=q.ph.map(fnPhL);
- return fnOriBox(ori2("os sons "+fnNm(pn)+", um de cada vez"+nm,"Junte os sons e toque na figura da palavra."))}
-function fnStageOri(et){const Y=abHl,T={
- rimas:ori2("(exemplo) "+Y("BOLA")+" e depois "+Y("COLA")+" e "+Y("CASA"),"Toque na figura cujo nome termina com o mesmo som."),
- silabas:ori2("(exemplo) "+Y("BA – NA – NA")+", marcando cada sílaba","Conte quantas sílabas tem a palavra e toque na resposta."),
- inicial:ori2("(exemplo) "+Y("BO")+" ou o som do começo da palavra","Procure a figura cujo nome começa com esse som."),
- ditado:ori2("(exemplo) "+Y("BOLA")+", devagar e, se necessário, por sílabas","Monte a palavra com as letras."),
- juntar:ori2("(exemplo) "+Y("s")+" – "+Y("a")+" – "+Y("p")+" – "+Y("o")+", um som de cada vez","Junte os sons e toque na figura da palavra."),
- caixas:ori2("(exemplo) "+Y("SAPO")+", devagar, e depois "+Y("s")+" – "+Y("a")+" – "+Y("p")+" – "+Y("o")+", um som de cada vez","Toque ou arraste a letra de cada som para a caixa, na ordem.")}[et];
- return T?fnOriBox(T):""}
-function fnFinOri(){return fnOriBox(ori2(null,"Descanse ou repita a atividade (↻) para tentar de novo.","Parabenize a criança. Se houve muitos erros, repita a atividade antes de avançar."))}
+ return fnOriBox(ori3("Pronuncie os sons das letras da palavra-dica e, em seguida, fale os nomes das figuras. Peça ao aprendente que selecione a figura cujo nome contém esses sons.",`Fale os sons das letras ${pn.map(x=>Y("/"+x+"/")).join(" – ")}. Fale os nomes das figuras${list?" "+list:""}.`))}
+function fnStageOri(et){return fnOriBox(`<div class="ori-l">👩‍🏫 <b>Orientação:</b> Escolha uma das opções para iniciar</div>`)}
+function fnFinOri(){return fnOriBox(`<div class="ori-l">👩‍🏫 <b>Orientações:</b> Se houve muitos erros nas respostas do aprendente, repita a atividade (as que foram erradas no mesmo bloco) antes de avançar.</div>`)}
 
 /* ===== Treino de fluência de leitura (reconhecimento de voz) ===== */
 const FL_TEXTS=[
