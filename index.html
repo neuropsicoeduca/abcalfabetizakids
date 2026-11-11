@@ -592,6 +592,7 @@ body.game-mode .app-footer p{margin:0}
 .ab-lvl strong{font-size:clamp(1rem,3.4vh,1.6rem);font-weight:900}
 .ab-lvl-d{font-weight:800;font-size:clamp(.8rem,2.4vh,1.1rem)}.ab-lvl-s{font-size:clamp(.7rem,2vh,.95rem);color:#5b6280}
 .ab-lvl .progress{margin:2px 0}
+.ab-trail{gap:clamp(12px,2.6vh,22px) clamp(12px,2.4vw,26px)}.ab-trail .ab-lvl{padding:clamp(4px,.9vh,8px) clamp(10px,1.6vh,16px);gap:clamp(1px,.4vh,3px)}.ab-trail .ab-lvl strong{font-size:clamp(.95rem,2.8vh,1.4rem)}
 .ab-lvl:active{filter:brightness(.97)}
 .ab-win{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.6cqh;text-align:center}
 .ab-big-party{font-size:min(26cqh,18cqw);line-height:1}
@@ -981,7 +982,7 @@ button.stu-stars:focus-visible{outline:3px solid #3b4fd0;outline-offset:2px}
 .stage-body.pw-top>.pw-ori{flex:0 0 auto;margin:0;max-width:100%;box-sizing:border-box;text-align:left;padding:.4em .9em;line-height:1.25}
 @media(orientation:portrait){.stage-body.pw-top>.pw-row{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1.5fr) minmax(0,1fr)}}
 @media(orientation:landscape) and (max-height:520px){.stage-body.pw-top>.pw-ori{padding:.22em .7em;border-width:2px}}
-/* Alfabeto: orientação ao adulto (mesmo modelo de Sílabas e palavras) e botões de áudio */
+/* Alfabeto: orientação ao(à) mediador(a) (mesmo modelo de Sílabas e palavras) e botões de áudio */
 .stage-body.ab-wori{display:flex;flex-direction:column;gap:clamp(6px,1.4vh,12px)}
 .ab-split{flex:1 1 0;min-height:0;min-width:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);grid-template-rows:minmax(0,1fr);gap:clamp(8px,2vw,22px)}
 .ab-split.ab-letters{grid-template-columns:minmax(0,1.9fr) minmax(0,1fr)}
@@ -1003,7 +1004,7 @@ button.stu-stars:focus-visible{outline:3px solid #3b4fd0;outline-offset:2px}
 .ab-sbtn:active{filter:brightness(.96)}
 .ab-exs{display:flex;flex-wrap:wrap;gap:.6cqh 2cqw;justify-content:center;font-weight:800;color:#5b6280;font-size:min(6cqh,3.6cqw);padding:0 3cqw}
 @media(orientation:portrait){.ab-left.ab-wbtn .ab-letter{font-size:min(42cqh,16cqw)}.ab-left.ab-wbtn .ab-fig{font-size:min(38cqh,26cqw)}}
-/* Consciência fonológica: aviso na tela principal e orientações ao adulto (sem áudio) */
+/* Consciência fonológica: aviso na tela principal e orientações ao(à) mediador(a) (sem áudio) */
 .fn-attn{margin:6px 0 12px;max-width:100%;box-sizing:border-box;text-align:left;font-size:clamp(.9rem,2.3vw,1.1rem);line-height:1.35;padding:.6em 1em}
 .pw-ori.fn-ori{max-height:46%;overflow:auto;text-align:left;font-size:clamp(.74rem,2.15vh,1rem);line-height:1.22;padding:.32em .8em}
 .fn-ori-l{margin-top:.16em}
@@ -1031,6 +1032,8 @@ button.stu-stars:focus-visible{outline:3px solid #3b4fd0;outline-offset:2px}
 .pw-ori .med-btn{display:none!important}
 .med-wrap.med-closed .med-body{display:block}
 .pw-ori .med-body{border-top-color:#e4e7f0}
+/* Sílabas e palavras: sem a linha tracejada interna na área de orientações (o botão do olho 👁 continua) */
+.fam-ori .med-body,.pw-top>.pw-ori .med-body{border-top:0!important;margin-top:0!important;padding-top:0!important}
 .pw-ori .pw-hl{background:none!important;font-weight:400!important;color:#2b3358;text-transform:uppercase;padding:0 .15em;filter:blur(.32em);transition:filter .5s ease;-webkit-user-select:none;user-select:none}
 .pw-ori .ori-k .pw-hl{filter:none}
 .pw-ori.ori-rev .pw-hl,html[data-ori-m="v"] .pw-ori .pw-hl{filter:none}
@@ -1049,6 +1052,19 @@ html[data-ori-m="v"] .pw-ori[data-ori-h]{padding-right:revert!important}
 .cfg-ot .ot-c.dis input[type=number],.cfg-ot .ot-c.dis select{opacity:.55}
 .cfg-ot.off{pointer-events:auto}
 @media(max-width:560px){.bottom .hud-right{flex-wrap:wrap}}
+/* Celular: linha 1 = voltar + mensagem; linha 2 = botão Próxima (centralizado); linha 3 = demais botões centralizados (embaralhar, refazer, dica, configurações, som, tela cheia) */
+@media(max-width:560px){
+.bottom{flex-wrap:wrap;justify-content:center;align-items:center;row-gap:4px}
+.bottom::before,.bottom::after{content:"";flex:0 0 100%;height:0}
+.bottom::before{order:1}.bottom::after{order:3}
+.bottom>:first-child{order:0}
+.bottom>.bottom-text{order:0;flex:1 1 0;min-width:0}
+.bottom>.go-btn{order:2;flex:0 0 auto}
+.bottom>*:not(:first-child):not(.bottom-text):not(.go-btn):not(.hud-right){order:4}
+.bottom .hud-right{display:contents}
+.bottom .hud-right>*{order:4}
+.bottom>[style*="visibility:hidden"]{display:none}
+}
 #cfgOv .cfg-opt span,#cfgOv .cfg-sec>span{font-weight:400}
 /* Tela principal de cada bloco: só o título de cada cartão (Nível 1, 2, 3…) e a barra de progresso */
 .rp-main .ab-lvl .ab-lvl-d,.rp-main .ab-lvl .ab-lvl-s,.rp-main .ab-lvl .small{display:none}
@@ -1854,7 +1870,7 @@ function renderFamConfig(cat){
    Etapa 3: ouça e escolha (única etapa com acertos e erros reais).
    Etapa 4: leitura de palavras e palavras inventadas formadas com a família (fusão das sílabas).
    Tocar numa sílaba ou palavra toca o som dela. */
-function famSpeak(t){/* sem voz: o adulto fala */}
+function famSpeak(t){/* sem voz: o(a) mediador(a) fala */}
 /* palavras reais de duas sílabas que não podem ser apresentadas como "inventadas" */
 const FAM_REAIS=["PAPO","PIPA","PUPA","POPA","DEDO","DADO","DUDA","LULA","LILA","LOLA","VIVO","VIVA","NINA","COCA","CACO","CUCA","MEMO","MIMO","MIMA","BOBA","BOBO","BEBA","BIBA","TATU","TETO","TITA","TOTO","FIFA","FOFO","GAGO","GUGU","RARO","SOSO","SESI","LELE","DIDI","NANA","NANO","NUNO","MOMO","PEPE","JUJU","BEBE"];
 function famBuildWords(f){
@@ -1929,7 +1945,21 @@ function renderFamActivity(){
  renderFamStage();
 }
 function famOriOn(){return true}
-function famOri3(s){return ori2("<b class=\"pw-hl\">"+esc(s)+"</b>","Toque nessa sílaba entre as opções.")}
+/* Orientações (mediador(a)) e fala do mediador por etapa; texto próprio para Sílabas Simples e Sílabas Complexas */
+const FAM_ORI={
+ simples:["",
+  "Toque nas letras ou sílabas em ordem, leia em voz alta e incentive o aprendente a repetir. A próxima será liberada após o toque.",
+  "Toque nas sílabas na nova ordem, leia em voz alta e incentive o aprendente a reconhecer e repetir a leitura.",
+  "Fale a letra ou sílaba da dica e peça ao aprendente toque na opção correspondente, uma por vez. Se errar, repita e incentive uma nova tentativa.",
+  "Leia a palavra da dica, destacando a junção das sílabas, e peça ao aprendente que toque na opção correspondente. Se errar, repita e incentive uma nova tentativa."],
+ complexas:["",
+  "Apresente as sílabas na ordem exibida, incentivando o aprendente a tocar em cada uma, ler em voz alta e repetir a leitura.",
+  "Apresente as sílabas embaralhadas e incentive o aprendente a tocar em cada uma, reconhecer e ler em voz alta na nova ordem.",
+  "Peça para o aprendente ouvir a sílaba falada pelo mediador e toque na opção correspondente. Se errar, ouça novamente e tente outra vez.",
+  "O aprendente deve identificar a palavra falada pelo mediador, juntar as sílabas e tocar na opção correspondente. Se errar, repita a palavra e incentive uma nova tentativa."]};
+function famOriTxt(step){return (FAM_ORI[fam&&fam.cat==="complexas"?"complexas":"simples"]||FAM_ORI.simples)[step]||""}
+function famOriBox(step,fala){return fala==null?`<div class="ori-l">👩‍🏫 <b>Orientações:</b> ${famOriTxt(step)}</div>`:ori3(famOriTxt(step),`Fale ${fala}.`)}
+function famOri3(s){return famOriBox(3,"<b class=\"pw-hl\">"+esc(s)+"</b>")}
 function ori3(o,m){return `<div class="ori-l">👩‍🏫 <b>Orientações:</b> ${o}</div><div class="ori-l ori-m">🗣️ <b>Mediador:</b> ${m}</div>`}
 function ori2(f,c,a){return `<div class="ori-k">👆 ${c}</div><div class="ori-l">👩‍🏫 <b>ORIENTAÇÃO:</b> ${f!=null?`🗣️ <b>FALE:</b> ${f}.`:(a||"")}</div>`}
 /* Orientação do mediador: a instrução da criança (ori-k) fica sempre visível; o restante (palavra-alvo, exemplos, respostas) fica atrás do botão */
@@ -1967,7 +1997,7 @@ function renderFamStage(){
  if(step<=2){
   const {cols,rws}=famGrid(fam.view.length);
   const lockOn=step===1&&!alreadyDone&&!CFG.skip;
-  body.innerHTML=`${famOri(ori2(fam.view.map(abHl).join(" – ")+", apontando cada sílaba",step===1?"Toque em cada sílaba, na ordem, e leia em voz alta.":"As sílabas trocaram de lugar: toque em cada uma e leia em voz alta."))}<div class="board families fam1" style="--rows:${rws};--r:${rws};--cols:${cols}"><div class="fam-row"><div class="fam-chips">${fam.view.map((sy,i)=>`<button type="button" class="fchip${lockOn&&i>0?" locked":""}" ${lockOn&&i>0?"disabled":""} style="--len:${sy.length}" aria-pressed="false">${esc(sy)}</button>`).join("")}</div></div></div>`;
+  body.innerHTML=`${famOri(famOriBox(step,null))}<div class="board families fam1" style="--rows:${rws};--r:${rws};--cols:${cols}"><div class="fam-row"><div class="fam-chips">${fam.view.map((sy,i)=>`<button type="button" class="fchip${lockOn&&i>0?" locked":""}" ${lockOn&&i>0?"disabled":""} style="--len:${sy.length}" aria-pressed="false">${esc(sy)}</button>`).join("")}</div></div></div>`;
   const els=[...body.querySelectorAll(".fchip")];
   const markAll=()=>els.forEach(b=>{b.classList.remove("locked");b.disabled=false;b.classList.add("marked");b.setAttribute("aria-pressed","true")});
   els.forEach(b=>b.onclick=()=>{
@@ -1983,7 +2013,7 @@ function renderFamStage(){
   if(CFG.skip&&!alreadyDone){runFlag("demo");markAll();finishStep();autoNext()}
  }else if(step===3){
   const L=fam.l3,total=L.order.length,{cols,rws}=famGrid(L.opts.length);
-  body.innerHTML=`${famOri(alreadyDone?ori2("a sílaba pedida","Toque nela entre as opções."):famOri3(L.order[L.i]))}<div class="board fam-listen" style="--rows:${rws};--r:${rws};--cols:${cols}"><div class="fl-top"><button type="button" class="fl-ear" id="famEar" aria-label="Ouvir de novo">🔊<span>Ouvir</span></button><div class="fl-count" id="flCount"></div></div><div class="fl-opts">${L.opts.map(sy=>`<button type="button" class="fchip fl-o" data-s="${esc(sy)}" style="--len:${sy.length}">${esc(sy)}</button>`).join("")}</div></div>`;
+  body.innerHTML=`${famOri(alreadyDone?famOriBox(3,"a sílaba pedida"):famOri3(L.order[L.i]))}<div class="board fam-listen" style="--rows:${rws};--r:${rws};--cols:${cols}"><div class="fl-top"><button type="button" class="fl-ear" id="famEar" aria-label="Ouvir de novo">🔊<span>Ouvir</span></button><div class="fl-count" id="flCount"></div></div><div class="fl-opts">${L.opts.map(sy=>`<button type="button" class="fchip fl-o" data-s="${esc(sy)}" style="--len:${sy.length}">${esc(sy)}</button>`).join("")}</div></div>`;
   const cnt=()=>{const c=$("#flCount");if(c)c.textContent=alreadyDone||fam.done[3]?`${total} de ${total}`:`${Math.min(L.i+1,total)} de ${total}`;const o=body.querySelector(".fam-ori");if(o&&!(alreadyDone||fam.done[3])){o.innerHTML=medInner(famOri3(L.order[L.i]));o.classList.add("med-closed")}};
   cnt();
   const say=()=>famSpeak(L.order[L.i]);
@@ -2004,20 +2034,19 @@ function renderFamStage(){
     else{setFb(`✅ Isso mesmo! ${L.i} de ${total}.`);setTimeout(()=>{b.classList.remove("right");lockInput=false;if(stage!=="fam3")return;reshuffle();cnt();say()},900)}
    }else{
     if(st){stgInc(st,"errors");save()}
-    b.classList.add("wrong");setFb("Quase! O ADULTO DEVE REPETIR A SÍLABA. Tente outra.");
+    b.classList.add("wrong");setFb("Quase! O(A) MEDIADOR(A) DEVE REPETIR A SÍLABA. Tente outra.");
     setTimeout(()=>b.classList.remove("wrong"),650)}
   });
   if(alreadyDone){opts.forEach(o=>o.classList.add("marked"));next.disabled=false;setFb(doneMsg)}
   else{next.disabled=true;
    if(CFG.skip){runFlag("demo");fam.done[3]=true;opts.forEach(o=>o.classList.add("marked"));cnt();finishStep();autoNext()}
-   else{setFb("Toque na sílaba que o adulto falou")}}
+   else{setFb("Toque na sílaba que o(a) mediador(a) falou")}}
  }else{
   const W=fam.wview,{cols,rws}=famGrid(W.length>4?6:W.length);
   /* Etapa 4: o mediador vê só a palavra pedida; a cada acerto todas as palavras são reembaralhadas e vem a próxima solicitação */
   const L4=fam.l4||(fam.l4={order:shuffle(fam.words.map(w=>w.t)),i:0}),total=L4.order.length;
-  const c4="Leia cada palavra juntando as sílabas e toque nela."+(W.some(w=>w.pseudo)?" As com ✨ são inventadas.":"");
-  const ori4=()=>ori2(abHl(L4.order[L4.i]),c4);
-  body.innerHTML=`${famOri(alreadyDone?ori2("a palavra pedida",c4):ori4())}<div class="board fam-words" style="--rows:${rws};--r:${rws};--cols:${cols}">${W.map(w=>`<button type="button" class="cell fw${w.pseudo?" pseudo":""}" data-t="${esc(w.t)}" style="--len:${w.t.length}" aria-pressed="false"><span class="fw-t">${w.s.map((sy,i)=>`<span style="color:${PALETTE[i%PALETTE.length]}">${esc(sy)}</span>`).join("")}</span>${w.pseudo?'<span class="fw-tag">✨ inventada</span>':""}<span class="chk">✓</span></button>`).join("")}</div>`;
+  const ori4=()=>famOriBox(4,abHl(L4.order[L4.i]));
+  body.innerHTML=`${famOri(alreadyDone?famOriBox(4,"a palavra pedida"):ori4())}<div class="board fam-words" style="--rows:${rws};--r:${rws};--cols:${cols}">${W.map(w=>`<button type="button" class="cell fw${w.pseudo?" pseudo":""}" data-t="${esc(w.t)}" style="--len:${w.t.length}" aria-pressed="false"><span class="fw-t">${w.s.map((sy,i)=>`<span style="color:${PALETTE[i%PALETTE.length]}">${esc(sy)}</span>`).join("")}</span>${w.pseudo?'<span class="fw-tag">✨ inventada</span>':""}<span class="chk">✓</span></button>`).join("")}</div>`;
   const els=[...body.querySelectorAll(".fw")];
   const markAll=()=>els.forEach(b=>{b.classList.add("marked");b.setAttribute("aria-pressed","true")});
   /* reembaralha: nenhuma palavra fica na posição anterior (sempre que possível); nada é removido nem duplicado */
@@ -2034,7 +2063,7 @@ function renderFamStage(){
     if(L4.i>=total){fam.done[4]=true;lockInput=false;markAll();finishStep();celebrateDone();autoNext()}
     else{setFb(`✅ Isso mesmo! ${L4.i} de ${total}.`);setTimeout(()=>{lockInput=false;if(stage!=="fam4")return;b.classList.remove("marked");b.setAttribute("aria-pressed","false");reshuffle4();const o=body.querySelector(".fam-ori");if(o){o.innerHTML=medInner(ori4());o.classList.add("med-closed")}},900)}
    }else{
-    b.classList.add("wrong");setFb("Quase! O ADULTO DEVE REPETIR A PALAVRA. Tente outra.");
+    b.classList.add("wrong");setFb("Quase! O(A) MEDIADOR(A) DEVE REPETIR A PALAVRA. Tente outra.");
     setTimeout(()=>b.classList.remove("wrong"),650)}
   });
   if(alreadyDone){markAll();next.disabled=false;setFb(doneMsg)}
@@ -2109,7 +2138,7 @@ const CFG={
  get delay(){if(CFG._d)return CFG._d;const p=active(),d=p&&p.cfg&&+p.cfg.delay;return [2,4,7].includes(d)?d:4}
 };
 
-/* ===== Origem da resposta: autônoma × ajuda do adulto × demonstrativa =====
+/* ===== Origem da resposta: autônoma × ajuda do(a) mediador(a) × demonstrativa =====
  Só respostas dadas pela criança, sem a solução fornecida pelo sistema ("Avançar sem selecionar") nem pelo avanço automático, compõem os indicadores de desempenho autônomo (acertos/erros/tentativas).
  As demais são gravadas à parte (p.reg e campos "demo"/"modo" nos registros). A CONCLUSÃO continua sendo
  registrada, mas concluir não significa que a criança aprendeu ou domina a habilidade. */
@@ -2133,25 +2162,25 @@ function runModo(){const m=(typeof currentRun!=="undefined"&&currentRun&&current
     (palavras: "Junte as sílabas" e "Escolha a figura"; famílias: "Ouça e escolha").
  3) Toque de leitura → stages[k].marks, nas etapas em que a criança apenas toca para marcar o que leu
     (palavras: "Junte os sons" e "Leia a palavra"; famílias: etapas 1, 2 e 4). O app não ouve a criança: não é acerto.
- 4) Leitura com autonomia / com ajuda → run.obs.aut ("a" | "h"), informada pelo adulto. A autonomia nunca é presumida;
+ 4) Leitura com autonomia / com ajuda → run.obs.aut ("a" | "h"), informada pelo(a) mediador(a). A autonomia nunca é presumida;
     o avanço automático assinala demonstração.
- 5) Habilidade observada → run.obs.hab ("s" | "p" | "n"), SÓ o adulto registra. Quantidade de toques não é indicador de alfabetização. */
+ 5) Habilidade observada → run.obs.hab ("s" | "p" | "n"), SÓ o(a) mediador(a) registra. Quantidade de toques não é indicador de alfabetização. */
 function runIsFam(r){return !!(r&&(r.kind==="fam"||(r.kind==null&&isFamCat(r.category)&&famOf(r.word))))}
 function runTapKeys(r){return runIsFam(r)?["families","read","picture"]:["families","read"]}
 function runVerif(r){let att=0,ok=0,err=0;const tap=runTapKeys(r),st=(r&&r.stages)||{};Object.keys(st).forEach(k=>{if(tap.includes(k))return;const x=st[k]||{};att+=x.attempts||0;ok+=x.correct||0;err+=x.errors||0});return {att,ok,err}}
 function runMarks(r){let n=0;const st=(r&&r.stages)||{};runTapKeys(r).forEach(k=>{const x=st[k]||{};n+=(x.marks!=null?x.marks:(x.correct||0))+((x.ajuda&&x.ajuda.marks)||0)});return n}
 function runLeitura(r){const o=r&&r.obs;if(r&&r.modoFinal==="demonstrativo")return "demo";if(o&&o.aut==="a")return "autonomia";if(o&&o.aut==="h")return "ajuda";if(r&&r.modoFinal==="ajuda")return "ajuda";return "nao"}
-function runObsBtn(){const r=currentRun;if(!r||!active()||(r.modo&&r.modo.demo))return "";return `<button type="button" class="secondary" data-obs-open style="margin-top:.5em;font-size:.9rem;padding:6px 14px">${r.obs?"✅ Registro do adulto salvo":"📝 Registro do adulto"}</button>`}
+function runObsBtn(){const r=currentRun;if(!r||!active()||(r.modo&&r.modo.demo))return "";return `<button type="button" class="secondary" data-obs-open style="margin-top:.5em;font-size:.9rem;padding:6px 14px">${r.obs?"✅ Registro do(a) mediador(a) salvo":"📝 Registro do(a) mediador(a)"}</button>`}
 function runObsBind(root){const b=root&&root.querySelector("[data-obs-open]");if(b)b.onclick=ev=>{ev.stopPropagation();runObsOpen(currentRun,b)}}
 function runObsOpen(run,btn){
  if(document.getElementById("runObsOv")||!run)return;const p=active();if(!p)return;clearTimeout(autoTimer);
  const o=run.obs||{},rad=(n,v,t,c)=>`<label><input type="radio" name="${n}" value="${v}" ${c?"checked":""}>${t}</label>`;
  const ov=document.createElement("div");ov.className="cfg-ov";ov.id="runObsOv";
- ov.innerHTML=`<div class="cfg-box ds-reg" role="dialog" aria-modal="true" aria-labelledby="roT"><h2 id="roT">📝 Registro do adulto</h2>
+ ov.innerHTML=`<div class="cfg-box ds-reg" role="dialog" aria-modal="true" aria-labelledby="roT"><h2 id="roT">📝 Registro do(a) mediador(a)</h2>
  <p class="muted small" style="margin:0 0 8px">O aplicativo não ouve nem avalia a pronúncia. Os toques da criança só marcam o percurso: quem registra como foi a leitura e se a habilidade foi observada é você.</p>
  <div class="cfg-sec"><b>Como foi a leitura?</b></div>
  <div class="cfg-pace">${rad("roA","a","✔ Leitura realizada com autonomia",o.aut==="a")}${rad("roA","h","🤝 Leitura realizada com ajuda",o.aut==="h")}${rad("roA","","Não observei",!o.aut)}</div>
- <div class="cfg-sec"><b>Habilidade observada pelo adulto</b></div>
+ <div class="cfg-sec"><b>Habilidade observada pelo(a) mediador(a)</b></div>
  <div class="cfg-pace">${rad("roH","s","✅ Habilidade observada",o.hab==="s")}${rad("roH","p","🔶 Observada em parte",o.hab==="p")}${rad("roH","n","🔁 Ainda não observada",o.hab==="n")}${rad("roH","","Sem registro",!o.hab)}</div>
  <div class="cfg-actions"><button class="secondary" id="roCancel" type="button">Cancelar</button><button class="primary" id="roSave" type="button">Salvar registro</button></div></div>`;
  document.body.appendChild(ov);
@@ -2162,13 +2191,13 @@ function runObsOpen(run,btn){
   const r=(p.activityLog||[]).find(x=>x.id===run.id)||run;
   if(a||h)r.obs={aut:a||null,hab:h||null,q:new Date().toISOString()};else delete r.obs;
   run.obs=r.obs;r.updated=new Date().toISOString();saveProfiles();close();
-  if(btn&&btn.isConnected)btn.textContent=r.obs?"✅ Registro do adulto salvo":"📝 Registro do adulto"};
+  if(btn&&btn.isConnected)btn.textContent=r.obs?"✅ Registro do(a) mediador(a) salvo":"📝 Registro do(a) mediador(a)"};
  const f=ov.querySelector('input[name=roA]');if(f)f.focus({preventScroll:true});ov.querySelector(".cfg-box").scrollTop=0;
 }
 function runSumHTML(p){
  const L=((p&&p.activityLog)||[]).filter(r=>r&&r.stages);let conc=0,att=0,ok=0,mk=0;const le={autonomia:0,ajuda:0,demo:0,nao:0},hb={s:0,p:0,n:0,x:0};
  L.forEach(r=>{mk+=runMarks(r);const v=runVerif(r);att+=v.att;ok+=v.ok;if(!r.completed)return;conc++;le[runLeitura(r)]++;const h=r.obs&&r.obs.hab;hb[h==="s"||h==="p"||h==="n"?h:"x"]++});
- return `<div class="cfg-sec"><b>🧮 Sílabas e palavras: o que cada número significa</b><span>1) Atividades concluídas: <b>${conc}</b> — só indica que o percurso terminou.<br>2) Respostas corretas na interação: <b>${ok} de ${att}</b> — apenas nas etapas em que o aplicativo confere a resposta.<br>3) Toques de leitura: <b>${mk}</b> — a criança marca o que leu; o aplicativo não ouve, então isso não é acerto.<br>4) Leitura informada pelo adulto: com autonomia <b>${le.autonomia}</b> • com ajuda <b>${le.ajuda}</b> • sem informação <b>${le.nao}</b> • avançada pelo aplicativo <b>${le.demo}</b>.<br>5) Habilidade observada pelo adulto: observada <b>${hb.s}</b> • em parte <b>${hb.p}</b> • ainda não <b>${hb.n}</b> • sem registro <b>${hb.x}</b>.<br>Quantidade de toques não é indicador de alfabetização.</span></div>`}
+ return `<div class="cfg-sec"><b>🧮 Sílabas e palavras: o que cada número significa</b><span>1) Atividades concluídas: <b>${conc}</b> — só indica que o percurso terminou.<br>2) Respostas corretas na interação: <b>${ok} de ${att}</b> — apenas nas etapas em que o aplicativo confere a resposta.<br>3) Toques de leitura: <b>${mk}</b> — a criança marca o que leu; o aplicativo não ouve, então isso não é acerto.<br>4) Leitura informada pelo(a) mediador(a): com autonomia <b>${le.autonomia}</b> • com ajuda <b>${le.ajuda}</b> • sem informação <b>${le.nao}</b> • avançada pelo aplicativo <b>${le.demo}</b>.<br>5) Habilidade observada pelo(a) mediador(a): observada <b>${hb.s}</b> • em parte <b>${hb.p}</b> • ainda não <b>${hb.n}</b> • sem registro <b>${hb.x}</b>.<br>Quantidade de toques não é indicador de alfabetização.</span></div>`}
 function regConcl(cat,id){const p=active();if(!p)return;p.concl=p.concl||{};p.concl[cat+"|"+id]={modo:runModo(),quando:new Date().toISOString()}}
 function setCfg(o){const p=active();if(!p)return;p.cfg=Object.assign({},p.cfg,{auto:!!o.auto,skip:!!o.skip,letter:["m","u","l","c"].includes(o.letter)?o.letter:"m",delay:[2,4,7].includes(+o.delay)?+o.delay:4});delete p.cfg.med;saveProfiles()}
 let noAutoOnce=false;
@@ -2190,7 +2219,7 @@ function openCfg(){
  <label class="cfg-opt"><input type="checkbox" id="cfgAuto" ${CFG.auto?"checked":""}><div><b>⏭️ Transição automática</b><span>Ao concluir uma etapa, avança sozinho para a próxima.</span></div></label>
  <div class="cfg-delay ${CFG.auto?"":"off"}" id="cfgDelay"><span style="margin:0 6px 0 0;font-weight:800;color:#5b6280">Tempo de espera:</span>${[[2,"2 s"],[4,"4 s"],[7,"7 s"]].map(d=>`<label><input type="radio" name="cfgD" value="${d[0]}" ${CFG.delay===d[0]?"checked":""}>${d[1]}</label>`).join("")}</div>
  
- <div class="cfg-sec"><b>🫣 Dicas da orientação</b><span>Como as dicas do adulto aparecem na caixa de orientação. A linha da criança nunca fica borrada.</span></div>
+ <div class="cfg-sec"><b>🫣 Dicas da orientação</b><span>Como as dicas do(a) mediador(a) aparecem na caixa de orientação. A linha da criança nunca fica borrada.</span></div>
  <div class="cfg-delay cfg-letter" id="cfgOriDica">${(()=>{const cur=["t","p","v"].includes((pp.cfg||{}).oriDica)?pp.cfg.oriDica:"t";return [["t","⏱️ Revelar por instantes (padrão)"],["p","👆 Somente ao pressionar"],["v","👁 Sempre visíveis"]].map(d=>`<label><input type="radio" name="cfgOD" value="${d[0]}" ${cur===d[0]?"checked":""}>${d[1]}</label>`).join("")})()}</div>
  <div class="cfg-sec"><b>⏳ Tempo de revelação das dicas</b><span>Vale para “Revelar por instantes”: por quanto tempo as dicas ficam visíveis.</span></div>
  <div class="cfg-delay cfg-letter cfg-ot ${(()=>{const m=["t","p","v"].includes((pp.cfg||{}).oriDica)?pp.cfg.oriDica:"t";return m==="t"?"":"off"})()}" id="cfgOriTempo">${(()=>{const c=pp.cfg||{},cur=["d","c","p"].includes(c.oriT)?c.oriT:"d",v=(+c.oriTV>=1&&+c.oriTV<=99)?Math.round(+c.oriTV):5,u=c.oriTU==="m"?"m":"s";return `<label><input type="radio" name="cfgOT" value="d" ${cur==="d"?"checked":""}>Padrão (0,6 s)</label><span class="ot-c ${cur==="c"?"":"dis"}" id="cfgOTc"><label><input type="radio" name="cfgOT" value="c" ${cur==="c"?"checked":""}>Personalizado:</label><input type="number" id="cfgOTV" min="1" max="99" step="1" value="${v}" aria-label="Tempo de revelação"><select id="cfgOTU" aria-label="Unidade de tempo"><option value="s" ${u==="s"?"selected":""}>segundos</option><option value="m" ${u==="m"?"selected":""}>minutos</option></select></span><label><input type="radio" name="cfgOT" value="p" ${cur==="p"?"checked":""}>Permanente na tela</label>`})()}</div>
@@ -2450,14 +2479,14 @@ function abWordSay(w){return AB_SAY[w]||String(w).toLowerCase()}
 let abVoice=null;
 function abPickVoice(){return null}
 /* vozes sintetizadas desativadas */
-function abSpeak(t){/* sem voz: o adulto fala */}
+function abSpeak(t){/* sem voz: o(a) mediador(a) fala */}
 function abSpeakSeq(a){/* sem voz */}
 function abSayLater(tok,t,ms){setTimeout(()=>{if(abAlive(tok))Array.isArray(t)?abSpeakSeq(t):abSpeak(t)},ms)}
 /* Voz de orientação inicial: diz uma vez o que a criança deve fazer; depois só fala a questão, após cada resposta */
-const AB_INS={con:"Adulto, mostre a letra e fale seu nome e seu som. A criança toca na letra para ver a figura.",ouvir:"Adulto, fale o nome da letra. A criança procura e toca nessa letra.",figura:"Adulto, mostre a letra. A criança toca na figura que começa com ela.",cv:"Adulto, mostre a letra. A criança procura e toca em todas as letras iguais a ela.",cs:"Adulto, fale o som da letra. A criança toca em todas as letras que fazem esse som.",ini:"Adulto, fale o nome da figura. A criança toca na letra com que ele começa."};
+const AB_INS={con:"Mediador(a), mostre a letra e fale seu nome e seu som. A criança toca na letra para ver a figura.",ouvir:"Mediador(a), fale o nome da letra. A criança procura e toca nessa letra.",figura:"Mediador(a), mostre a letra. A criança toca na figura que começa com ela.",cv:"Mediador(a), mostre a letra. A criança procura e toca em todas as letras iguais a ela.",cs:"Mediador(a), fale o som da letra. A criança toca em todas as letras que fazem esse som.",ini:"Mediador(a), fale o nome da figura. A criança toca na letra com que ele começa."};
 const abInsT=(f,k)=>f?`Início: “${AB_INS[k]}” `:"";
 function abLetterName(c){return AB_NAME[String(c).toUpperCase()]||String(c)}
-/* ===== Progressão (mais regular -> mais complexo), sons, orientação do adulto e registro por letra ===== */
+/* ===== Progressão (mais regular -> mais complexo), sons, orientação do(a) mediador(a) e registro por letra ===== */
 const AB_SIL={B:"bá",C:"cá",D:"dá",F:"fá",G:"gá",J:"já",K:"cá",L:"lá",M:"má",N:"ná",P:"pá",Q:"quê",R:"rá",S:"sá",T:"tá",V:"vá",W:"uá",X:"chá",Y:"iá",Z:"zá"};
 const AB_STG=[["Vogais","AEIOU"],["Consoantes regulares","BDFJLMNPTV"],["Consoantes que variam","CGRSXZ"],["Casos especiais","HKQWY"]];
 const AB_TIERN=["sons regulares","sons que variam","casos especiais"];
@@ -2537,7 +2566,7 @@ function abSetOf(kind){const V="AEIOU".split("");return kind==="vogais"?V:kind==
 let SG=null;
 function abSoundMode(kind){
  const p=active();if(!p){renderClassDashboard();return}
- const modes=[["conhecer","👂","Conhecer as letras","Toque na letra e veja a figura"],["ouvir","🎧","Ouça e escolha","O adulto fala o nome da letra; ache-a na tela"],["figura","🖼️","Letra e figura","Veja a letra e ache a figura que começa com ela"]];
+ const modes=[["conhecer","👂","Conhecer as letras","Toque na letra e veja a figura"],["ouvir","🎧","Ouça e escolha","O(a) mediador(a) fala o nome da letra; ache-a na tela"],["figura","🖼️","Letra e figura","Veja a letra e ache a figura que começa com ela"]];
  const aa=abAlpha(p);
  const cards=modes.map(c=>{const n=abExecGet(aa,"sons_"+c[0],kind)>0?1:0;return `<button class="ab-lvl" data-sm="${c[0]}" type="button"><strong>${c[1]} ${c[2]}</strong><span class="ab-lvl-s">${c[3]}</span><div class="progress"><span style="width:${n*100}%"></span></div><span class="small">${n} de 1 concluída</span></button>`}).join("");
  abShell({sub:"Sons das letras • "+SG_NAME[kind],noSound:true,single:`<div class="ab-board ab-levels">${cards}</div>`,msg:"🎮 Escolha como praticar",onBack:abSoundMenu});
@@ -2560,7 +2589,7 @@ function sgRound(){
  let opts,say,left,msg;
  if(S.game==="ouvir"){
   opts=shuffle([l,...others]).map(ch=>({ch,html:ch,ok:ch===l}));
-  say="Encontre a letra "+name;msg="Ache a letra que o adulto falou";
+  say="Encontre a letra "+name;msg="Ache a letra que o(a) mediador(a) falou";
   left=`<div class="ab-left ab-tap" id="abLeft" role="button" tabindex="0" aria-label="Ouvir de novo"><span class="ab-hear-ic" aria-hidden="true">🔊</span><div class="ab-figwrap"><div class="ab-fig" id="abBig">🎧</div><div class="ab-cap" id="abCap"><span class="ab-q">?</span></div></div></div>`;
  }else{
   opts=shuffle([{ch:l,html:fig[1],ok:true},...others.map(o=>{const f=AB_FIG[o][abRnd(AB_FIG[o].length)];return {ch:o,html:f[1],ok:false}})]);
@@ -2588,7 +2617,7 @@ function sgRound(){
    abMsg(["Muito bem! 🎉","Isso mesmo! ⭐","Acertou! 🌟"][abRnd(3)]+" "+l+" de "+fig[0].charAt(0)+fig[0].slice(1).toLowerCase());abChime();
    abSpeak(name+" de "+abWordSay(fig[0]));
    abEnableNext(isLast?"Concluir ▶":"Próxima ▶",()=>{if(!abAlive(tok))return;S.i++;S.i>=S.queue.length?sgFinish():sgRound()})}
-  else{cntErr(S);abLog(l,false);b.disabled=true;b.classList.add("wrong");abTick(false);abMsg("Tente de novo! O ADULTO DEVE REPETIR A LETRA. 👂");setTimeout(()=>{if(abAlive(tok)&&!solved)abSpeak(say)},800)}
+  else{cntErr(S);abLog(l,false);b.disabled=true;b.classList.add("wrong");abTick(false);abMsg("Tente de novo! O(A) MEDIADOR(A) DEVE REPETIR A LETRA. 👂");setTimeout(()=>{if(abAlive(tok)&&!solved)abSpeak(say)},800)}
  });
 }
 function sgFinish(){
@@ -2697,7 +2726,7 @@ function abCacaRound(){
     {const bg=$("#abBig"),cp=$("#abCap");if(bg)bg.textContent=fig[1];if(cp)cp.innerHTML=`<b>${esc(fig[0].charAt(0))}</b>${esc(fig[0].slice(1))}`}
     abEnableNext(isLast?"Concluir ▶":"Próxima ▶",()=>{if(!abAlive(tok))return;S.i++;S.i>=S.queue.length?abFinish():abRound()})}
    else abMsg("Isso! "+S.found+" de "+S.nT+" • "+(som?"Continue procurando o som que você ouviu":"Ache todas: "+target))}
-  else{cntErr(S);S.roundErr++;abLog(t,false);abTick(false);b.classList.remove("shake");void b.offsetWidth;b.classList.add("shake");abMsg(som?"Quase! O ADULTO DEVE REPETIR O SOM. Procure a letra. 👂":"Quase! Procure a letra "+target+" 🔎");if(som&&S.roundErr%2===0)abSpeak(say)}
+  else{cntErr(S);S.roundErr++;abLog(t,false);abTick(false);b.classList.remove("shake");void b.offsetWidth;b.classList.add("shake");abMsg(som?"Quase! O(A) MEDIADOR(A) DEVE REPETIR O SOM. Procure a letra. 👂":"Quase! Procure a letra "+target+" 🔎");if(som&&S.roundErr%2===0)abSpeak(say)}
  });
 }
 function abInicialRound(){
@@ -2715,7 +2744,7 @@ function abInicialRound(){
   left:`<div class="ab-left ab-tap" id="abLeft" role="button" tabindex="0" aria-label="Ouvir o nome da figura de novo"><span class="ab-hear-ic" aria-hidden="true">🔊</span><div class="ab-figwrap"><div class="ab-fig">${w.e}</div><div class="ab-cap" id="abCap"><span class="ab-q">?</span></div></div></div>`,
   right:`<div class="ab-board"><div class="ab-opts" style="--n:${n}">${opts.map(o=>`<button class="ab-opt" type="button" data-ch="${o.ch}" aria-label="Letra ${o.show}">${o.show}</button>`).join("")}</div></div>`,
   ori:abOri3(ori3(`Fale o nome da figura. O aprendente deve identificar e selecionar a letra inicial da palavra ouvida. Se errar, repita devagar, destacando o início da palavra. Se necessário, pronuncie apenas o nome da letra inicial. Ao acertar, diga o nome da letra e da palavra.`,`Fale ${abHl(w.w)}.`)),
-  msg:"O adulto fala a palavra: com que som ela começa? Toque na letra.",
+  msg:"O(a) mediador(a) fala a palavra: com que som ela começa? Toque na letra.",
   next:{label:isLast?"Concluir ▶":"Próxima ▶",disabled:true},
   onBack:()=>abLevels("inicial"),onRestart:()=>abStart("inicial",L)});
  abBindBtns(btns);
@@ -2729,7 +2758,7 @@ function abInicialRound(){
    $("#abCap").innerHTML=`<b>${esc(w.w.charAt(0))}</b>${esc(w.w.slice(1))}`;
    abMsg(["Muito bem! 🎉","Isso mesmo! ⭐","Acertou! 🌟"][abRnd(3)]+" "+w.w.charAt(0)+" de "+w.w.charAt(0)+w.w.slice(1).toLowerCase());abChime();
    abSpeak(abLetterName(c)+" de "+say);abEnableNext(isLast?"Concluir ▶":"Próxima ▶",()=>{if(!abAlive(tok))return;S.i++;S.i>=S.queue.length?abFinish():abRound()})}
-  else{cntErr(S);S.roundErr++;abLog(c,false);b.disabled=true;b.classList.add("wrong");abTick(false);abMsg("Tente de novo! O ADULTO DEVE REPETIR A PALAVRA. Pense no primeiro som. 👂");setTimeout(()=>{if(abAlive(tok)&&!solved)abSpeak(say)},800)}
+  else{cntErr(S);S.roundErr++;abLog(c,false);b.disabled=true;b.classList.add("wrong");abTick(false);abMsg("Tente de novo! O(A) MEDIADOR(A) DEVE REPETIR A PALAVRA. Pense no primeiro som. 👂");setTimeout(()=>{if(abAlive(tok)&&!solved)abSpeak(say)},800)}
  });
 }
 function abFinish(){
@@ -2862,8 +2891,8 @@ const FN_I2=[["BOLA","BANANA","SAPO,GATO"],["CASA","QUEIJO","BOLA,SAPO"],["SAPO"
 const FN_I3=[["A","á","ABELHA","BOLA,CASA,SAPO"],["E","ê","ELEFANTE","GATO,BOLA,LUA"],["I","i","IGREJA","VACA,PATO,SAPO"],["O","ô","OVO","MACACO,FACA,LUA"],["U","u","UVA","CASA,BOLA,PATO"],["M","mmm","MACACO","BOLA,SAPO,LUA"],["S","sss","SAPO","MACACO,FACA,VACA"],["F","fff","FACA","VACA,SAPO,MACACO"],["V","vvv","VACA","FACA,GATO,LUA"],["L","lll","LUA","MACACO,SAPO,BOLA"]];
 const FN_L={A:"a",E:"e",I:"i",O:"o",U:"u",M:"m",S:"s",F:"f",V:"v",L:"l"};
 const FN_DIT=[["BOLA GATO PATO VACA FACA LUA SAPO MALA UVA JACA","⚽ 🐱 🦆 🐄 🔪 🌙 🐸 🧳 🍇 "],["CHAVE BANANA JANELA PIPOCA MACACO TOMATE SAPATO CAMISA","🔑 🍌 🪟 🍿 🐒 🍅 👞 👕"],["CAFÉ SOFÁ AVIÃO MAÇÃ LIMÃO BEBÊ JACARÉ FEIJÃO","☕ 🛋️ ✈️ 🍎 🍋 👶 🐊 🫘"]].map(x=>{const w=x[0].split(" "),e=x[1].split(" ");return w.map((a,i)=>({w:a,e:e[i]||""}))});
-const FN_ET=[["rimas","🎵","Rimas","Palavras que terminam com o mesmo som"],["silabas","👏","Conte as sílabas","Bata palmas e conte os pedacinhos"],["inicial","🔤","Som inicial","Descubra com que som a palavra começa"],["ditado","✏️","Ditado com letras","O adulto fala a palavra; escreva letra por letra"]];
-const FN_LV={silabas:[["1 e 2 sílabas","Palavras curtas e familiares."],["2 e 3 sílabas","Palavras um pouco maiores."],["1 a 4 sílabas","Todas as extensões, até 4 pedacinhos."]],inicial:[["Sílaba inicial","Qual figura começa com a sílaba?"],["Mesmo som inicial","O adulto fala a palavra; o som vale mais que a letra."],["Som da letra","O som da letra, não o nome dela."]],ditado:[["Palavras curtas","Palavras de 3 e 4 letras."],["Palavras maiores","Dígrafos e mais letras."],["Acentos e til","É, Á, Ã, Ê, Ç… cada marca conta."]]};
+const FN_ET=[["rimas","🎵","Rimas","Palavras que terminam com o mesmo som"],["silabas","👏","Conte as sílabas","Bata palmas e conte os pedacinhos"],["inicial","🔤","Som inicial","Descubra com que som a palavra começa"],["ditado","✏️","Ditado com letras","O(a) mediador(a) fala a palavra; escreva letra por letra"]];
+const FN_LV={silabas:[["1 e 2 sílabas","Palavras curtas e familiares."],["2 e 3 sílabas","Palavras um pouco maiores."],["1 a 4 sílabas","Todas as extensões, até 4 pedacinhos."]],inicial:[["Sílaba inicial","Qual figura começa com a sílaba?"],["Mesmo som inicial","O(a) mediador(a) fala a palavra; o som vale mais que a letra."],["Som da letra","O som da letra, não o nome dela."]],ditado:[["Palavras curtas","Palavras de 3 e 4 letras."],["Palavras maiores","Dígrafos e mais letras."],["Acentos e til","É, Á, Ã, Ê, Ç… cada marca conta."]]};
 function fnData(p){p.fono=p.fono||{};p.fono.n=p.fono.n||{};p.fono.h=p.fono.h||{};return p.fono}
 const fnN=(p,et,k)=>fnData(p).n[et+"|"+k]||0;
 function fnMenuMarkup(p){
@@ -2926,12 +2955,12 @@ function fnRimaR(){
   next:{label:fnNextLbl(),disabled:true},onBack:fnBlocks,onRestart:fnRound}));
  fnBindLeft(say,tok,[{t:`Qual palavra termina com o mesmo som de ${abWordSay(q.t)}?`,sel:"#abLeft .ab-cap"},...opts.map(w=>({t:abWordSay(w),sel:`.fn-opts .ab-opt[data-w="${w}"]`}))]);
  fnBindPics(q.a,()=>{const r=FNW[q.a],t=FNW[q.t];fnOk(tok,`${fnPraise()} ${q.t} e ${q.a} terminam com o mesmo som: ${rimaTxt(q.a)}`,abWordSay(q.t)+" e "+abWordSay(q.a)+" rimam")},
-  ()=>fnBad("Tente de novo! O ADULTO DEVE REPETIR AS PALAVRAS. 👂"),tok)}
+  ()=>fnBad("Tente de novo! O(A) MEDIADOR(A) DEVE REPETIR AS PALAVRAS. 👂"),tok)}
 function rimaTxt(w){const x=FNW[w];if(!x||!x.s)return"";const sy=x.s.split("-");return "-"+sy.slice(Math.max(0,x.t-1)).join("").replace(/^(?:qu|gu|[^aeiouáàâãéêíóôõú])+/i,"")}
 function fnSilR(){
  const S=FN,q=S.qs[S.i],tok=abTok+1,n=q.s.length,say=abWordSay(q.w);
  abShell(Object.assign(fnHead(),{say,
-  left:fnLeft(`<div class="ab-figwrap"><div class="ab-fig">${figureMarkup({w:q.w,e:q.e,img:null})}</div><div class="ab-cap" id="abCap">${esc(q.w)}</div><div class="fn-tip">Dica para o adulto: bata palmas junto com a criança a cada pedacinho da palavra.</div></div>`),
+  left:fnLeft(`<div class="ab-figwrap"><div class="ab-fig">${figureMarkup({w:q.w,e:q.e,img:null})}</div><div class="ab-cap" id="abCap">${esc(q.w)}</div><div class="fn-tip">Dica para o(a) mediador(a): bata palmas junto com a criança a cada pedacinho da palavra.</div></div>`),
   right:`<div class="ab-board"><div class="ab-opts" style="--n:4">${[1,2,3,4].map(x=>`<button class="ab-opt" type="button" data-n="${x}" aria-label="${x}">${x}</button>`).join("")}</div></div>`,
   msg:"👏 Quantas sílabas tem esta palavra?",next:{label:fnNextLbl(),disabled:true},onBack:fnBackFn(),onRestart:fnRound}));
  fnBindLeft(say,tok,[{t:say,sel:"#abCap"},"Quantas sílabas tem esta palavra? Bata palmas a cada pedacinho e toque no número certo."]);let solved=false;const bs=[...document.querySelectorAll(".ab-opt")];
@@ -2945,10 +2974,10 @@ function fnIniR(){
  const S=FN,q=S.qs[S.i],tok=abTok+1,L=S.k;let left,say,ok,words,tip="",msgQ;
  if(L===1){say=q[1];ok=q[2];words=shuffle([q[2],...q[3].split(",")]);left=fnLeft(`<div class="ab-letter">${esc(q[0])}</div>`);msgQ=`🔤 Qual figura começa com o som ${q[0]}?`}
  else if(L===2){say=abWordSay(q[0]);ok=q[1];words=shuffle([q[1],...q[2].split(",")]);left=fnLeft(`<div class="ab-figwrap"><div class="ab-fig">${fnFig(q[0])}</div><div class="ab-cap">${esc(q[0])}</div></div>`);msgQ=`🔤 Qual figura começa com o mesmo som de ${q[0].toLowerCase()}?`}
- else{say=q[1];ok=q[2];words=shuffle([q[2],...q[3].split(",")]);left=fnLeft(`<div class="ab-figwrap"><div class="ab-letter">${abPair(q[0],false)}</div><div class="fn-tip">Dica para o adulto: faça só o som /${FN_L[q[0]]}/, sem dizer o nome da letra.</div></div>`);msgQ=`🔤 Qual figura começa com o som da letra ${q[0]}?`}
+ else{say=q[1];ok=q[2];words=shuffle([q[2],...q[3].split(",")]);left=fnLeft(`<div class="ab-figwrap"><div class="ab-letter">${abPair(q[0],false)}</div><div class="fn-tip">Dica para o(a) mediador(a): faça só o som /${FN_L[q[0]]}/, sem dizer o nome da letra.</div></div>`);msgQ=`🔤 Qual figura começa com o som da letra ${q[0]}?`}
  abShell(Object.assign(fnHead(),{say,left,right:fnPicOpts(words,false),msg:msgQ,next:{label:fnNextLbl(),disabled:true},onBack:fnBackFn(),onRestart:fnRound}));
  fnBindLeft(say,tok,L===1?["Qual figura começa com o som",{t:q[1],sel:"#abLeft .ab-letter"},"Toque na figura certa."]:L===2?[{t:say,sel:"#abLeft .ab-cap"},`Qual figura começa com o mesmo som de ${say}? Toque na figura certa.`]:[`Qual figura começa com o som da letra ${abLetterName(q[0])}?`,{t:q[1],sel:"#abLeft .ab-letter"},"Toque na figura certa."]);
- fnBindPics(ok,()=>fnOk(tok,`${fnPraise()} ${ok.charAt(0)}${ok.slice(1).toLowerCase()} começa com esse som.`,abWordSay(ok)),()=>fnBad("Tente de novo! O ADULTO DEVE REPETIR O NOME DAS FIGURAS. 👂"),tok)}
+ fnBindPics(ok,()=>fnOk(tok,`${fnPraise()} ${ok.charAt(0)}${ok.slice(1).toLowerCase()} começa com esse som.`,abWordSay(ok)),()=>fnBad("Tente de novo! O(A) MEDIADOR(A) DEVE REPETIR O NOME DAS FIGURAS. 👂"),tok)}
 function fnDecoys(w,n){const base=[...w],ex=[];base.forEach(c=>{const b=c.normalize("NFD").replace(/[\u0300-\u036f]/g,"");if(b!==c&&!ex.includes(b))ex.push(b)});
  const pool="ABCDEFGHIJLMNOPRSTUV".split("").filter(c=>!base.includes(c)&&!ex.includes(c));let h=0;for(const c of w)h=(h*31+c.charCodeAt(0))%997;
  while(ex.length<n&&pool.length){ex.push(pool.splice(h%pool.length,1)[0]);h+=7}return ex}
@@ -2960,8 +2989,8 @@ function fnDitR(){
  abShell(Object.assign(fnHead(),{say,
   left:fnLeft(`<div class="ab-figwrap fn-dit"><div class="ab-fig">${fig}</div><div class="fn-slots" id="fnSlots" style="--n:${L.length}"></div><button class="round-btn fn-erase" id="fnErase" type="button" aria-label="Apagar a última letra">⌫</button></div>`),
   right:`<div class="ab-board"><div class="ab-grid" style="--cols:${cols};--rows:${rows}">${tiles.map(t=>`<button class="ab-tile" type="button" data-id="${t.id}" aria-label="Letra ${t.c}">${t.c}</button>`).join("")}</div></div>`,
-  msg:"✏️ O adulto fala a palavra. Escreva letra por letra.",next:{label:fnNextLbl(),disabled:true},onBack:fnBackFn(),onRestart:fnRound}));
- fnBindLeft(say,tok,["O adulto fala a palavra. Escreva letra por letra. Toque nas letras na ordem certa.",say]);let done=false,busy=false;
+  msg:"✏️ O(a) mediador(a) fala a palavra. Escreva letra por letra.",next:{label:fnNextLbl(),disabled:true},onBack:fnBackFn(),onRestart:fnRound}));
+ fnBindLeft(say,tok,["O(a) mediador(a) fala a palavra. Escreva letra por letra. Toque nas letras na ordem certa.",say]);let done=false,busy=false;
  const bt=[...document.querySelectorAll(".ab-tile")];
  const paint=(bad)=>{$("#fnSlots").innerHTML=slots.map((s,i)=>`<button type="button" class="fn-slot${s?" fill":""}${bad&&bad[i]?" bad":""}${done?" ok":""}" data-i="${i}" aria-label="Posição ${i+1}">${s?esc(s.c):""}</button>`).join("");
   document.querySelectorAll(".fn-slot").forEach(b=>b.onclick=()=>{if(done||busy)return;const s=slots[+b.dataset.i];if(s)rm(+b.dataset.i)});
@@ -2994,7 +3023,7 @@ function fnFinish(){
 function fnReg(str,noS){str.split(" ").forEach(x=>{const m=x.match(/^([A-ZÀ-Ú-]+)(.*)$/u);if(!m)return;const w=m[1].replace(/-/g,""),o=FNW[w]||(FNW[w]={w,e:""});if(!o.e&&m[2])o.e=m[2];if(!o.s&&!noS)o.s=m[1].toLowerCase()})}
 fnReg("SO-FÁ🛋️ BE-BÊ👶 FEI-JÃO🫘 CHA-VE🔑 CHU-VA🌧️ CO-E-LHO🐰 A-BE-LHA🐝 MI-NHO-CA🪱 GA-LI-NHA🐔 QUEI-JO🧀 CAR-RO🚗 CA-VA-LO🐴 PI-PO-CA🍿 MA-CA-CO🐒 TO-MA-TE🍅 SA-PA-TO👞 CA-MI-SA👕 BA-NA-NA🍌 JA-NE-LA🪟 BO-LA⚽ GA-TO🐱 PA-TO🦆 VA-CA🐄 FA-CA🔪 SA-PO🐸 U-VA🍇 JA-CA CA-FÉ☕ MA-ÇÃ🍎 LI-MÃO🍋 JA-CA-RÉ🐊 A-VI-ÃO✈️");
 FN_SIL.forEach(x=>{const o=FNW[x.w]||(FNW[x.w]={w:x.w,e:x.e});if(!o.e)o.e=x.e;if(!o.s)o.s=x.s.join("-")});
-/* Sons iniciais: [grafema, símbolo, som prolongado (só contínuos/vogais), dica de pronúncia ao adulto (sem vogal extra), palavras com divisão silábica] */
+/* Sons iniciais: [grafema, símbolo, som prolongado (só contínuos/vogais), dica de pronúncia ao(à) mediador(a) (sem vogal extra), palavras com divisão silábica] */
 const FN_PH=[
 ["F","f","ffff","sopre o ar entre os dentes de cima e o lábio de baixo, prolongando 'ffff' (não diga 'fê')","FA-CA🔪 FO-GO🔥 FA-DA🧚 FOR-MI-GA🐜"],
 ["V","v","vvvv","igual ao som do F, mas com a voz ligada: 'vvvv' (não diga 'vê')","VA-CA🐄 VE-LA🕯️ VI-O-LÃO🎸 VUL-CÃO🌋"],
@@ -3028,20 +3057,20 @@ const fnDl=s=>s.split(" ").map(x=>{const m=x.match(/^([A-ZÀ-Ú]+)(.*)$/u);retur
 FN_DIT[1]=fnDl("BANANA🍌 JANELA🪟 PIPOCA🍿 MACACO🐒 TOMATE🍅 SAPATO👞 CAMISA👕 CAVALO🐴");
 FN_DIT[3]=fnDl("CHAVE🔑 CHUVA🌧️ COELHO🐰 ABELHA🐝 MINHOCA🪱 GALINHA🐔 QUEIJO🧀 CARRO🚗");
 FN_LV.silabas=[["1 e 2 sílabas","Contar e achar a sílaba inicial/final."],["2 e 3 sílabas","Contar; sílaba inicial, medial e final."],["1 a 4 sílabas","Todas as extensões, até 4 pedacinhos."]];
-FN_LV.inicial=[["Sílaba inicial","O adulto fala a sílaba; a criança acha a figura."],["Fonema inicial","Sem pista da letra: só o som."],["Fonema e letra","Associe o som à letra."]];
+FN_LV.inicial=[["Sílaba inicial","O(a) mediador(a) fala a sílaba; a criança acha a figura."],["Fonema inicial","Sem pista da letra: só o som."],["Fonema e letra","Associe o som à letra."]];
 FN_LV.juntar=[["2 e 3 sons","Palavras muito curtas."],["4 sons","Sons parecidos entre as palavras."],["4 a 6 sons","Dígrafos e sons que mudam."]];
-FN_ET[1][3]="Bata palmas, conte e ache a sílaba";FN_ET[3][3]="O adulto fala a palavra; monte com as letras";
-FN_ET.push(["juntar","🧩","Junte os Sons","O adulto fala os sons separados; descubra a palavra"]);
+FN_ET[1][3]="Bata palmas, conte e ache a sílaba";FN_ET[3][3]="O(a) mediador(a) fala a palavra; monte com as letras";
+FN_ET.push(["juntar","🧩","Junte os Sons","O(a) mediador(a) fala os sons separados; descubra a palavra"]);
 /* ===== Caixas de Som: mapeamento fonema-letra e soletração por fonemas (SEM ÁUDIO) =====
    Uma caixa por FONEMA (CH, LH, NH, RR, SS, QU e GU ocupam uma só caixa). Base: FN_JS (fonemas em IPA). */
 FN_LV.caixas=[["2 e 3 sons","Letras com som regular."],["4 sons","Sem dígrafo: um som, uma caixa."],["Dígrafos e casos especiais","CH, LH, NH, RR, QU, SS e letras que mudam de som."]];
-FN_ET.push(["caixas","🔡","Caixas de Som","O adulto fala os sons; ponha a letra de cada som na sua caixa"]);
+FN_ET.push(["caixas","🔡","Caixas de Som","O(a) mediador(a) fala os sons; ponha a letra de cada som na sua caixa"]);
 fnReg("OS-SO🦴");
 /* fonema → grafema(s) possíveis (o primeiro que casar com a escrita da palavra vale) */
 const FN_G={a:["A","Á","Â"],e:["E","Ê","É"],"ɛ":["É","E"],i:["I","Í"],o:["O","Ô","Ó"],"ɔ":["Ó","O"],u:["U","Ú"],"ã":["Ã"],
  b:["B"],d:["D"],f:["F"],g:["GU","G"],"ʒ":["J","G"],k:["QU","C","K"],l:["L"],"ʎ":["LH"],m:["M"],n:["N"],"ɲ":["NH"],p:["P"],"ʁ":["RR","R"],
  s:["SS","S","Ç","C"],t:["T"],v:["V"],z:["Z","S"],"ʃ":["CH","X"]};
-/* como o adulto fala cada som (texto) */
+/* como o(a) mediador(a) fala cada som (texto) */
 const FN_CXD={"ʃ":"ch (xxxx)","ʒ":"j (jjjj)","ʎ":"lh","ɲ":"nh","k":"k","ʁ":"rr (rrrr)","ɛ":"é","ɔ":"ó","ã":"ã"};
 /* peças parecidas, usadas como distratores */
 const FN_CXF={A:"O E",E:"I A",I:"E U",O:"U A",U:"O I",É:"E",Ê:"E",Í:"I",Ó:"O",Ô:"O",Ú:"U",Ã:"A",Á:"A",Â:"A",B:"D P V",C:"G S QU",CH:"J X",D:"B T",F:"V",G:"C J GU",J:"G CH",L:"R LH",LH:"L NH",M:"N NH",N:"M NH",NH:"N LH",P:"B T",QU:"C GU",R:"L RR",RR:"R SS",S:"Z C SS",SS:"S RR",T:"D P",V:"F B",X:"CH S",Z:"S J",GU:"G QU",Ç:"S"};
@@ -3086,7 +3115,7 @@ function fnCxR(){
  const attempt=b=>{if(!abAlive(tok)||done||b.disabled)return false;const t=T(+b.dataset.id),c=cur();if(!t||c<0)return false;
   if(t.c===q.g[c]){place(t);return true}
   b.classList.remove("shake");void b.offsetWidth;b.classList.add("shake");setTimeout(()=>b.classList.remove("shake"),450);
-  fnCxRec(q,k,"erros");fnBad("O ADULTO DEVE REPETIR O SOM.");return false};
+  fnCxRec(q,k,"erros");fnBad("O(A) MEDIADOR(A) DEVE REPETIR O SOM.");return false};
  /* arrastar: a peça "fantasma" segue o dedo; ao soltar na caixa da vez vale como tentativa; senão volta ao banco */
  const slotAt=(x,y)=>{const el=document.elementFromPoint(x,y);return el&&el.closest?el.closest(".fn-slot"):null};
  const goBack=(d,b)=>{const r=b.getBoundingClientRect(),g=d.ghost;g.classList.add("back");g.style.left=r.left+"px";g.style.top=r.top+"px";setTimeout(()=>g.remove(),220)};
@@ -3106,7 +3135,7 @@ function fnCxR(){
   b.onpointerup=end;b.onpointercancel=end});
  $("#fnHelp").onclick=e=>{e.stopPropagation();if(!abAlive(tok)||done)return;const c=cur(),b=bt.find(x=>!x.disabled&&T(+x.dataset.id).c===q.g[c]);if(!b)return;
   fnCxRec(q,k,"ajudas");bt.forEach(x=>x.classList.remove("hint"));b.classList.add("hint");clearTimeout(hintT);hintT=setTimeout(()=>b.classList.remove("hint"),3500);
-  abMsg("💡 Ajuda: a peça certa está brilhando. O ADULTO DEVE REPETIR O SOM.")};
+  abMsg("💡 Ajuda: a peça certa está brilhando. O(A) MEDIADOR(A) DEVE REPETIR O SOM.")};
  paint();
  if(CFG.skip)setTimeout(()=>{const step=()=>{if(!abAlive(tok)||done)return;const c=cur(),t=tiles.find(x=>x.c===q.g[c]&&!slots.some(s=>s&&s.id===x.id));if(!t)return;asAuto(()=>place(t,true));if(!done)setTimeout(step,350)};step()},900)}
 const FN_DL=[["Palavras curtas","3 e 4 letras"],["Palavras maiores","3 sílabas, letras simples"],["Acentos e til","É, Á, Ã, Ê, Ç: cada marca conta"],["Dígrafos","CH, LH, NH, QU, RR: 2 letras, 1 som"]];
@@ -3155,10 +3184,10 @@ function fnExp(w){const sy=(FNW[w]&&FNW[w].s)||"",o=[];(w.match(/CH|LH|NH|QU|RR|
 function fnRimaR(){
  const S=FN,q=S.qs[S.i],tok=abTok+1,opts=shuffle(q.o.slice()),say=abWordSay(q.t);
  abShell(Object.assign(fnHead(opts),{say,left:fnLeft(`<div class="ab-figwrap"><div class="ab-fig">${fnFig(q.t)}</div><div class="ab-cap" style="visibility:hidden">${esc(q.t)}</div></div>`),
-  right:fnPicOpts(opts,"h"),msg:"🎵 O adulto fala: qual palavra termina com o mesmo som?",next:{label:fnNextLbl(),disabled:true},onBack:fnBlocks,onRestart:fnRound}));
+  right:fnPicOpts(opts,"h"),msg:"🎵 O(a) mediador(a) fala: qual palavra termina com o mesmo som?",next:{label:fnNextLbl(),disabled:true},onBack:fnBlocks,onRestart:fnRound}));
  fnBindLeft(say,tok,[`Qual palavra termina com o mesmo som de ${say}?`,...opts.map(w=>({t:abWordSay(w),sel:`.fn-opts .ab-opt[data-w="${w}"]`}))]);
  fnBindPics(q.a,()=>{const c=$("#abLeft .ab-cap");if(c){c.style.visibility="visible";c.innerHTML=fnRimaHL(q.t)}fnCapsRev(q.a,0,fnRimaHL);
-  fnOk(tok,`${fnPraise()} ${q.t} e ${q.a} rimam: terminam em ${rimaTxt(q.a)}`+(rimaTxt(q.a)!==rimaTxt(q.t)?" (mesmo som, escritas diferentes)":""),abWordSay(q.t)+" e "+abWordSay(q.a)+" rimam")},()=>fnBad("Tente de novo! O ADULTO DEVE REPETIR AS PALAVRAS. 👂"),tok)}
+  fnOk(tok,`${fnPraise()} ${q.t} e ${q.a} rimam: terminam em ${rimaTxt(q.a)}`+(rimaTxt(q.a)!==rimaTxt(q.t)?" (mesmo som, escritas diferentes)":""),abWordSay(q.t)+" e "+abWordSay(q.a)+" rimam")},()=>fnBad("Tente de novo! O(A) MEDIADOR(A) DEVE REPETIR AS PALAVRAS. 👂"),tok)}
 /* ---- 2. Conte as sílabas: contagem e sílaba inicial/medial/final ---- */
 function fnSilR(){
  const S=FN,q=S.qs[S.i],tok=abTok+1,n=q.s.length,say=abWordSay(q.w),P=q.p,ix=P==="i"?0:P==="f"?n-1:1,ans=P?q.s[ix]:null;
@@ -3171,7 +3200,7 @@ function fnSilR(){
   if(good(b)){solved=true;b.classList.add("right");bs.forEach(x=>{if(x!==b){if(!x.classList.contains("wrong"))x.classList.add("dim");x.disabled=true}});
    const c=$("#abCap");c.style.visibility="visible";c.innerHTML=q.s.map((s,i)=>`<span style="color:${PALETTE[i%4]}${P&&i===ix?";text-decoration:underline":""}">${esc(s)}</span>`).join('<span class="fn-hy">-</span>');
    fnOk(tok,P?`${fnPraise()} A sílaba ${{i:"inicial",m:"medial",f:"final"}[P]} de ${q.w.toLowerCase()} é ${ans.toUpperCase()}: ${q.s.join("-")}`:`${fnPraise()} ${q.w.toLowerCase()} tem ${n} ${n===1?"sílaba":"sílabas"}: ${q.s.join("-")}`,q.s.join(", "))}
-  else{b.disabled=true;b.classList.add("wrong");fnBad(P?"Tente de novo! O ADULTO DEVE REPETIR A PALAVRA, devagar. 👂":"Tente de novo! Bata palmas a cada pedacinho. 👏")}});
+  else{b.disabled=true;b.classList.add("wrong");fnBad(P?"Tente de novo! O(A) MEDIADOR(A) DEVE REPETIR A PALAVRA, devagar. 👂":"Tente de novo! Bata palmas a cada pedacinho. 👏")}});
  if(CFG.skip)setTimeout(()=>{if(abAlive(tok)&&!solved){const r=bs.find(good);if(r)asAuto(()=>r.click())}},900)}
 /* ---- 3. Som inicial: sílaba inicial, fonema inicial (sem letra), fonema-grafema ---- */
 function fnIniR(){
@@ -3179,12 +3208,12 @@ function fnIniR(){
  const snd=e.v?["Qual figura começa com este som?",e.v]:["Escute o começo desta palavra:",abWordSay(q.model),"Qual figura começa com o mesmo som?"];
  let big,seq,msgQ;
  if(L===1){big=abPair(q.syl,false);seq=["Qual figura começa com a sílaba",{t:q.syl.toLowerCase(),sel:"#abLeft .ab-letter"},"Toque na figura certa."];msgQ=`🔤 Qual figura começa com a sílaba ${q.syl}?`}
- else if(L===2){big="👂";seq=snd;msgQ="🔤 O adulto fala o som: qual figura começa com ele?"}
+ else if(L===2){big="👂";seq=snd;msgQ="🔤 O(a) mediador(a) fala o som: qual figura começa com ele?"}
  else{big=abPair(e.g,false);seq=["Olhe a letra.",...snd];msgQ=`🔤 Qual figura começa com o som da letra ${e.g}?`}
  abShell(Object.assign(fnHead(words),{say:seq[0],left:fnLeft(`<div class="ab-figwrap"><div class="ab-letter">${big}</div></div>`),right:fnPicOpts(words,"h"),msg:msgQ,next:{label:fnNextLbl(),disabled:true},onBack:fnBackFn(),onRestart:fnRound}));
  fnBindLeft(seq[0],tok,seq);
  fnBindPics(q.w,()=>{fnCapsRev(q.w,L===1?q.syl.length:q.w.match(/^(CH|QU|GU|[^])/)[0].length);
-  fnOk(tok,`${fnPraise()} ${q.w.charAt(0)+q.w.slice(1).toLowerCase()} começa ${L===1?"com a sílaba "+q.syl:"com o som "+fnSn(e)}.`,abWordSay(q.w))},()=>fnBad("Tente de novo! O ADULTO DEVE REPETIR O NOME DAS FIGURAS. 👂"),tok)}
+  fnOk(tok,`${fnPraise()} ${q.w.charAt(0)+q.w.slice(1).toLowerCase()} começa ${L===1?"com a sílaba "+q.syl:"com o som "+fnSn(e)}.`,abWordSay(q.w))},()=>fnBad("Tente de novo! O(A) MEDIADOR(A) DEVE REPETIR O NOME DAS FIGURAS. 👂"),tok)}
 /* ---- 4. Ditado com letras: oral (sem figura nem escrita) e com figura ---- */
 function fnDitR(){
  const S=FN,q=S.qs[S.i],tok=abTok+1,w=q.w,L=[...w],say=abWordSay(w),oral=!!q.oral,lv=S.k%10;
@@ -3193,8 +3222,8 @@ function fnDitR(){
  abShell(Object.assign(fnHead([]),{say,
   left:fnLeft(`<div class="ab-figwrap fn-dit"><div class="ab-fig" id="fnFig"${oral?' style="font-size:min(20cqh,32cqw)"':""}>${oral?"👂":fig}</div><div class="fn-slots" id="fnSlots" style="--n:${L.length}"></div><button class="round-btn fn-erase" id="fnErase" type="button" aria-label="Apagar a última letra">⌫</button><div class="fn-tip" id="fnExp"></div></div>`),
   right:`<div class="ab-board"><div class="ab-grid" style="--cols:${cols};--rows:${rows}">${tiles.map(t=>`<button class="ab-tile" type="button" data-id="${t.id}" aria-label="Letra ${t.c}">${t.c}</button>`).join("")}</div></div>`,
-  msg:oral?"🎧 O adulto fala a palavra; monte com as letras.":"✏️ O adulto fala a palavra. Escreva letra por letra.",next:{label:fnNextLbl(),disabled:true},onBack:fnBackFn(),onRestart:fnRound}));
- fnBindLeft(say,tok,["O adulto fala a palavra. Escreva letra por letra. Toque nas letras na ordem certa.",say]);let done=false,busy=false;const bt=[...document.querySelectorAll(".ab-tile")];
+  msg:oral?"🎧 O(a) mediador(a) fala a palavra; monte com as letras.":"✏️ O(a) mediador(a) fala a palavra. Escreva letra por letra.",next:{label:fnNextLbl(),disabled:true},onBack:fnBackFn(),onRestart:fnRound}));
+ fnBindLeft(say,tok,["O(a) mediador(a) fala a palavra. Escreva letra por letra. Toque nas letras na ordem certa.",say]);let done=false,busy=false;const bt=[...document.querySelectorAll(".ab-tile")];
  const paint=bad=>{$("#fnSlots").innerHTML=slots.map((s,i)=>`<button type="button" class="fn-slot${s?" fill":""}${bad&&bad[i]?" bad":""}${done?" ok":""}" data-i="${i}" aria-label="Posição ${i+1}">${s?esc(s.c):""}</button>`).join("");
   document.querySelectorAll(".fn-slot").forEach(b=>b.onclick=()=>{if(done||busy)return;if(slots[+b.dataset.i])rm(+b.dataset.i)});
   bt.forEach(b=>{const u=slots.some(s=>s&&s.id===+b.dataset.id);b.disabled=u||done;b.classList.toggle("used",u)})};
@@ -3210,10 +3239,10 @@ function fnDitR(){
 function fnJunR(){
  const S=FN,q=S.qs[S.i],tok=abTok+1,opts=shuffle(q.o.slice()),sym=q.ph.map(fnPhL).join(" – ");
  abShell(Object.assign(fnHead(opts),{say:"Junte os sons",left:fnLeft(`<div class="ab-figwrap"><div class="fn-dots" style="--n:${q.ph.length}">${q.ph.map((_,i)=>`<span class="fn-dot" style="background:${PALETTE[i%4]}"></span>`).join("")}</div><div class="ab-cap" id="abCap" style="visibility:hidden">${esc(q.w)}</div><div class="fn-tip" id="fnExp"></div></div>`),
-  right:fnPicOpts(opts,"h"),msg:"🧩 O adulto fala os sons; junte e descubra a palavra",next:{label:fnNextLbl(),disabled:true},onBack:fnBackFn(),onRestart:fnRound}));
+  right:fnPicOpts(opts,"h"),msg:"🧩 O(a) mediador(a) fala os sons; junte e descubra a palavra",next:{label:fnNextLbl(),disabled:true},onBack:fnBackFn(),onRestart:fnRound}));
  const pulse=()=>document.querySelectorAll(".fn-dot").forEach((d,i)=>setTimeout(()=>{if(!abAlive(tok))return;d.classList.add("on");setTimeout(()=>d.classList.remove("on"),800)},i*1000)),l=$("#abLeft");
  l.classList.add("ab-tap");l.setAttribute("role","button");l.tabIndex=0;l.setAttribute("aria-label","Acender os pontos de novo");l.onclick=pulse;l.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pulse()}};setTimeout(()=>{if(abAlive(tok))pulse()},450);
- fnBindPics(q.w,()=>{const c=$("#abCap");c.style.visibility="visible";fnCapsRev(q.w,0);$("#fnExp").textContent=sym+" = "+fnExp(q.w);fnOk(tok,`${fnPraise()} ${sym} = ${q.w}!`,abWordSay(q.w))},()=>fnBad("Tente de novo! Peça ao adulto para repetir os sons. 👂"),tok)}
+ fnBindPics(q.w,()=>{const c=$("#abCap");c.style.visibility="visible";fnCapsRev(q.w,0);$("#fnExp").textContent=sym+" = "+fnExp(q.w);fnOk(tok,`${fnPraise()} ${sym} = ${q.w}!`,abWordSay(q.w))},()=>fnBad("Tente de novo! Peça ao(à) mediador(a) para repetir os sons. 👂"),tok)}
 function fnFinish(){
  const S=FN,p=active();if(!p)return;const d=fnData(p),key=S.et+"|"+S.k;
  const first=!d.n[key];d.n[key]=(d.n[key]||0)+1;d.h[key]=(d.h[key]||0)+S.hit;if(S.na){d.hna=d.hna||{};const q=d.hna[key]=d.hna[key]||{demo:0};q.demo+=S.na.demo.ac;regSess(S)}d.last={et:S.et,k:S.k,at:new Date().toISOString()};saveProfiles();
@@ -3228,7 +3257,7 @@ function fnFinish(){
   next:{label:nx[0],disabled:false,fn:nx[1]},onBack:S.et==="rimas"?fnBlocks:()=>fnLevels(S.et),onRestart:()=>fnStart(S.et,k)});
  celebrateDone();autoClick("#abNext")}
 
-/* ===== Consciência fonológica v3: SEM ÁUDIO — o adulto apresenta oralmente os estímulos; orientações visíveis (realce amarelo) ===== */
+/* ===== Consciência fonológica v3: SEM ÁUDIO — o(a) mediador(a) apresenta oralmente os estímulos; orientações visíveis (realce amarelo) ===== */
 const fnOL=(ic,t,b)=>`<div class="fn-ori-l">${ic} <b>${t}</b> ${b}</div>`;
 const fnOriBox=h=>medBox("ab-ori fn-ori",h);
 const FN_PHL={"ʃ":"ch","ʒ":"j","ɛ":"é","ɔ":"ó","ʎ":"lh","ɲ":"nh","k":"c","ʁ":"rr"},fnPhL=x=>FN_PHL[x]||x;
@@ -3441,7 +3470,7 @@ function flQuiz(){
  const opts=flShuf([{t:Q[1],ok:true},{t:Q[2]},{t:Q[3]}]);
  const cls=caseMode==="l"?"lc":caseMode==="c"?"cur":"uc";
  board.innerHTML=`<div class="fl-qz ${cls}" id="flQz"><div class="fl-qin"><div class="fl-qtag">❓ Pergunta sobre o texto</div><div class="fl-qq" id="flQq">${esc(Q[0])}</div><div class="fl-qtext hidden" id="flQtx">${esc(T.x)}</div><div class="fl-qopts" id="flQo" role="group" aria-label="Alternativas">${opts.map((o,i)=>`<button type="button" class="fl-qo" data-i="${i}">${esc(o.t)}</button>`).join("")}</div><button type="button" class="fl-qre" id="flQre" aria-expanded="false">📖 Reler o texto</button></div></div>`;
- const oi=document.querySelector(".ab-ori-t");if(oi)oi.textContent=(T.lv<=4?"O adulto lê a pergunta em voz alta (as palavras de pergunta ainda não foram treinadas). A criança lê as respostas e toca na certa. ":T.lv<=11?"A criança lê a pergunta e toca na resposta; ajude com as palavras de pergunta (quem, onde, quando…) se preciso. ":"A criança lê a pergunta e toca na resposta. ")+"Se errar, incentive-a a reler o texto e tentar de novo.";
+ const oi=document.querySelector(".ab-ori-t");if(oi)oi.textContent=(T.lv<=4?"O(a) mediador(a) lê a pergunta em voz alta (as palavras de pergunta ainda não foram treinadas). A criança lê as respostas e toca na certa. ":T.lv<=11?"A criança lê a pergunta e toca na resposta; ajude com as palavras de pergunta (quem, onde, quando…) se preciso. ":"A criança lê a pergunta e toca na resposta. ")+"Se errar, incentive-a a reler o texto e tentar de novo.";
  const sb=document.querySelector(".hud-sub");if(sb)sb.textContent=`${T.e} ${T.t} • Compreensão`;
  $("#flQre").onclick=e=>{const tx=$("#flQtx"),b=e.currentTarget,show=tx.classList.contains("hidden");tx.classList.toggle("hidden",!show);b.textContent=show?"❓ Voltar à pergunta":"📖 Reler o texto";b.setAttribute("aria-expanded",show?"true":"false")};
  const bs=[...document.querySelectorAll(".fl-qo")];
@@ -3468,7 +3497,7 @@ function flStop(){}
 function flAlpha(p){p.fluencia=p.fluencia||{};const f=p.fluencia;f.textos=f.textos||{};f.sessoes=f.sessoes||[];return f}
 /* Registro individual do Treino de Leitura Livre (campos por texto em fluencia.textos[id]):
    n = leituras concluídas (n>0 => texto concluído; releituras = n-1) • quando = última leitura • prim = 1ª conclusão
-   ini = leitura iniciada e ainda não concluída • obs/oc = observação do adulto (opcional). Nada disso é avaliação automática da pronúncia. */
+   ini = leitura iniciada e ainda não concluída • obs/oc = observação do(a) mediador(a) (opcional). Nada disso é avaliação automática da pronúncia. */
 function flDate(iso){try{const d=new Date(iso);return isNaN(d)?"":d.toLocaleDateString("pt-BR")}catch(_){return""}}
 function flStats(list,f){
  let c=0,rel=0,last="",ini=0;
@@ -3478,16 +3507,16 @@ const FL_OBS={seg:"leu com segurança",ajuda:"precisou de ajuda",rel:"reler outr
 function flMarkStart(){
  const p=active();if(!p||!FL)return;const f=flAlpha(p),r=f.textos[FL.text.id]=f.textos[FL.text.id]||{n:0};
  if(!(r.n>0))r.ini=new Date().toISOString();saveProfiles()}
-/* após acertar a pergunta: convite à releitura + observação opcional do adulto (sem avaliação automática) */
+/* após acertar a pergunta: convite à releitura + observação opcional do(a) mediador(a) (sem avaliação automática) */
 function flAfter(){
  const box=document.querySelector(".fl-qin");if(!box||!FL||box.querySelector(".fl-after"))return;
  const T=FL.text,tk=FL.tok,w=document.createElement("div"),lab={seg:"✔ Com segurança",ajuda:"🤝 Com ajuda",rel:"🔁 Reler depois"},tt={seg:"Leu com segurança",ajuda:"Precisou de ajuda",rel:"Reler outro dia"};w.className="fl-after";
- w.innerHTML=`<div class="fl-re-t">🔁 Reler ajuda a ler com mais segurança e fluidez, no seu ritmo.</div><div class="fl-row" id="flRow"></div><div class="fl-ob" role="group" aria-label="Observação do adulto"><div class="fl-ob-t">👩‍🏫 Observação do adulto (opcional)</div><div class="fl-ob-b">${Object.keys(lab).map(k=>`<button type="button" class="fl-obb" data-o="${k}" title="${tt[k]}" aria-label="${tt[k]}" aria-pressed="false">${lab[k]}</button>`).join("")}</div></div>`;
+ w.innerHTML=`<div class="fl-re-t">🔁 Reler ajuda a ler com mais segurança e fluidez, no seu ritmo.</div><div class="fl-row" id="flRow"></div><div class="fl-ob" role="group" aria-label="Observação do(a) mediador(a)"><div class="fl-ob-t">👩‍🏫 Observação do(a) mediador(a) (opcional)</div><div class="fl-ob-b">${Object.keys(lab).map(k=>`<button type="button" class="fl-obb" data-o="${k}" title="${tt[k]}" aria-label="${tt[k]}" aria-pressed="false">${lab[k]}</button>`).join("")}</div></div>`;
  box.appendChild(w);
  const row=$("#flRow"),re=$("#flQre"),rb=document.createElement("button");rb.type="button";rb.className="fl-rebtn";rb.id="flReBtn";rb.textContent="🔁 Ler de novo";rb.title="Ler este texto de novo";
  if(re)row.appendChild(re);row.appendChild(rb);
  const qz=$("#flQz");if(qz)qz.classList.add("fin");
- const oi=document.querySelector(".ab-ori-t");if(oi)oi.textContent="Reler e registrar a observação do adulto são opcionais. O aplicativo não avalia a pronúncia.";
+ const oi=document.querySelector(".ab-ori-t");if(oi)oi.textContent="Reler e registrar a observação do(a) mediador(a) são opcionais. O aplicativo não avalia a pronúncia.";
  rb.onclick=()=>{if(abAlive(tk))flStart(T.id)};
  w.querySelectorAll(".fl-obb").forEach(b=>b.onclick=()=>{
   if(!abAlive(tk))return;const k=b.dataset.o,p=active();if(!p)return;
@@ -3496,7 +3525,7 @@ function flAfter(){
   if(FL.obsC&&r.oc[FL.obsC]>0)r.oc[FL.obsC]--;
   r.oc[k]=(r.oc[k]||0)+1;FL.obsC=k;r.obs={c:k,q:new Date().toISOString()};saveProfiles();
   w.querySelectorAll(".fl-obb").forEach(x=>{const on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-pressed",on?"true":"false")});
-  abMsg("Observação do adulto registrada. ✍️")})}
+  abMsg("Observação do(a) mediador(a) registrada. ✍️")})}
 let FL_LVL=1,FL_LV=0;
 /* Treino de Leitura Livre: categoria (1 = textos com palavras simples: níveis 1-4; 2 = palavras complexas: níveis 5-12) -> nível (trilha de 12 níveis, LVN) -> texto */
 function flCat(t){return t.lv<=4?1:2}
@@ -3770,7 +3799,7 @@ function lgTextUnits(k){
  (LG_TC[k]||[]).forEach((u,i)=>out.push({id:k+"-"+(i+1),t:u.t,e:u.e,f:u.f,items:[u.x],sub:u.x.split(/\s+/).length+" palavras • "+u.f,hab:u.f,q:u.q,rk:u.r}));
  return out.map((u,i)=>[u,i]).sort((a,b)=>a[0].rk-b[0].rk||a[1]-b[1]).map(a=>a[0]);
 }
-/* Perguntas de compreensão: o adulto lê a pergunta, confere a resposta esperada e registra como a criança foi (fica em leitura.u[id].comp) */
+/* Perguntas de compreensão: o(a) mediador(a) lê a pergunta, confere a resposta esperada e registra como a criança foi (fica em leitura.u[id].comp) */
 function lgQuizOpen(u){
  if(document.getElementById("lgQzOv"))return;
  const p=active();if(!p||!u||!u.q||!u.q.length)return;
@@ -3914,7 +3943,7 @@ function lgGuideOpen(){
  ov.querySelector("#lgGuideOk").onclick=close;
  ov.querySelector("#lgGuideOk").focus({preventScroll:true});ov.querySelector(".cfg-box").scrollTop=0;
 }
-/* ===== Desafio de leitura: banco inédito + telas + registro do adulto ===== */
+/* ===== Desafio de leitura: banco inédito + telas + registro do(a) mediador(a) ===== */
 /* ===== Desafio de leitura: banco de material INÉDITO (não usado nas listas, frases e textos do treino) ===== */
 const DS_LV={
  p:[["pbp","📘","Palavras simples","Sílabas simples (CV), só com letras já ensinadas"],["pbe","🔗","Encontros e sílabas travadas","BL · BR · TR… e R ou S travando a sílaba"],["pbd","🔠","Dígrafos e ortografia","CH · LH · NH, R, S, ditongos, nasais e acentos"]],
@@ -4100,14 +4129,14 @@ function dsRender(){
  dsFit();requestAnimationFrame(dsFit);setTimeout(dsFit,150);
  window.addEventListener("resize",function f(){if(!abAlive(tk)){window.removeEventListener("resize",f);return}dsFit()});
 }
-/* A criança terminou de ler: o material passa a "visto"; depois, perguntas (se houver) e registro do adulto */
+/* A criança terminou de ler: o material passa a "visto"; depois, perguntas (se houver) e registro do(a) mediador(a) */
 function dsDone(){
  const S=DS;if(!S||S.done||S.end)return;S.done=true;
  const p=active();
  if(p){const D=dsData(p),sn=D.seen[S.k]=Array.isArray(D.seen[S.k])?D.seen[S.k]:[];S.U.ids.forEach(id=>{if(!sn.includes(id))sn.push(id)});if(sn.length>400)sn.splice(0,sn.length-400);saveProfiles()}
  if(S.U.q&&S.U.q.length)dsQuizOpen();else dsRegOpen();
 }
-/* Perguntas de compreensão: a resposta esperada só aparece ao adulto, depois que a criança responde */
+/* Perguntas de compreensão: a resposta esperada só aparece ao(à) mediador(a), depois que a criança responde */
 function dsQuizOpen(){
  if(document.getElementById("dsQzOv"))return;
  const S=DS;if(!S)return;const U=S.U,Q=U.q,tot=Q.length;let i=0,ok=0,pt=0;
@@ -4117,7 +4146,7 @@ function dsQuizOpen(){
  const fim=n=>{S.comp=n>0?{ok,pt,tot:n}:null;ov.remove();dsRegOpen()};
  const show=()=>{
   const q=Q[i],imp=q[2]==="i";
-  ov.innerHTML=box(`<div class="cfg-sec"><b>Pergunta ${i+1} de ${tot} • ${imp?"💡 Pense e responda":"📍 Procure no texto"}</b></div><p class="ds-q">${esc(q[0])}</p>${rev}<div id="dsQAns" class="small" style="display:none;margin:0 0 10px"><b>Resposta esperada (para o adulto):</b> ${esc(q[1])}</div><div class="cfg-actions" id="dsQS"><button class="secondary" id="dsQSkip" type="button">Pular perguntas</button><button class="secondary" id="dsQShow" type="button">👩‍🏫 Orientação do mediador: ver resposta esperada</button></div><div class="cfg-actions" id="dsQJ" style="display:none"><button class="secondary" id="dsQNo" type="button">🙂 Precisou de ajuda</button><button class="secondary" id="dsQPt" type="button">🤔 Em parte</button><button class="primary" id="dsQYes" type="button">😀 Respondeu bem</button></div>`);
+  ov.innerHTML=box(`<div class="cfg-sec"><b>Pergunta ${i+1} de ${tot} • ${imp?"💡 Pense e responda":"📍 Procure no texto"}</b></div><p class="ds-q">${esc(q[0])}</p>${rev}<div id="dsQAns" class="small" style="display:none;margin:0 0 10px"><b>Resposta esperada (para o(a) mediador(a)):</b> ${esc(q[1])}</div><div class="cfg-actions" id="dsQS"><button class="secondary" id="dsQSkip" type="button">Pular perguntas</button><button class="secondary" id="dsQShow" type="button">👩‍🏫 Orientação do mediador: ver resposta esperada</button></div><div class="cfg-actions" id="dsQJ" style="display:none"><button class="secondary" id="dsQNo" type="button">🙂 Precisou de ajuda</button><button class="secondary" id="dsQPt" type="button">🤔 Em parte</button><button class="primary" id="dsQYes" type="button">😀 Respondeu bem</button></div>`);
   ov.querySelector("#dsQShow").onclick=()=>{ov.querySelector("#dsQAns").style.display="block";ov.querySelector("#dsQS").style.display="none";ov.querySelector("#dsQJ").style.display="flex"};
   ov.querySelector("#dsQSkip").onclick=()=>fim(i);
   const nx=g=>{if(g===2)ok++;else if(g===1)pt++;i++;i<tot?show():fim(tot)};
@@ -4150,7 +4179,7 @@ function dsRegOpen(){
  ${cp?`<p class="small" style="margin:0 0 6px">Perguntas: <b>${cp.ok}</b> respondidas bem${cp.pt?`, <b>${cp.pt}</b> em parte`:""} de <b>${cp.tot}</b>.</p>`:""}
  <div class="cfg-pace">${rad("dsC","b","Compreendeu bem",cgDef==="b")}${rad("dsC","p","Compreendeu em parte",cgDef==="p")}${rad("dsC","a","Precisou de ajuda para compreender",cgDef==="a")}${rad("dsC","x","Não avaliada",cgDef==="x")}</div>
  <div class="cfg-sec"><b>Observações (opcional)</b></div>
- <textarea class="ds-obs" id="dsObs" maxlength="300" placeholder="Ex.: confundiu LH e NH; leu melhor a segunda vez" aria-label="Observações do adulto"></textarea>
+ <textarea class="ds-obs" id="dsObs" maxlength="300" placeholder="Ex.: confundiu LH e NH; leu melhor a segunda vez" aria-label="Observações do(a) mediador(a)"></textarea>
  <p class="small" id="dsErr" style="color:#b54747;font-weight:800;margin:6px 0 0;display:none">Escolha como foi a leitura: com autonomia ou com ajuda.</p>
  <div class="cfg-actions"><button class="secondary" id="dsRSkip" type="button">Pular registro</button><button class="primary" id="dsRSave" type="button">Salvar registro</button></div></div>`;
  document.body.appendChild(ov);
@@ -4512,17 +4541,20 @@ function idbDel(k){if(!idb)return;try{idb.transaction("a","readwrite").objectSto
 const AC={a:"á",e:"ê",i:"í",o:"ô",u:"ú"};
 function resp(sy){let t=sy.toLowerCase();if(/[áéíóúâêôãõ]/.test(t))return t;
  return t.replace(/^(qu|gu|ch|lh|nh|[bcdfghjklmnpqrstvxz]*)([aeiou])([^aeiou]*)$/,(m,o,v,c)=>o+AC[v]+c)}
-function say(items,done){++tok;/* sem voz nem gravações: o adulto fala */if(done)done()}
+function say(items,done){++tok;/* sem voz nem gravações: o(a) mediador(a) fala */if(done)done()}
 const aW=w=>[{k:"w",t:w}];
 const aS=S=>S.flatMap(s=>[{k:"s",t:s},{gap:220}]);
 const aModel=x=>[...aS(x.s),{gap:250},{k:"w",t:x.w}];
 const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const COL=["#ff3da8","#ff8a1f","#2f9cf4","#22b573"];
+/* Embaralha as opções evitando que sílabas consecutivas da palavra (em qualquer sentido) fiquem lado a lado, e que repita a ordem anterior */
+const shufSeq=(items,seq,prev)=>{const adj=a=>{let n=0;for(let i=0;i<a.length-1;i++)for(let k=0;k<seq.length-1;k++)if((a[i]===seq[k]&&a[i+1]===seq[k+1])||(a[i]===seq[k+1]&&a[i+1]===seq[k]))n++;return n},same=(a,b)=>!!b&&a.length===b.length&&a.every((v,i)=>v===b[i]);
+ let best=null,bs=1e9;for(let t=0;t<400;t++){const c=shuf([...items]),sc=adj(c)+(same(c,prev)?50:0);if(sc<bs){bs=sc;best=c;if(!sc)break}}return best||[...items]};
 const fig=(x,nocap)=>x.p?`<div class="fig-emoji">🪄</div><div class="fig-cap">palavra inventada</div>`:`<div class="fig-emoji">${figureMarkup({w:x.w,e:x.e,img:x.img})}</div>${nocap?"":`<div class="fig-cap">${esc(x.w)}</div>`}`;
 /* ---- casca do jogo (mesmo layout das demais atividades) ---- */
 function shell(title,sub,back){
  document.body.classList.add("game-mode");stage="pw";
- $("#appMain").innerHTML=`<section class="game${caseClass()}" id="game"><div class="hud"><button class="hud-btn" id="menuBtn" type="button" aria-label="Menu">☰</button><div class="hud-title"><strong>${title}</strong><span class="hud-sub">${sub}</span></div><div class="hud-menu hidden" id="hudMenu"><button type="button" data-go="student">👤 Menu do participante</button><button type="button" data-go="classes">🏫 Grupos e participantes</button><button type="button" data-go="cfg">⚙️ Configurações do jogo</button><button type="button" data-go="home">⌂ Menu inicial</button><button type="button" data-go="profile">👤 Meu perfil</button><button type="button" data-go="logout">🚪 Sair da conta</button></div></div><div class="stage-body stage-build" id="stageBody"></div><div class="bottom"><button class="round-btn" id="pwBack" type="button" aria-label="Voltar">◀</button><div class="bottom-text"><div class="feedback" id="feedback" aria-live="polite"></div></div><button class="round-btn hidden" id="pwRestart" type="button" aria-label="Reiniciar" title="Recomeçar esta etapa">↻</button><button class="round-btn hidden" id="pwHelp" type="button" aria-label="Ajuda" title="Ajuda (dica)">💡</button><button class="go-btn" id="nextStage" type="button" disabled>Próxima ▶</button><div class="hud-right"><button class="hud-btn" id="cfgBarBtn" type="button" aria-label="Configurações do jogo" title="Configurações do jogo">⚙️</button><button class="hud-btn" id="soundBtn" type="button" aria-label="Som">${soundOn?"🔊":"🔇"}</button><button class="hud-btn" id="fsBtn" type="button" aria-label="Tela cheia">⛶</button></div></div></section>`;
+ $("#appMain").innerHTML=`<section class="game${caseClass()}" id="game"><div class="hud"><button class="hud-btn" id="menuBtn" type="button" aria-label="Menu">☰</button><div class="hud-title"><strong>${title}</strong><span class="hud-sub">${sub}</span></div><div class="hud-menu hidden" id="hudMenu"><button type="button" data-go="student">👤 Menu do participante</button><button type="button" data-go="classes">🏫 Grupos e participantes</button><button type="button" data-go="cfg">⚙️ Configurações do jogo</button><button type="button" data-go="home">⌂ Menu inicial</button><button type="button" data-go="profile">👤 Meu perfil</button><button type="button" data-go="logout">🚪 Sair da conta</button></div></div><div class="stage-body stage-build" id="stageBody"></div><div class="bottom"><button class="round-btn" id="pwBack" type="button" aria-label="Voltar">◀</button><div class="bottom-text"><div class="feedback" id="feedback" aria-live="polite"></div></div><button class="round-btn hidden" id="pwShuf" type="button" aria-label="Embaralhar de novo" title="Embaralhar de novo">🔀</button><button class="round-btn hidden" id="pwRestart" type="button" aria-label="Reiniciar" title="Recomeçar esta etapa">↻</button><button class="round-btn hidden" id="pwHelp" type="button" aria-label="Ajuda" title="Ajuda (dica)">💡</button><button class="go-btn" id="nextStage" type="button" disabled>Próxima ▶</button><div class="hud-right"><button class="hud-btn" id="cfgBarBtn" type="button" aria-label="Configurações do jogo" title="Configurações do jogo">⚙️</button><button class="hud-btn" id="soundBtn" type="button" aria-label="Som">${soundOn?"🔊":"🔇"}</button><button class="hud-btn" id="fsBtn" type="button" aria-label="Tela cheia">⛶</button></div></div></section>`;
  {const sb=$("#stageBody");if(sb)sb.classList.add("pw-top")} const menu=$("#hudMenu");$("#menuBtn").onclick=e=>{e.stopPropagation();menu.classList.toggle("hidden")};
  $("#game").onclick=e=>{if(!menu.contains(e.target))menu.classList.add("hidden")};
  menu.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{const g=b.dataset.go;say([]);if(g==="student")renderStudentMenu();else if(g==="classes")renderClassDashboard();else if(g==="cfg"){menu.classList.add("hidden");openCfg()}else if(g==="home")renderHome();else if(g==="profile")renderProfile();else if(g==="logout"){if(confirm("Deseja sair da conta do responsável?"))logoutTeacher("Você saiu da conta.")}});
@@ -4538,8 +4570,8 @@ let grp="simples_montar";
 function trail(g){say([]);grp=g||grp;const p=active();if(!p){renderClassDashboard();return}
  const [a,b]=GRP[grp],pct=l=>Math.round(doneN(p,l)/inLv(l).length*100);
  let cards="";for(let l=a;l<=b;l++){const n=inLv(l).length;cards+=`<button class="ab-lvl" data-lv="${l}" type="button"><strong>🧩 ${l}. ${LVN[l][0]}</strong><span class="ab-lvl-d">${LVN[l][1]}</span><div class="progress"><span style="width:${pct(l)}%"></span></div><span class="small">${doneN(p,l)+" de "+n+" palavras"}</span></button>`}
- const acts=[["esc","👂","Qual palavra você ouviu?","Palavras parecidas: GATO, GALO, PATO"],["rr","🔤","RR e SS","Aprenda os sons e a escrita"],["pse","🪄","Palavras inventadas","Leia sem figura e sem decorar"]].map(x=>`<button class="ab-lvl" data-act="${x[0]}" type="button"><strong>${x[1]} ${x[2]}</strong><span class="ab-lvl-d">${x[3]}</span></button>`).join("");
- abShell({title:"Sílabas e palavras",rp:"cat:"+grp,sub:grp==="simples_montar"?"🧩 Palavras Simples":"🧩 Palavras Complexas",noSound:true,single:`<div class="ab-board ab-levels" style="overflow-y:auto;align-content:start;grid-template-rows:none;grid-auto-rows:minmax(clamp(96px,22vh,150px),auto)">${cards}${acts}</div>`,msg:"🧩 Escolha um nível ou atividade para jogar",onBack:renderStudentMenu});
+ const acts=(grp==="complexas_montar"?[["mix","👂","Qual palavra você ouviu?","Palavras parecidas: GATO, GALO, PATO"]]:[["esc","👂","Qual palavra você ouviu?","Palavras parecidas: GATO, GALO, PATO"],["rr","🔤","RR e SS","Aprenda os sons e a escrita"],["pse","🪄","Palavras inventadas","Leia sem figura e sem decorar"]]).map(x=>`<button class="ab-lvl" data-act="${x[0]}" type="button"><strong>${x[1]} ${x[2]}</strong><span class="ab-lvl-d">${x[3]}</span>${x[0]==="mix"?`<div class="progress"><span style="width:${Math.min(100,((D(p).q.mix||{}).n||0)*20)}%"></span></div>`:""}</button>`).join("");
+ abShell({title:"Sílabas e palavras",rp:"cat:"+grp,sub:grp==="simples_montar"?"🧩 Palavras Simples":"🧩 Palavras Complexas",noSound:true,single:`<div class="ab-board ab-levels ab-trail" style="overflow-y:auto;align-content:start;align-content:safe center;grid-template-rows:none;grid-auto-rows:minmax(clamp(58px,11vh,84px),auto)">${cards}${acts}</div>`,msg:"🧩 Escolha um nível ou atividade para jogar",onBack:renderStudentMenu});
  document.querySelectorAll("[data-lv]").forEach(b=>b.onclick=()=>startLv(+b.dataset.lv));
  document.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>b.dataset.act==="rr"?lesson():startQ(b.dataset.act))}
 /* ---- palavra: etapa 1 ditado, etapa 2 leitura ---- */
@@ -4548,31 +4580,20 @@ function startLv(l){const p=active(),list=inLv(l);let i=list.findIndex(x=>!isDon
 function distract(x){const pool=bank().filter(y=>y.lv<=x.lv&&!y.p===!x.p).flatMap(y=>y.s),need=new Set(x.s);
  const sim=distinct(pool).filter(s=>!need.has(s)&&x.s.some(t=>t[0]===s[0]||t.slice(-1)===s.slice(-1)));
  return shuf(sim.length>=2?sim:distinct(pool).filter(s=>!need.has(s))).slice(0,2)}
-function word1(){const S=ST,x=S.list[S.i];S.got=[];S.ok=false;S.err=0;S.help=0;S.opts=shuf([...x.s,...distract(x)]);
- shell(`Palavra ${S.i+1} de ${S.list.length}`,`Etapa 1 de 2 · Junte as sílabas`,()=>trail());draw1();setTimeout(()=>say(aW(x.w)),300);
- fb("Toque nas sílabas na ordem da palavra");{const r=$("#pwRestart");r.classList.remove("hidden");r.onclick=()=>{S.ok=false;S.got=[];const nb=$("#nextStage");nb.disabled=true;nb.textContent="Próxima ▶";draw1();say(aW(x.w));fb("↻ Vamos recomeçar! O ADULTO DEVE REPETIR A PALAVRA. Toque nas sílabas na ordem.")}}
- $("#pwHelp").onclick=()=>{if(S.ok)return;S.help++;rec(x.w,{help:1});const k=S.opts.findIndex((o,i)=>o===x.s[S.got.length]&&!S.got.some(g=>g.i===i));draw1(k);say([...aW(x.w),{gap:300},...aS(x.s)]);fb("💡 O ADULTO DEVE REPETIR A PALAVRA. A sílaba brilhando é a próxima.")}}
+function word1(){const S=ST,x=S.list[S.i];S.got=[];S.ok=false;S.err=0;S.help=0;S.logged=false;S.opts=shufSeq([...x.s,...distract(x)],x.s);
+ shell(`Palavra ${S.i+1} de ${S.list.length}`,`Etapa 1 · Junte as sílabas`,()=>trail());draw1();setTimeout(()=>say(aW(x.w)),300);
+ fb("Toque nas sílabas na ordem da palavra");{const sh=$("#pwShuf");sh.classList.remove("hidden");sh.onclick=()=>{if(S.ok)return;S.got=[];S.opts=shufSeq(S.opts,x.s,S.opts);draw1();fb("🔀 Sílabas embaralhadas! Toque nas sílabas na ordem da palavra.")}}{const r=$("#pwRestart");r.classList.remove("hidden");r.onclick=()=>{S.ok=false;S.got=[];const nb=$("#nextStage");nb.disabled=true;nb.textContent="Próxima ▶";draw1();say(aW(x.w));fb("↻ Vamos recomeçar! O(A) MEDIADOR(A) DEVE REPETIR A PALAVRA. Toque nas sílabas na ordem.")}}
+ $("#pwHelp").onclick=()=>{if(S.ok)return;S.help++;rec(x.w,{help:1});const k=S.opts.findIndex((o,i)=>o===x.s[S.got.length]&&!S.got.some(g=>g.i===i));draw1(k);say([...aW(x.w),{gap:300},...aS(x.s)]);fb("💡 O(A) MEDIADOR(A) DEVE REPETIR A PALAVRA. A sílaba brilhando é a próxima.")}}
 function draw1(hint){const S=ST,x=S.list[S.i],n=x.s.length;
  const slots=x.s.map((sy,i)=>{const g=S.got[i];return `<div class="slot-wrap"><button type="button" class="slot2 ${S.ok?"ok":g?"fill":"empty"}" data-slot="${i}" style="${S.ok?"color:"+COL[i%4]:""}">${S.ok?esc(sy):g?esc(g.s):"&nbsp;"}</button></div>`}).join("");
- $("#stageBody").innerHTML=`${ori(x.p?ori2(`<b class="pw-hl">${esc(x.w)}</b>`,"Toque nas sílabas, na ordem, para formar a palavra."):ori2(`<b class="pw-hl">${esc(x.s.join(" – "))}</b>`,"Toque nas sílabas que formam a palavra, na ordem."))}<div class="pw-row"><div class="board build"><div class="opts" style="--n:${S.opts.length}">${S.opts.map((o,i)=>`<button type="button" class="opt${hint===i?" hint":""}" data-i="${i}" style="--len:${o.length}" ${S.ok||S.got.some(g=>g.i===i)?"disabled":""}><span class="cell-t">${esc(o)}</span></button>`).join("")}</div></div><div class="side"><div><button class="pw-ear" id="pwEar" type="button">🔊 Ouvir a palavra</button><div class="slots" style="--n:${n}">${slots}</div></div>${S.ok?`<div class="fig-box">${fig(x)}</div>`:`<div></div>`}</div></div>`;
+ $("#stageBody").innerHTML=`${ori(ori3(x.lv>=5?"Fale a palavra ou sílaba solicitada e peça ao aprendente que selecione as opções na ordem correta. Após concluir, a imagem será exibida; incentive-o a ler a palavra em voz alta.":"Fale a palavra solicitada e peça ao aprendente que selecione as sílabas na ordem correta. Após concluir, a imagem será exibida; incentive-o a ler a palavra em voz alta.",`Fale <b class="pw-hl">${esc(x.s.join("-"))}</b>.`))}<div class="pw-row"><div class="board build"><div class="opts" style="--n:${S.opts.length}">${S.opts.map((o,i)=>`<button type="button" class="opt${hint===i?" hint":""}" data-i="${i}" style="--len:${o.length}" ${S.ok||S.got.some(g=>g.i===i)?"disabled":""}><span class="cell-t">${esc(o)}</span></button>`).join("")}</div></div><div class="side"><div><button class="pw-ear" id="pwEar" type="button">🔊 Ouvir a palavra</button><div class="slots" style="--n:${n}">${slots}</div></div>${S.ok?`<div class="fig-box">${fig(x)}</div>`:`<div></div>`}</div></div>`;
  $("#pwEar").onclick=()=>say(aW(x.w));
  document.querySelectorAll("[data-slot]").forEach(b=>b.onclick=()=>{if(S.ok)return;const i=+b.dataset.slot;if(!S.got[i])return;S.got.length=i;draw1()});
  document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{if(S.ok)return;const i=+b.dataset.i;S.got.push({s:S.opts[i],i});say([{k:"s",t:S.opts[i]}]);
   if(S.got.length<n){draw1();return}
   const okk=S.got.map(g=>g.s).join("")===x.w;
-  if(okk){S.ok=true;rec(x.w,{att:1,ok:1});if(S.help===0)rec(x.w,{au:1});celebrateDone();abTick(true);draw1();fb((x.p?"✅ Muito bem! Palavra inventada formada.":"✅ Isso! A palavra é "+x.w+"."));setTimeout(()=>say(aW(x.w)),350);nextBtn("Etapa 2 ▶",word2)}
-  else{S.err++;rec(x.w,{att:1,err:1});abTick(false);draw1();document.querySelectorAll(".slot2").forEach(e=>e.classList.add("wrong"));fb("❌ Ainda não. O ADULTO DEVE REPETIR A PALAVRA. Tente outra vez.");setTimeout(()=>{if(stage!=="pw"||S.ok)return;S.got=[];draw1();say(aW(x.w))},1000)}})}
-function word2(){const S=ST,x=S.list[S.i],n=x.s.length;S.tap=new Set();S.wt=false;S.logged=false;
- shell(`Palavra ${S.i+1} de ${S.list.length}`,`Etapa 2 de 2 · Leia a palavra`,()=>trail());
- $("#stageBody").innerHTML=`${ori(ori2(null,"Toque em cada sílaba e leia a palavra em voz alta.","Ajude na leitura, se precisar."))}<div class="pw-row"><div class="board win"><div class="win-word">${x.s.map((sy,i)=>`<button type="button" class="pw-sy" data-i="${i}" style="color:${COL[i%4]}">${esc(sy)}</button>`).join("")}</div></div><div class="side"><div></div><div id="pwFig"></div></div></div>`;
- fb("Toque em cada sílaba e leia a palavra.");
- const chk=()=>{if(S.tap.size===n){if(!S.logged){rec(x.w,{n:1});S.logged=true}{const fg=$("#pwFig");if(fg)fg.outerHTML=`<div class="fig-box" id="pwFig">${fig(x)}</div>`}celebrateDone();fb("🎉 Muito bem! Palavra lida. Aperte o botão para continuar.");const last=S.i+1>=S.list.length;nextBtn(last?"Concluir ▶":"Próxima palavra ▶",()=>{if(last)lvEnd();else{S.i++;word1()}})}};
- document.querySelectorAll(".pw-sy").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(S.tap.has(i)||S.tap.size>=n)return;const nx=S.tap.size;
-  if(i!==nx&&x.s[i]!==x.s[nx]){b.classList.add("wrong");setTimeout(()=>b.classList.remove("wrong"),450);fb("❌ Ainda não. Toque nas sílabas na ordem em que a palavra é escrita, da esquerda para a direita.");return}
-  S.tap.add(i);b.classList.add("on");fb("Toque em cada sílaba e leia a palavra.");say([{k:"s",t:x.s[i]}]);chk()});
- 
- {const r=$("#pwRestart");r.classList.remove("hidden");r.onclick=()=>{S.tap=new Set();const nb=$("#nextStage");nb.disabled=true;nb.textContent="Próxima ▶";document.querySelectorAll(".pw-sy").forEach(e=>e.classList.remove("on"));{const fg=$("#pwFig");if(fg)fg.outerHTML='<div id="pwFig"></div>'}fb("↻ Recomeçando a leitura.")}}
- $("#pwHelp").onclick=()=>{S.help++;rec(x.w,{help:1});say(aModel(x));fb("💡 Adulto, leia a palavra devagar, sílaba por sílaba. Agora a criança lê!")}}
+  if(okk){S.ok=true;rec(x.w,{att:1,ok:1});if(S.help===0)rec(x.w,{au:1});celebrateDone();abTick(true);draw1();fb((x.p?"✅ Muito bem! Palavra inventada formada. Leia em voz alta.":"✅ Isso! A palavra é "+x.w+". Leia em voz alta."));setTimeout(()=>say(aW(x.w)),350);if(!S.logged){rec(x.w,{n:1});S.logged=true}const last=S.i+1>=S.list.length;nextBtn(last?"Concluir ▶":"Próxima palavra ▶",()=>{if(last)lvEnd();else{S.i++;word1()}})}
+  else{S.err++;rec(x.w,{att:1,err:1});abTick(false);draw1();document.querySelectorAll(".slot2").forEach(e=>e.classList.add("wrong"));fb("❌ Ainda não. O(A) MEDIADOR(A) DEVE REPETIR A PALAVRA. Tente outra vez.");setTimeout(()=>{if(stage!=="pw"||S.ok)return;S.got=[];draw1();say(aW(x.w))},1000)}})}
 function lvEnd(){const p=active(),l=ST.lv,all=doneN(p,l)>=inLv(l).length;$("#appMain").innerHTML=`<section class="panel" style="text-align:center"><div style="font-size:4rem">🎉</div><h1>${all?"Nível concluído!":"Muito bem!"}</h1><p>${l}. ${LVN[l][0]} — ${doneN(p,l)} de ${inLv(l).length} palavras.</p><div class="row" style="justify-content:center"><button class="primary" id="a1">${all&&l<12?"Próximo nível":"Continuar"}</button><button class="secondary" id="a2">Voltar à trilha</button></div></section>`;document.body.classList.remove("game-mode");
  celebrateDone();$("#a1").onclick=()=>all&&l<12?startLv(l+1):startLv(l);$("#a2").onclick=()=>trail(l<=4?"simples_montar":"complexas_montar")}
 /* ---- quizzes: escuta com alternativas semelhantes, RR/SS e pseudopalavras ---- */
@@ -4580,31 +4601,38 @@ function lev(a,b){const m=[];for(let i=0;i<=a.length;i++){m[i]=[i];for(let j=1;j
 const SW={P:"B",B:"P",T:"D",D:"T",F:"V",V:"F",M:"N",N:"M",C:"G",G:"C"};
 function mutate(w){const o=[];[0,w.length-2].forEach(i=>{const c=SW[w[i]];if(c&&!(("CG".includes(w[i]))&&/[EI]/.test(w[i+1])))o.push(w.slice(0,i)+c+w.slice(i+1))});return o}
 function spell(w){return distinct([w.replace(/RR/g,"R"),w.replace(/SS/g,"S"),w.replace(/SS/g,"Ç"),w.replace(/RR/,"R").replace(/^R/,"RR"),w.replace(/S(?=[AEIOU])/g,"Z")].filter(x=>x!==w))}
-function makeQs(kind){const p=active(),open=bank();
+function makeQs(kind,flt){const p=active(),open=bank().filter(flt||(()=>true));
+ if(kind==="mix"){const [a,b]=GRP.complexas_montar,f=x=>x.lv>=a&&x.lv<=b,g=k=>makeQs(k,f).map(q=>({...q,k})),seen=new Set(),out=[];
+  const L={esc:g("esc"),rr:g("rr"),pse:g("pse")},want={esc:4,rr:3,pse:3},take=(k,n)=>{while(n>0&&L[k].length){const q=L[k].shift();if(seen.has(q.t))continue;seen.add(q.t);out.push(q);n--}return n};
+  let miss=0;for(const k of["esc","rr","pse"])miss+=take(k,want[k]);
+  for(const k of["esc","pse","rr"])if(miss>0)miss=take(k,miss);
+  return shuf(out)}
  const real=open.filter(x=>!x.p);
  if(kind==="esc")return shuf(real).slice(0,10).map(x=>{const d=real.filter(y=>y.w!==x.w&&lev(x.w,y.w)<=2).sort((a,b)=>lev(x.w,a.w)-lev(x.w,b.w)+Math.random()-.5).slice(0,3).map(y=>y.w);
    const f=shuf(real.filter(y=>y.w!==x.w&&!d.includes(y.w))).slice(0,Math.max(0,2-d.length)).map(y=>y.w);return {x,t:x.w,opts:shuf([x.w,...d,...f])}});
  if(kind==="rr")return shuf(open.filter(x=>!x.p&&/RR|SS/.test(x.w))).slice(0,10).map(x=>({x,t:x.w,opts:shuf([x.w,...distinct([...shuf(spell(x.w)),...bank().filter(y=>!y.p&&y.w!==x.w&&lev(x.w,y.w)<=2).map(y=>y.w),x.w.replace(/RR/,"RH").replace(/SS/,"SC")]).filter(w=>w!==x.w).slice(0,3)])}));
  const ps=open.filter(x=>x.p);return shuf(ps).slice(0,10).map(x=>{let d=mutate(x.w).filter(w=>!ps.some(y=>y.w===w));d=distinct([...d,...shuf(ps.filter(y=>y.w!==x.w&&y.s.length===x.s.length)).map(y=>y.w)]).slice(0,3);return {x,t:x.w,opts:shuf([x.w,...d])}})}
-const QT={esc:"Qual palavra você ouviu?",rr:"RR e SS: escreva certo",pse:"Palavra inventada"};
+const QT={esc:"Qual palavra você ouviu?",rr:"RR e SS: escreva certo",pse:"Palavra inventada",mix:"Qual palavra você ouviu?"};
 let Q=null;
 function startQ(kind){const qs=makeQs(kind);if(qs.length<3){alert("Ainda há poucas palavras para esta atividade.");return}Q={kind,qs,i:0,ok:0,err:0,help:0,att:0};qn()}
-function qn(){const Z=Q,q=Z.qs[Z.i];Z.first=true;Z.done=false;Z.off=new Set();
+function qn(){const Z=Q,q=Z.qs[Z.i];Z.first=true;Z.done=false;Z.off=new Set();const reshuf=()=>{const o=q.opts.slice();let t=0;do{q.opts=shuf(o)}while(t++<10&&o.length>1&&q.opts.join("|")===o.join("|"))};
  shell(`Pergunta ${Z.i+1} de ${Z.qs.length}`,QT[Z.kind],()=>trail());
- const draw=()=>{$("#stageBody").innerHTML=`${ori(ori2(`<b class="pw-hl">${esc(q.t)}</b>`,Z.kind==="pse"?"Toque na palavra inventada que o adulto falou.":"Toque na palavra que o adulto falou."))}<div class="pw-row"><div class="board build"><div class="opts" style="--n:${q.opts.length}">${q.opts.map((o,i)=>`<button type="button" class="opt" data-i="${i}" style="--len:${o.length}" ${Z.done||Z.off.has(i)?"disabled":""}><span class="cell-t">${esc(o)}</span></button>`).join("")}</div></div><div class="side"><div><button class="pw-ear" id="pwEar" type="button">🔊 Ouvir</button></div>${Z.done&&Z.kind!=="pse"?`<div class="fig-box">${fig(q.x)}</div>`:"<div></div>"}</div></div>`;
+ const draw=()=>{$("#stageBody").innerHTML=`${ori(Z.kind==="mix"?ori3("Fale a palavra solicitada e peça ao aprendente que a selecione. Após concluir, a imagem será exibida; incentive-o a ler a palavra em voz alta. Quando a imagem não for apresentada, esta é uma palavra inventada.",`Fale <b class="pw-hl">${esc(q.t)}</b>.`):ori2(`<b class="pw-hl">${esc(q.t)}</b>`,(q.k||Z.kind)==="pse"?"Toque na palavra inventada que o(a) mediador(a) falou.":"Toque na palavra que o(a) mediador(a) falou."))}<div class="pw-row"><div class="board build"><div class="opts" style="--n:${q.opts.length}">${q.opts.map((o,i)=>`<button type="button" class="opt" data-i="${i}" style="--len:${o.length}" ${Z.done||Z.off.has(o)?"disabled":""}><span class="cell-t">${esc(o)}</span></button>`).join("")}</div></div><div class="side"><div><button class="pw-ear" id="pwEar" type="button">🔊 Ouvir</button>${Z.done&&q.x.p?`<div class="slots" style="--n:${q.x.s.length}">${q.x.s.map((sy,i)=>`<div class="slot-wrap"><button type="button" class="slot2 ok" style="color:${COL[i%4]}">${esc(sy)}</button></div>`).join("")}</div>`:""}</div>${Z.done?`<div class="fig-box">${fig(q.x)}</div>`:"<div></div>"}</div></div>`;
   $("#pwEar").onclick=()=>say(aW(q.t));
   document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;Z.att++;
-   if(q.opts[i]===q.t){Z.done=true;if(Z.first)Z.ok++;abTick(true);draw();fb("✅ Isso mesmo: "+q.t+"!");setTimeout(()=>say(aW(q.t)),300);const last=Z.i+1>=Z.qs.length;nextBtn(last?"Ver resultado ▶":"Próxima ▶",()=>{if(last)qEnd();else{Z.i++;qn()}})}
-   else{Z.first=false;Z.err++;Z.off.add(i);abTick(false);draw();fb("❌ O ADULTO DEVE REPETIR A PALAVRA. Tente outra opção.");say(aW(q.t))}})};
- draw();setTimeout(()=>say(aW(q.t)),300);fb("Toque na palavra que o adulto falou");
- $("#pwHelp").onclick=()=>{if(Z.done)return;const w=q.opts.map((o,i)=>i).filter(i=>q.opts[i]!==q.t&&!Z.off.has(i));if(w.length>1){Z.off.add(w[0]);Z.help++}else Z.help++;draw();say(aW(q.t));fb("💡 Tirei uma opção. O ADULTO DEVE REPETIR A PALAVRA.")}}
+   if(q.opts[i]===q.t){Z.done=true;if(Z.first)Z.ok++;celebrateDone();abTick(true);draw();fb("✅ Isso mesmo: "+q.t+"!");setTimeout(()=>say(aW(q.t)),300);const last=Z.i+1>=Z.qs.length;nextBtn(last?"Ver resultado ▶":"Próxima ▶",()=>{if(last)qEnd();else{Z.i++;qn()}})}
+   else{Z.first=false;Z.err++;abTick(false);reshuf();draw();fb("❌ O(A) MEDIADOR(A) DEVE REPETIR A PALAVRA. Tente outra opção.");say(aW(q.t))}})};
+ draw();setTimeout(()=>say(aW(q.t)),300);fb("Toque na palavra que o(a) mediador(a) falou");
+ {const r=$("#pwRestart");r.classList.remove("hidden");r.title="Refazer a atividade";r.setAttribute("aria-label","Refazer a atividade");r.onclick=()=>{if((Z.i>0||Z.done)&&!confirm("Refazer a atividade desde o início?"))return;startQ(Z.kind)}}
+ {const sh=$("#pwShuf");sh.classList.remove("hidden");sh.onclick=()=>{if(Z.done)return;const o=q.opts.slice();let t=0;do{q.opts=shuf(o.slice())}while(t++<20&&o.length>1&&q.opts.join("|")===o.join("|"));draw();fb("🔀 Palavras embaralhadas! Toque na palavra que o(a) mediador(a) falou.")}}
+ $("#pwHelp").onclick=()=>{if(Z.done)return;const w=q.opts.filter(o=>o!==q.t&&!Z.off.has(o));if(w.length>1){Z.off.add(w[0]);Z.help++}else Z.help++;draw();say(aW(q.t));fb("💡 Tirei uma opção. O(A) MEDIADOR(A) DEVE REPETIR A PALAVRA.")}}
 function qEnd(){const Z=Q;recQ(Z.kind,{att:Z.att,ok:Z.ok,err:Z.err,help:Z.help,n:1});document.body.classList.remove("game-mode");
  $("#appMain").innerHTML=`<section class="panel" style="text-align:center"><div style="font-size:4rem">🎉</div><h1>${QT[Z.kind]}</h1><p>Atividade concluída! Você conseguiu!</p><div class="row" style="justify-content:center"><button class="primary" id="a1">Jogar de novo</button><button class="secondary" id="a2">Voltar à trilha</button></div></section>`;
  celebrateDone();$("#a1").onclick=()=>startQ(Z.kind);$("#a2").onclick=()=>trail()}
 /* ---- lição RR e SS ---- */
 function lesson(){say([]);stage="pw-menu";document.body.classList.remove("game-mode");
  const ex=[["R no começo","som forte","RATO","ra-to"],["RR no meio","som forte","CARRO","car-ro"],["R no meio","som fraco","CARO","ca-ro"],["S no começo","som de S","SAPO","sa-po"],["SS no meio","som de S","PASSO","pas-so"],["S entre vogais","som de Z","CASA","ca-sa"]];
- $("#appMain").innerHTML=`<section class="panel"><div class="topline"><div><div class="muted small">SÍLABAS E PALAVRAS</div><h1>🔤 RR e SS</h1></div><button class="secondary" id="pwB">← Voltar</button></div><p>Adulto, fale cada palavra e peça à criança que toque nela. <b>RR</b> e <b>SS</b> só aparecem <b>entre vogais</b>. O RR faz o mesmo som do R do começo da palavra. O SS tem som de S.</p><div class="category-grid">${ex.map(e=>`<button class="category" data-w="${e[2]}" data-s="${e[3]}"><strong style="font-size:1.6em">${e[2].replace(/RR|SS/,m=>`<span style="color:#ff3da8">${m}</span>`)}</strong><div class="small">${e[0]} • ${e[1]}</div></button>`).join("")}</div><div class="row" style="margin-top:16px"><button class="primary" id="pwQ">Praticar RR e SS</button><button class="secondary" id="pwL">Ler palavras com RR e SS</button></div></section>`;
+ $("#appMain").innerHTML=`<section class="panel"><div class="topline"><div><div class="muted small">SÍLABAS E PALAVRAS</div><h1>🔤 RR e SS</h1></div><button class="secondary" id="pwB">← Voltar</button></div><p>Mediador(a), fale cada palavra e peça à criança que toque nela. <b>RR</b> e <b>SS</b> só aparecem <b>entre vogais</b>. O RR faz o mesmo som do R do começo da palavra. O SS tem som de S.</p><div class="category-grid">${ex.map(e=>`<button class="category" data-w="${e[2]}" data-s="${e[3]}"><strong style="font-size:1.6em">${e[2].replace(/RR|SS/,m=>`<span style="color:#ff3da8">${m}</span>`)}</strong><div class="small">${e[0]} • ${e[1]}</div></button>`).join("")}</div><div class="row" style="margin-top:16px"><button class="primary" id="pwQ">Praticar RR e SS</button><button class="secondary" id="pwL">Ler palavras com RR e SS</button></div></section>`;
  document.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>say([{k:"s",t:"x"}].slice(1).concat(aS(b.dataset.s.toUpperCase().split("-")),[{gap:200},{k:"w",t:b.dataset.w}])));
  $("#pwB").onclick=()=>trail();$("#pwQ").onclick=()=>startQ("rr");$("#pwL").onclick=()=>startLv(7)}
 /* ---- gravação de voz do educador ---- */
@@ -4781,7 +4809,7 @@ document.addEventListener("click",function(e){
    Regra: a etapa N só abre quando a etapa N-1 do mesmo menu estiver concluída. Não altera nenhuma atividade nem dado de progresso:
    lê o próprio indicador de progresso de cada cartão (ex.: "3 de 12 concluídas", "N rodadas", "✅ Lido") e, nos Sons das letras, o contador de sessões.
    Etapas que o participante já tinha iniciado (ou que vêm antes de uma etapa já iniciada) continuam abertas.
-   O adulto libera qualquer etapa resolvendo uma continha; a liberação fica salva no participante (p.seqUnlock). */
+   O(a) mediador(a) libera qualquer etapa resolvendo uma continha; a liberação fica salva no participante (p.seqUnlock). */
 (function(){
 "use strict";
 var MAXERR=3,LOCKMS=30000,errs=0,until=0;
@@ -4841,8 +4869,8 @@ function run(root,scope,specs,ctx){
    var id=scope+"|"+sp.a+"|"+el.getAttribute("data-"+sp.a);
    if(U[id])return;
    lockEl(el,id)})})}
-/* continha do adulto */
-/* Conta do adulto: apenas soma ou subtração, alternando (soma, subtração, soma...). Subtração sempre com resultado positivo. */
+/* continha do(a) mediador(a) */
+/* Conta do(a) mediador(a): apenas soma ou subtração, alternando (soma, subtração, soma...). Subtração sempre com resultado positivo. */
 var nextSub=false;
 function rnd(lo,hi){return lo+Math.floor(Math.random()*(hi-lo+1))}
 function mk(){
@@ -4854,7 +4882,7 @@ function ask(el){
  var id=el.getAttribute("data-seq-lock"),prob=mk();
  var ov=document.createElement("div");ov.className="cfg-ov";ov.id="seqOv";
  ov.innerHTML='<div class="cfg-box" role="dialog" aria-modal="true" aria-labelledby="seqT"><h2 id="seqT">🔒 Etapa bloqueada</h2>'
-  +'<p class="muted small" style="margin:0 0 6px">Esta etapa abre quando a etapa anterior for concluída. Só um adulto pode liberar agora: resolva a conta abaixo.</p>'
+  +'<p class="muted small" style="margin:0 0 6px">Esta etapa abre quando a etapa anterior for concluída. Só um(a) mediador(a) pode liberar agora: resolva a conta abaixo.</p>'
   +'<p class="seq-q" id="seqQ"></p>'
   +'<input class="seq-in" id="seqA" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="Resposta da conta">'
   +'<p class="seq-msg" id="seqMsg" role="alert"></p>'
@@ -4887,6 +4915,554 @@ function wrap(name,fn){var o=window[name];if(typeof o!=="function")return;window
 window.seqRefresh=function(){try{if(last&&last.probe&&document.body.contains(last.probe))run(document.getElementById("appMain"),last.scope,last.specs,last.ctx)}catch(err){console.error("seq-gate",err)}};
 wrap("renderStudentMenu",function(){run(document.getElementById("appMain"),"menu",MENU,{})});
 wrap("abShell",function(c){run(document.getElementById("appMain"),((c&&c.title)||"")+"|"+((c&&c.sub)||""),SHELL,{kind:kindOf(c&&c.sub)})});
+})();
+</script>
+<style id="atend-grupo-css">
+/* ===== Atendimento em Grupo (acréscimo; só aparece quando há atendimento em grupo ativo) ===== */
+#grpBar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap;padding:6px 10px;margin:0 0 10px;background:#eef0ff;border:2px solid #cfd5ff;border-radius:16px;box-shadow:0 4px 12px #4658a01a;font-size:.92rem;color:#2b3358}
+#grpBar b{font-weight:900}
+#grpBar .gb-cur{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+#grpBar .gb-cur i{font-style:normal;opacity:.7;margin-left:4px}
+#grpBar.warn .gb-cur{color:#a15c00}
+#grpBar .gb-btns{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+#grpBar button{min-height:36px;padding:4px 10px;border-radius:12px;font-weight:800;font-size:.88rem;background:#fff;border:2px solid #dce2ff;color:#3d4fa9;box-shadow:none}
+body.game-mode #grpBar{position:static;flex:0 0 auto;order:1;margin:0;border-radius:0;border-width:2px 0 0;padding:3px max(8px,env(safe-area-inset-right)) 3px max(8px,env(safe-area-inset-left));flex-wrap:nowrap;gap:6px;box-shadow:none}
+body.game-mode.grp-on .app-footer{order:2}
+body.game-mode #grpBar .gb-grp{display:none}
+body.game-mode #grpBar button{min-height:32px;padding:2px 8px}
+body.game-mode #grpBar .gb-btns{flex-wrap:nowrap}
+@media(max-width:560px){#grpBar .gb-grp,#grpBar .gb-lbl{display:none}}
+.grp-entry{margin-top:16px}
+.grp-entry h2{margin:0 0 4px}
+.grp-kids,.grp-order{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:12px 0}
+.grp-kid,.grp-turn,.grp-blk{display:flex;align-items:center;gap:10px;text-align:left;background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px 14px;min-height:56px;color:var(--ink)}
+.grp-kid strong,.grp-turn strong,.grp-blk strong{min-width:0;overflow-wrap:anywhere}
+.grp-chk,.grp-n{flex:0 0 30px;width:30px;height:30px;border-radius:10px;border:2px solid #b9c8d8;display:grid;place-items:center;font-weight:900;background:#fff;color:transparent}
+.grp-n{color:var(--ink);font-size:.9rem}
+.grp-kid.on{border-color:#7b83e7;background:#f1f2ff}
+.grp-kid.on .grp-chk{background:#5d6ee5;border-color:#5d6ee5;color:#fff}
+.grp-turn.cur{border-color:#22b573;background:#e8f7ee}
+.grp-turn.cur .grp-n{background:#22b573;border-color:#22b573;color:#fff}
+.grp-tag{margin-left:auto;font-size:.78rem;font-weight:800;color:#5d6380;white-space:nowrap}
+.grp-blocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:8px 0 14px}
+.grp-blk{flex-direction:column;align-items:flex-start;gap:3px}
+.grp-blk small{color:#5d6380;font-weight:700}
+.grp-blk.on,.grp-free.on{border-color:#7b83e7;background:#f1f2ff}
+.grp-sec{margin:14px 0 4px;font-size:1.05rem}
+.grp-banner{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:10px 14px;margin:12px 0;border:2px solid #cfd5ff;background:#eef0ff;border-radius:14px}
+#grpToast{position:fixed;left:50%;bottom:calc(64px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:200;max-width:min(92vw,520px);padding:10px 16px;border-radius:14px;background:#2b3358;color:#fff;font-weight:800;text-align:center;box-shadow:0 8px 24px #0004}
+/* --- turnos: criança da vez, tela de troca, aviso automático, opções --- */
+#grpBar{border-left-width:8px}
+#grpBar .gb-dot{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;color:#fff;font-weight:900;font-size:.9rem;margin-right:6px;vertical-align:middle}
+#grpBar .gb-cur{font-size:1.02rem}
+#grpBar .gb-with{font-weight:700;color:#5d6380}
+body.game-mode #grpBar .gb-with{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:560px){body.game-mode #grpBar .gb-with{display:none}}
+#grpFrame{position:fixed;inset:0;z-index:90;pointer-events:none;border-radius:0}
+#grpHand{position:fixed;inset:0;z-index:180;display:grid;place-items:center;padding:16px;background:color-mix(in srgb,var(--c) 22%,#fff);}
+#grpHand .gh-box{width:min(94vw,520px);text-align:center;background:#fff;border:6px solid var(--c);border-radius:28px;padding:clamp(16px,4vh,30px);box-shadow:0 14px 40px #0003}
+#grpHand .gh-dot{width:clamp(64px,14vh,104px);height:clamp(64px,14vh,104px);margin:0 auto 8px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-size:clamp(2rem,7vh,3.4rem);font-weight:900}
+#grpHand .gh-k{margin:0;font-weight:800;color:#5d6380}
+#grpHand .gh-n{margin:.1em 0 .3em;font-size:clamp(1.6rem,6vh,2.4rem);overflow-wrap:anywhere}
+#grpHand .gh-r{margin:0 0 14px;font-size:clamp(1rem,2.6vh,1.2rem);color:#2b3358}
+#grpPend{position:fixed;left:50%;bottom:calc(58px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:170;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;max-width:94vw;padding:8px 12px;border-radius:16px;color:#fff;font-weight:800;box-shadow:0 8px 24px #0004}
+#grpPend button{min-height:36px;padding:4px 12px;border-radius:12px;border:2px solid #fff;background:#fff;color:#2b3358;font-weight:800}
+.grp-opts{align-items:flex-start}
+.grp-opt{flex:1 1 240px;min-width:0}
+.grp-seg{display:flex;gap:6px;flex-wrap:wrap}
+.grp-seg button{min-height:40px;padding:6px 12px}
+.grp-seg button.on{border-color:#7b83e7;background:#e3e6ff}
+.grp-opt select{min-height:36px;padding:4px 8px;border-radius:10px;border:1px solid #b9c8d8}
+.grp-n{border-color:var(--c,#b9c8d8)}
+.grp-turn{border-left:8px solid var(--c,#b9c8d8)}
+.grp-turn.cur{border-color:var(--c,#22b573);background:color-mix(in srgb,var(--c,#22b573) 14%,#fff)}
+.grp-turn.cur .grp-n{background:var(--c,#22b573);border-color:var(--c,#22b573)}
+.grp-nm{display:flex;flex-direction:column;min-width:0}
+.grp-nm small{color:#5d6380;font-weight:700;font-size:.78rem}
+/* --- atividades cooperativas --- */
+.grp-cb{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px 14px;min-height:56px;color:var(--ink)}
+.grp-cb small{color:#5d6380;font-weight:700}
+.grp-cb strong{min-width:0;overflow-wrap:anywhere}
+.grp-cb.on{border-color:#7b83e7;background:#f1f2ff}
+.co-left{gap:1.2cqh}
+.co-turn{display:flex;align-items:center;gap:.5em;justify-content:center;max-width:100%;padding:.2em .7em;border-radius:999px;background:color-mix(in srgb,var(--c) 18%,#fff);border:3px solid var(--c);font-size:min(6.2cqh,5.4cqw);font-weight:800;color:#2b3358;flex:0 0 auto}
+.co-turn b{font-weight:900;overflow-wrap:anywhere}
+.co-dot{display:inline-grid;place-items:center;width:1.5em;height:1.5em;border-radius:50%;background:var(--c);color:#fff;font-weight:900;flex:0 0 auto}
+.co-obs{font-size:min(4.2cqh,3.8cqw);font-weight:700;color:#5d6380;text-align:center;flex:0 0 auto}
+.co-who{display:flex;flex-wrap:wrap;gap:.2em .7em;justify-content:center;font-size:min(4.2cqh,3.8cqw);font-weight:800;color:#8a90a8;flex:0 0 auto}
+.co-who .on{color:#1f9d63}
+.co-who.big{font-size:min(5.5cqh,5cqw);margin-top:.6em}
+.co-slots{display:flex;gap:.25em;justify-content:center;flex-wrap:wrap;flex:0 0 auto}
+.co-slot{display:inline-grid;place-items:center;min-width:1.5em;height:1.5em;padding:0 .2em;border:3px dashed #b8bdcc;border-radius:.3em;background:#fff;font-weight:900;color:var(--ink2);font-size:min(12cqh,13cqw)}
+.co-slot.on{border:3px solid #22b573;background:#e8f7ee;color:#157a4a}
+.co-prog{font-weight:800;color:#5d6380;font-size:min(5cqh,4.6cqw);flex:0 0 auto}
+.co-done{text-align:center;padding:1em;display:grid;gap:.3em;justify-items:center}
+.co-done h2{margin:0}
+.co-star{font-size:clamp(3rem,16vh,6rem)}
+.co-info{display:flex;flex-direction:column;align-items:center;gap:1.2cqh;min-width:0;flex:0 0 auto}
+.co-main{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2cqh;min-height:0;min-width:0;flex:1 1 auto;max-width:100%}
+@media(orientation:portrait){
+ .co-info{flex:0 0 36%;order:2;gap:.4em}
+ .co-main{order:1;flex:1 1 0}
+ .co-turn{font-size:clamp(.78rem,4.2vw,1.02rem);flex-wrap:wrap;justify-content:center}
+ .co-obs,.co-who{font-size:clamp(.62rem,2.9vw,.8rem)}
+ .co-prog{font-size:clamp(.66rem,3.2vw,.85rem)}
+ .co-slot{font-size:min(30cqh,9cqw)}
+}
+</style>
+<script id="atend-grupo">
+/* ===== Atendimento em Grupo =====
+   Acréscimo isolado: não altera nenhuma atividade, conteúdo, configuração ou relatório.
+   A criança "da vez" é simplesmente o participante ativo (activeId): todas as atividades continuam rodando no modo individual
+   e gravando no perfil dela. Este módulo só (1) cria/seleciona grupos, (2) marca os presentes, (3) passa a vez entre eles
+   e (4) reabre a mesma atividade para a próxima criança, pelo próprio botão do menu dela (respeitando jogos liberados e bloqueio sequencial).
+   Registro de presença por criança: p.atend = [{sessao, quando, grupo, grupoId, presentes}]. */
+(function(){
+"use strict";
+if(window.__atendGrupo)return;window.__atendGrupo=1;
+var GS=null,SELKEY="jl_grp_sel",CFGKEY="jl_grp_cfg",from="home",toastT=null,lastHit=0;
+var COLS=["#2f9cf4","#22b573","#f59e0b","#e8548f","#8b5cf6","#14b8a6","#ef4444","#84cc16"];
+function cfgLoad(){var d={mod:"ind",alt:"man",N:3,M:3,hand:true};try{var o=JSON.parse(localStorage.getItem(CFGKEY)||"{}");["ind","dup","col"].indexOf(o.mod)>=0&&(d.mod=o.mod);["man","hit","time"].indexOf(o.alt)>=0&&(d.alt=o.alt);o.N>0&&(d.N=+o.N);o.M>0&&(d.M=+o.M);typeof o.hand==="boolean"&&(d.hand=o.hand)}catch(e){}return d}
+function cfgSave(){if(!GS)return;try{localStorage.setItem(CFGKEY,JSON.stringify({mod:GS.mod,alt:GS.alt,N:GS.N,M:GS.M,hand:GS.hand}))}catch(e){}}
+function firstName(n){return String(n||"").split(/\s+/)[0]}
+function namesTxt(ids){var a=ids.map(function(x){var p=kidById(x);return p?esc(firstName(p.name)):""}).filter(Boolean);return a.length<3?a.join(" e "):a.slice(0,-1).join(", ")+" e "+a[a.length-1]}
+function colOf(id){return (GS&&GS.col&&GS.col[id])||"#5d6ee5"}
+function unitsOf(){var ids=GS.ids;if(GS.mod==="col")return ids.length?[ids.slice()]:[];
+ if(GS.mod==="dup"){var u=[];for(var i=0;i<ids.length;i+=2)u.push(ids.slice(i,i+2));if(u.length>1&&u[u.length-1].length===1){var l=u.pop();u[u.length-1].push(l[0])}return u}
+ return ids.map(function(x){return [x]})}
+function partnersOf(id){var u=unitsOf().filter(function(x){return x.indexOf(id)>=0})[0]||[id];return u.filter(function(x){return x!==id})}
+/* quem deve ser o próximo: quem teve menos vezes; empate = o mais próximo depois da criança atual (garante a vez de todos) */
+function gSuggest(){var ids=GS.ids,n=ids.length;if(n<2)return GS.cur;var best=-1,bt=1e9;for(var k=1;k<=n;k++){var i=(GS.cur+k)%n,t=GS.turns[ids[i]]||0;if(t<bt){bt=t;best=i}}return best}
+/* contagem de turnos, acertos e tempo por criança */
+function gPause(){if(GS&&GS.act&&GS.t0){var d=Date.now()-GS.t0;GS.tm[GS.act]=(GS.tm[GS.act]||0)+d;GS.tcur+=d;GS.t0=null}}
+function gSave(id){var p=kidById(id);if(!p||!Array.isArray(p.atend))return;var e=p.atend.filter(function(x){return x.sessao===GS.id})[0];if(!e)return;e.modalidade=GS.mod;e.turnos=GS.turns[id]||0;e.acertos=GS.hits[id]||0;e.seg=Math.round((GS.tm[id]||0)/1000);if(GS.coopN&&GS.coopN[id])e.coop=JSON.parse(JSON.stringify(GS.coopN[id]))}
+function gLeave(){if(!GS||!GS.act)return;gPause();gSave(GS.act);try{saveProfiles()}catch(e){}}
+function gTurnTo(id){
+ if(GS.act===id){if(!GS.t0&&!GS.hold)GS.t0=Date.now();return false}
+ gLeave();GS.act=id;GS.turns[id]=(GS.turns[id]||0)+1;GS.th=0;GS.tcur=0;GS.t0=GS.hold?null:Date.now();gCancelPend();return true}
+function Q(s,r){return (r||document).querySelector(s)}
+function byName(a,b){return String(a.name||"").localeCompare(String(b.name||""),"pt-BR",{sensitivity:"base",numeric:true})}
+function kidById(id){return profiles.find(function(x){return x.id===id})||allProfiles.find(function(x){return x.id===id&&x.teacherId===activeTeacherId})}
+function kidsOf(cid){return (isFamily()?profiles:profiles.filter(function(p){return p.classId===cid})).slice().sort(byName)}
+function loadSel(cid){try{var o=JSON.parse(localStorage.getItem(SELKEY)||"{}");return Array.isArray(o[cid])?o[cid]:[]}catch(e){return []}}
+function saveSel(cid,ids){try{var o=JSON.parse(localStorage.getItem(SELKEY)||"{}");o[cid]=ids;localStorage.setItem(SELKEY,JSON.stringify(o))}catch(e){}}
+function gValid(){return !!(GS&&activeTeacherId&&activeTeacherId===GS.tid)}
+function toast(t){var e=Q("#grpToast");if(!e){e=document.createElement("div");e.id="grpToast";e.setAttribute("role","status");document.body.appendChild(e)}e.textContent=t;clearTimeout(toastT);toastT=setTimeout(function(){var x=Q("#grpToast");if(x)x.remove()},3500)}
+function hhmm(iso){try{var d=new Date(iso);return d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}catch(e){return ""}}
+
+/* ---------- barra do atendimento (aparece em todas as telas enquanto o atendimento está ativo) ---------- */
+function gBar(){
+ var bar=document.getElementById("grpBar"),fr=document.getElementById("grpFrame");
+ if(!gValid()){if(bar)bar.remove();if(fr)fr.remove();document.body.classList.remove("grp-on");return}
+ var main=document.getElementById("appMain");if(!main||!main.parentNode)return;
+ if(!bar){bar=document.createElement("div");bar.id="grpBar";bar.setAttribute("role","region");bar.setAttribute("aria-label","Atendimento em grupo");main.parentNode.insertBefore(bar,main);
+  bar.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-g]");if(!b)return;var a=b.dataset.g;
+   if(a==="prev")gSwitch(GS.cur-1,{});else if(a==="next")gSwitch(gSuggest(),{});else if(a==="panel")gPanel();else if(a==="end")gEndAsk();else if(a==="hold")gHandShow(true)})}
+ document.body.classList.add("grp-on");
+ var n=GS.ids.length,cid=GS.ids[GS.cur],cur=kidById(cid),act=activeId&&GS.ids.indexOf(activeId)<0?active():null,nx=kidById(GS.ids[gSuggest()]),pt=partnersOf(cid);
+ var col=colOf(cid),ini=cur?esc(String(cur.name).trim().charAt(0).toUpperCase()):"?";
+ var mid=act?'<span class="gb-cur">⚠️ <b>'+esc(act.name)+'</b> <i>(fora do atendimento)</i></span>'
+  :'<span class="gb-cur"><span class="gb-dot" style="background:'+col+'" aria-hidden="true">'+ini+'</span>Vez de <b>'+esc(cur?cur.name:"—")+'</b><i>'+(GS.cur+1)+'/'+n+'</i>'
+   +(pt.length?'<span class="gb-with"> · 👀 '+namesTxt(pt)+(pt.length>1?' ajudam':' observa')+'</span>':'')+'</span>';
+ var html='<span class="gb-grp">👥 <b>'+esc(GS.className)+'</b></span>'+mid+'<span class="gb-btns">'
+  +(n>1?'<button type="button" data-g="prev" aria-label="Criança anterior">◀</button><button type="button" data-g="next" aria-label="Próxima criança"><span class="gb-lbl">Próxima: '+esc(nx?firstName(nx.name):"")+' </span>▶</button>':'')
+  +'<button type="button" data-g="hold" aria-label="Aguardar: mostrar de quem é a vez"><span aria-hidden="true">✋</span><span class="gb-lbl"> Aguardar</span></button><button type="button" data-g="panel" aria-label="Painel do atendimento">📋<span class="gb-lbl"> Painel</span></button><button type="button" data-g="end" aria-label="Encerrar atendimento">⏹<span class="gb-lbl"> Encerrar</span></button></span>';
+ bar.classList.toggle("warn",!!act);bar.style.borderLeftColor=act?"":col;
+ if(bar.dataset.h!==html){bar.innerHTML=html;bar.dataset.h=html}
+ var show=!act&&cur&&activeId===cid&&stage!=="grp-panel"&&stage!=="grp-setup";
+ if(!fr){fr=document.createElement("div");fr.id="grpFrame";fr.setAttribute("aria-hidden","true");document.body.appendChild(fr)}
+ fr.style.display=show?"block":"none";fr.style.boxShadow="inset 0 0 0 6px "+col;
+}
+function gSync(){
+ if(GS&&!gValid())gDrop();
+ if(GS){var i=activeId?GS.ids.indexOf(activeId):-1,inAct=i>=0&&stage!=="grp-panel"&&stage!=="grp-setup";
+  if(i>=0)GS.cur=i;
+  if(inAct){if(GS.act!==GS.ids[i])gTurnTo(GS.ids[i]);else if(!GS.t0&&!GS.hold)GS.t0=Date.now()}
+  else gPause()}
+ gBar();gInject();
+}
+
+/* ---------- troca de criança ---------- */
+function gBlkFor(o){if(o.menuOnly)return null;if(GS.blk)return GS.blk;return (o.auto||GS.mod!=="ind")?GS.last:null}
+function gSwitch(i,o){
+ if(!gValid())return;o=o||{};
+ var n=GS.ids.length;if(!n){gEnd();renderHome();return}
+ i=((i%n)+n)%n;
+ var id=GS.ids[i],p=kidById(id);
+ if(!p){GS.ids.splice(i,1);if(!GS.ids.length){gEnd();renderHome();return}GS.cur=Math.min(GS.cur,GS.ids.length-1);gSwitch(GS.cur,o);return}
+ if(coopLive()){coopTurn(i);return}
+ GS.coop=null;
+ commitStageClock();clearTimeout(autoTimer);gCancelPend();
+ var changed=GS.act!==id;
+ GS.cur=i;activeId=id;activeClassId=GS.classId;
+ if(GS.hand&&changed)GS.hold=true;
+ gTurnTo(id);
+ renderStudentMenu();
+ var b=gBlkFor(o);if(b)gOpenBlk(p,b);
+ if(GS.hand&&changed)gHandShow();
+ gBar();
+}
+function gOpenBlk(p,b){
+ var m=document.getElementById("appMain"),el=m&&m.querySelector("[data-"+b.k+'="'+b.v+'"]');
+ if(!el){toast(p.name+": esta atividade não está liberada para este participante.");return}
+ el.click();
+}
+/* ---------- tela de troca ("passe para ...") e aviso de troca automática ---------- */
+function gHandShow(manual){
+ if(!gValid()||Q("#grpHand"))return;
+ var id=GS.ids[GS.cur],p=kidById(id);if(!p)return;
+ GS.hold=true;gPause();
+ var pt=partnersOf(id),col=colOf(id),ov=document.createElement("div");
+ ov.id="grpHand";ov.setAttribute("role","dialog");ov.setAttribute("aria-modal","true");ov.setAttribute("aria-label","Vez de "+p.name);ov.style.setProperty("--c",col);
+ var rule=GS.mod==="ind"?'Só <b>'+esc(p.name)+'</b> responde agora. As outras crianças aguardam a vez.'
+  :GS.mod==="dup"?'<b>'+esc(p.name)+'</b> toca na tela. '+(pt.length?'<b>'+namesTxt(pt)+'</b> '+(pt.length>1?'observam':'observa')+' e '+(pt.length>1?'ajudam':'ajuda')+' a conferir, sem tocar.':'')
+  :'<b>'+esc(p.name)+'</b> toca na tela. '+(pt.length?'<b>'+namesTxt(pt)+'</b> ajudam falando, sem tocar.':'');
+ ov.innerHTML='<div class="gh-box"><div class="gh-dot" aria-hidden="true">'+esc(String(p.name).trim().charAt(0).toUpperCase())+'</div><p class="gh-k">'+(manual?'Aguarde':'Passe para')+'</p><h2 class="gh-n">Vez de '+esc(p.name)+'</h2><p class="gh-r">'+rule+'</p><div class="row" style="justify-content:center"><button class="primary" id="ghGo" type="button">▶ Começar</button><button class="ghost" id="ghPanel" type="button">📋 Painel</button></div></div>';
+ document.body.appendChild(ov);
+ Q("#ghGo").onclick=gHandHide;
+ Q("#ghPanel").onclick=function(){gHandHide();gPanel()};
+ setTimeout(function(){var b=Q("#ghGo");if(b)b.focus()},30);
+}
+function gHandHide(){var o=Q("#grpHand");if(o)o.remove();if(GS){GS.hold=false;if(GS.act&&!GS.t0&&activeId===GS.act)GS.t0=Date.now()}}
+function gCancelPend(){if(GS){if(GS.pendT){clearInterval(GS.pendT);GS.pendT=null}GS.pend=null}var e=Q("#grpPend");if(e)e.remove()}
+function gPendUI(){
+ if(!GS||!GS.pend)return;
+ var e=Q("#grpPend"),p=kidById(GS.ids[GS.pend.i]);if(!p)return;
+ if(!e){e=document.createElement("div");e.id="grpPend";e.setAttribute("role","alert");document.body.appendChild(e);
+  e.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-p]");if(!b||!GS||!GS.pend)return;
+   if(b.dataset.p==="now"){var j=GS.pend.i;gCancelPend();gSwitch(j,{auto:true})}
+   else{gCancelPend();gPause();GS.tcur=0;GS.th=0;if(activeId===GS.act&&!GS.hold)GS.t0=Date.now()}})}
+ e.style.background=colOf(GS.ids[GS.pend.i]);
+ e.innerHTML='<span>⏭ Vez de <b>'+esc(firstName(p.name))+'</b> em '+GS.pend.s+' s</span><button type="button" data-p="now">Passar agora</button><button type="button" data-p="stay">Mais um pouco</button>';
+}
+function gTrigger(){
+ if(!gValid()||GS.pend||GS.hold||!GS.t0||GS.ids.length<2||coopLive())return;
+ GS.pend={i:gSuggest(),s:5};gPendUI();
+ GS.pendT=setInterval(function(){if(!GS||!GS.pend){return}GS.pend.s--;if(GS.pend.s<=0){var j=GS.pend.i;gCancelPend();gSwitch(j,{auto:true})}else gPendUI()},1000);
+}
+function onHit(){
+ if(!gValid()||!GS.act||!GS.t0||activeId!==GS.act)return;
+ var n=Date.now();if(n-lastHit<250)return;lastHit=n;
+ GS.hits[GS.act]=(GS.hits[GS.act]||0)+1;GS.th++;
+ if(GS.alt==="hit"&&GS.th>=GS.N)gTrigger();
+}
+function wrapFn(name,fn){var o=window[name];if(typeof o!=="function")return;window[name]=function(){var r=o.apply(this,arguments);try{fn.apply(null,arguments)}catch(err){console.error("atend-grupo",err)}return r}}
+wrapFn("cntHit",function(){if(recMode()==="auto")onHit()});
+wrapFn("abLog",function(l,ok){if(ok&&l&&recMode()==="auto")onHit()});
+wrapFn("stgInc",function(st,k){if(st&&k==="correct"&&recMode()==="auto")onHit()});
+setInterval(function(){
+ if(!gValid()||GS.alt!=="time"||!GS.t0||GS.pend||GS.hold||activeId!==GS.act||coopLive())return;
+ if(GS.tcur+(Date.now()-GS.t0)>=GS.M*60000)gTrigger();
+},1000);
+document.addEventListener("click",function(e){
+ if(!gValid()||stage!=="student-menu")return;
+ var b=e.target&&e.target.closest?e.target.closest("[data-ab],[data-cat],[data-fn],[data-fl],[data-lg]"):null;if(!b)return;
+ var d=b.dataset,k=d.ab!=null?"ab":d.cat!=null?"cat":d.fn!=null?"fn":d.fl!=null?"fl":"lg";GS.last={k:k,v:d[k]};
+});
+
+/* ---------- tela 1: preparar o atendimento (grupo + presentes) ---------- */
+function gSetup(cid,src){
+ if(!activeTeacher()){renderGate();return}
+ if(src)from=src;
+ commitStageClock();clearTimeout(autoTimer);document.body.classList.remove("game-mode");
+ profiles=allProfiles.filter(function(p){return p.teacherId===activeTeacherId});
+ var own=ensureTeacherClasses(activeTeacherId),fam=isFamily();
+ if(cid)activeClassId=cid;
+ if(!own.some(function(c){return c.id===activeClassId}))activeClassId=own.length?own[0].id:null;
+ stage="grp-setup";
+ var cl=own.find(function(c){return c.id===activeClassId}),kids=cl?kidsOf(cl.id):[],ok=new Set(kids.map(function(k){return k.id})),
+  sel=new Set(loadSel(activeClassId).filter(function(id){return ok.has(id)}));
+ var m=document.getElementById("appMain");
+ m.innerHTML='<section class="panel grp-panel"><div class="topline"><div><h1>👥 Atendimento em Grupo</h1><p class="muted">'+(fam?'Marque as crianças presentes e comece.':'Escolha o grupo, marque quem está presente e comece.')+' Cada criança mantém o próprio registro.</p></div><div class="topline-actions"><button class="secondary" id="grpBack" type="button">← Voltar</button></div></div>'
+  +(gValid()?'<div class="grp-banner"><span>Atendimento em andamento: <b>'+esc(GS.className)+'</b> ('+GS.ids.length+' presentes)</span><button class="secondary" id="grpResume" type="button">Voltar ao atendimento</button></div>':'')
+  +(fam?'':'<div class="class-manager"><div style="flex:1;min-width:180px"><label for="grpClass">Grupo</label><select id="grpClass" style="width:100%"'+(own.length?'':' disabled')+'>'+own.map(function(c){return '<option value="'+esc(c.id)+'"'+(c.id===activeClassId?' selected':'')+'>'+esc(c.name)+'</option>'}).join("")+'</select></div><button class="secondary" id="grpNewToggle" type="button" aria-expanded="false" aria-controls="grpNewForm">+ Novo grupo</button></div>'
+   +'<form id="grpNewForm" class="class-manager hidden"><div style="flex:1;min-width:180px"><label for="grpNewName">Nome do novo grupo</label><input id="grpNewName" maxlength="60" placeholder="'+esc(roleInfo().group)+'" style="width:100%" required></div><button class="primary" type="submit">+ Cadastrar grupo</button></form>')
+  +'<h2>Quem está presente?</h2>'
+  +(kids.length?'<div class="row"><button class="ghost" id="grpAll" type="button">Marcar todos</button><button class="ghost" id="grpNone" type="button">Limpar</button><span class="muted" id="grpCount" aria-live="polite"></span></div><div class="grp-kids" id="grpKids">'+kids.map(function(k){return '<button type="button" class="grp-kid" data-k="'+esc(k.id)+'" aria-pressed="false"><span class="grp-chk" aria-hidden="true">✔</span><strong>'+esc(k.name)+'</strong></button>'}).join("")+'</div>'
+   :'<p class="muted">'+(cl?'Este grupo ainda não tem participantes.':'Cadastre um grupo para começar.')+'</p>'+(cl?'<button class="secondary" id="grpAddKids" type="button">👤 Cadastrar participantes</button>':''))
+  +'<div class="row" style="justify-content:center;margin-top:18px"><button class="primary" id="grpGo" type="button" disabled>▶ Iniciar atendimento</button></div></section>';
+ function paint(){
+  m.querySelectorAll(".grp-kid").forEach(function(b){var on=sel.has(b.dataset.k);b.classList.toggle("on",on);b.setAttribute("aria-pressed",on?"true":"false")});
+  var c=Q("#grpCount");if(c)c.textContent=sel.size+(sel.size===1?" presente":" presentes");
+  var g=Q("#grpGo");if(g)g.disabled=!sel.size;
+ }
+ paint();
+ Q("#grpBack").onclick=function(){from==="classes"?renderClassDashboard():renderHome()};
+ var rs=Q("#grpResume");if(rs)rs.onclick=gPanel;
+ var cs=Q("#grpClass");if(cs)cs.onchange=function(){gSetup(cs.value)};
+ var nt=Q("#grpNewToggle");if(nt)nt.onclick=function(){var f=Q("#grpNewForm"),o=f.classList.contains("hidden");f.classList.toggle("hidden",!o);nt.setAttribute("aria-expanded",o?"true":"false");if(o)Q("#grpNewName").focus()};
+ var nf=Q("#grpNewForm");if(nf)nf.onsubmit=function(ev){ev.preventDefault();var name=Q("#grpNewName").value.trim();if(!name)return;
+  if(classes.some(function(c){return c.teacherId===activeTeacherId&&c.name.toLocaleLowerCase("pt-BR")===name.toLocaleLowerCase("pt-BR")})){alert("Você já cadastrou um grupo com esse nome.");return}
+  var c={id:makeId(),teacherId:activeTeacherId,name:name,created:new Date().toISOString()};classes.push(c);saveClasses();activeId=null;gSetup(c.id)};
+ m.querySelectorAll(".grp-kid").forEach(function(b){b.onclick=function(){var k=b.dataset.k;sel.has(k)?sel.delete(k):sel.add(k);paint()}});
+ var al=Q("#grpAll");if(al)al.onclick=function(){kids.forEach(function(k){sel.add(k.id)});paint()};
+ var no=Q("#grpNone");if(no)no.onclick=function(){sel.clear();paint()};
+ var ak=Q("#grpAddKids");if(ak)ak.onclick=function(){activeId=null;renderClassDashboard()};
+ Q("#grpGo").onclick=function(){var ids=kids.filter(function(k){return sel.has(k.id)}).map(function(k){return k.id});if(ids.length)gStart(activeClassId,ids)};
+}
+
+/* ---------- início do atendimento ---------- */
+function gStart(cid,ids){
+ var cl=classes.find(function(c){return c.id===cid});
+ var cf=cfgLoad(),col={};ids.forEach(function(id,i){col[id]=COLS[i%COLS.length]});
+ gEnd();
+ GS={id:makeId(),tid:activeTeacherId,classId:cid,className:cl?cl.name:"Grupo",ids:ids.slice(),cur:0,blk:null,last:null,col:col,turns:{},hits:{},tm:{},act:null,t0:null,tcur:0,th:0,hold:false,pend:null,pendT:null,coop:null,coopN:{},mod:cf.mod,alt:cf.alt,N:cf.N,M:cf.M,hand:cf.hand,started:new Date().toISOString()};
+ ids.forEach(function(id){var p=kidById(id);if(!p)return;
+  p.atend=Array.isArray(p.atend)?p.atend:[];
+  p.atend.push({sessao:GS.id,quando:GS.started,grupo:GS.className,grupoId:cid,presentes:ids.length,modalidade:GS.mod,turnos:0,acertos:0,seg:0});
+  if(p.atend.length>300)p.atend=p.atend.slice(-300)});
+ saveProfiles();saveSel(cid,ids);
+ activeId=null;activeClassId=cid;
+ gBar();gPanel();
+}
+
+/* ---------- tela 2: painel do atendimento (vez + atividade para todos) ---------- */
+var SEC={ab:"🔤 Alfabeto",cat:"📚 Sílabas e palavras",fn:"🎵 Consciência fonológica",fl:"📖 Leitura Livre",lg:"🗣️ Fluência Leitora"};
+function gBlocks(){
+ var kids=GS.ids.map(kidById).filter(Boolean),tmp=document.createElement("div"),seen={},out=[];
+ tmp.style.cssText="position:fixed;left:-9999px;top:0;visibility:hidden";document.body.appendChild(tmp);
+ try{kids.forEach(function(p){
+  var h="";try{h+=abMenuMarkup(p)}catch(e){}
+  h+='<div>'+["simples","complexas","simples_montar","complexas_montar"].map(function(c){return '<button data-cat="'+c+'"><strong>'+esc(catLabel(c))+'</strong></button>'}).join("")+'</div>';
+  try{h+=fnMenuMarkup(p)}catch(e){}try{h+=flMenuMarkup(p)}catch(e){}try{h+=lgMenuMarkup(p)}catch(e){}
+  tmp.innerHTML=h;
+  tmp.querySelectorAll("[data-ab],[data-cat],[data-fn],[data-fl],[data-lg]").forEach(function(b){
+   var d=b.dataset,k=d.ab!=null?"ab":d.cat!=null?"cat":d.fn!=null?"fn":d.fl!=null?"fl":"lg",v=d[k],key=k+":"+v;
+   if(!gmOn(p,key))return;
+   var s=seen[key];if(!s){var st=b.querySelector("strong"),lb=((st||b).textContent||"").replace(/\s+/g," ").trim();
+    s=seen[key]={k:k,v:v,label:lb||key,n:0};out.push(s)}
+   s.n++})})}
+ finally{tmp.remove()}
+ return out;
+}
+function seg(opt,items,val){return '<div class="grp-seg" role="group" data-opt="'+opt+'">'+items.map(function(x){return '<button type="button" class="secondary'+(x[0]===val?' on':'')+'" data-v="'+x[0]+'" aria-pressed="'+(x[0]===val?'true':'false')+'">'+x[1]+'</button>'}).join("")+'</div>'}
+function sel(id,vals,v,suf){return '<select id="'+id+'" aria-label="Quantidade">'+vals.map(function(x){return '<option value="'+x+'"'+(x===v?' selected':'')+'>'+x+suf+'</option>'}).join("")+'</select>'}
+var MODHELP={ind:"Uma criança por vez responde na tela; as outras aguardam a vez.",dup:"Cada dupla trabalha junta: quem está na vez toca na tela e o parceiro observa e ajuda a conferir, sem tocar. Os papéis se alternam. Com número ímpar, forma-se um trio.",col:"Todos participam juntos: a vez de tocar na tela passa de criança em criança e as outras ajudam falando, sem tocar."};
+function gStats(id){var t=GS.turns[id]||0,h=GS.hits[id]||0,m=Math.round((GS.tm[id]||0)/60000);return t?(t+(t===1?' vez':' vezes')+' · '+h+(h===1?' acerto':' acertos')+' · '+m+' min'):''}
+function gPanel(){
+ if(!gValid()){gDrop();renderHome();return}
+ commitStageClock();clearTimeout(autoTimer);gCancelPend();gHandHide();document.body.classList.remove("game-mode");
+ profiles=allProfiles.filter(function(p){return p.teacherId===activeTeacherId});
+ GS.ids=GS.ids.filter(function(id){return !!kidById(id)});
+ if(!GS.ids.length){gEnd();renderHome();return}
+ GS.cur=Math.min(GS.cur,GS.ids.length-1);
+ stage="grp-panel";gPause();
+ var n=GS.ids.length,blocks=gBlocks(),bySec={},sug=gSuggest();
+ blocks.forEach(function(b){(bySec[b.k]=bySec[b.k]||[]).push(b)});
+ function turn(id){var i=GS.ids.indexOf(id),p=kidById(id),cur=i===GS.cur,st=gStats(id);
+  return '<button type="button" class="grp-turn'+(cur?' cur':'')+'" data-i="'+i+'" style="--c:'+colOf(id)+'"><span class="grp-n">'+(i+1)+'</span><span class="grp-nm"><strong>'+esc(p.name)+'</strong>'+(st?'<small>'+st+'</small>':'')+'</span><span class="grp-tag">'+(cur?'na vez':(i===sug&&n>1?'sugerida':(GS.turns[id]?'✔':'')))+'</span></button>'}
+ var U=unitsOf(),turns=GS.mod==="ind"?'<div class="grp-order">'+GS.ids.map(turn).join("")+'</div>'
+  :U.map(function(u,ui){return '<h3 class="grp-sec">'+(GS.mod==="dup"?(u.length>2?'Trio ':'Dupla ')+(ui+1):'Todos juntos')+'</h3><div class="grp-order">'+u.map(turn).join("")+'</div>'}).join("");
+ var m=document.getElementById("appMain");
+ m.innerHTML='<section class="panel grp-panel"><div class="topline"><div><h1>👥 '+esc(GS.className)+'</h1><p class="muted">'+n+(n===1?' presente':' presentes')+' · atendimento iniciado às '+esc(hhmm(GS.started))+'</p></div><div class="topline-actions"><button class="secondary" id="gpSetup" type="button">✏️ Alterar presentes</button><button class="secondary" id="gpEnd" type="button">⏹ Encerrar atendimento</button></div></div>'
+  +'<h2>Organização dos turnos</h2><div class="class-manager grp-opts">'
+  +'<div class="grp-opt"><label>Como participam</label>'+seg("mod",[["ind","👤 Individual"],["dup","👥 Em duplas"],["col","🙌 Coletiva"]],GS.mod)+'<p class="muted small" style="margin:6px 0 0">'+MODHELP[GS.mod]+'</p></div>'
+  +'<div class="grp-opt"><label>Troca de vez</label>'+seg("alt",[["man","✋ Manual"],["hit","🎯 Por acertos"],["time","⏱️ Por tempo"]],GS.alt)
+  +(GS.alt==="hit"?'<p class="small" style="margin:6px 0 0">Passa a vez a cada '+sel("gpN",[1,2,3,5,10],GS.N,'')+' acerto(s), com aviso de 5 s.</p>':GS.alt==="time"?'<p class="small" style="margin:6px 0 0">Passa a vez a cada '+sel("gpM",[1,2,3,5,10],GS.M,'')+' minuto(s), com aviso de 5 s.</p>':'<p class="muted small" style="margin:6px 0 0">Você passa a vez pela barra: ◀ ▶.</p>')+'</div>'
+  +'<div class="grp-opt"><label><input type="checkbox" id="gpHand"'+(GS.hand?' checked':'')+'> Mostrar tela de troca</label><p class="muted small" style="margin:6px 0 0">“Passe para…” antes de cada vez, para a criança certa responder.</p><button class="ghost" id="gpShuffle" type="button" style="margin-top:8px">🔀 Sortear ordem'+(GS.mod==="dup"?' e duplas':'')+'</button></div></div>'
+  +'<h2>Vez de quem?</h2>'+turns
+  +'<h2>🤝 Atividades cooperativas</h2><p class="muted small">Todos contribuem para o mesmo desafio e a vez passa a cada contribuição, sem pontos nem classificação. Usam as palavras, sílabas, figuras e rimas do próprio jogo e valem só no atendimento em grupo.</p>'
+  +(GS.coop?'<div class="row"><button type="button" class="secondary" id="gpCoopResume">▶ Retomar a atividade cooperativa</button></div>':'')
+  +'<div class="grp-blocks">'+COOP.map(function(c){return '<button type="button" class="grp-cb'+(GS.coop&&GS.coop.k===c[0]?' on':'')+'" data-c="'+c[0]+'"><strong>'+c[1]+' '+c[2]+'</strong><small>'+c[3]+'</small></button>'}).join("")+'</div>'
+  +'<h2>Atividade</h2><p class="muted small">Escolha uma atividade para todos: cada criança segue o próprio nível e grava o próprio progresso. Ao passar a vez, a mesma atividade abre para a próxima criança.</p>'
+  +'<div class="row"><button type="button" class="secondary grp-free'+(GS.blk?'':' on')+'" id="gpFree">🎯 Cada criança escolhe a sua</button></div>'
+  +Object.keys(SEC).filter(function(k){return bySec[k]}).map(function(k){return '<h3 class="grp-sec">'+SEC[k]+'</h3><div class="grp-blocks">'+bySec[k].map(function(b){return '<button type="button" class="grp-blk'+(GS.blk&&GS.blk.k===b.k&&GS.blk.v===b.v?' on':'')+'" data-k="'+esc(b.k)+'" data-v="'+esc(b.v)+'"><strong>'+esc(b.label)+'</strong>'+(b.n<n?'<small>liberada para '+b.n+' de '+n+'</small>':'')+'</button>'}).join("")+'</div>'}).join("")
+  +'</section>';
+ m.querySelectorAll(".grp-turn").forEach(function(b){b.onclick=function(){if(GS.coop){GS.cur=+b.dataset.i;gPanel()}else gSwitch(+b.dataset.i,{})}});
+ m.querySelectorAll(".grp-cb").forEach(function(b){b.onclick=function(){coopStart(b.dataset.c)}});
+ var cr=Q("#gpCoopResume");if(cr)cr.onclick=coopResume;
+ m.querySelectorAll(".grp-seg button").forEach(function(b){b.onclick=function(){var o=b.parentNode.dataset.opt,v=b.dataset.v;if(o==="mod")GS.mod=v;else GS.alt=v;GS.th=0;GS.tcur=0;cfgSave();gPanel()}});
+ var sn=Q("#gpN");if(sn)sn.onchange=function(){GS.N=+sn.value;GS.th=0;cfgSave()};
+ var sm=Q("#gpM");if(sm)sm.onchange=function(){GS.M=+sm.value;GS.tcur=0;cfgSave()};
+ Q("#gpHand").onchange=function(){GS.hand=this.checked;cfgSave()};
+ Q("#gpShuffle").onclick=function(){var a=GS.ids,cid=GS.ids[GS.cur];for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}GS.cur=Math.max(0,a.indexOf(cid));gPanel()};
+ Q("#gpFree").onclick=function(){GS.blk=null;gSwitch(GS.cur,{menuOnly:true})};
+ m.querySelectorAll(".grp-blk").forEach(function(b){b.onclick=function(){GS.blk={k:b.dataset.k,v:b.dataset.v};gSwitch(GS.cur,{})}});
+ Q("#gpSetup").onclick=function(){gSetup(GS.classId)};
+ Q("#gpEnd").onclick=gEndAsk;
+ gBar();
+}
+
+/* ---------- atividades cooperativas (só no Atendimento em Grupo) ----------
+   Usam o conteúdo e o visual do próprio jogo (WORDS, FNP, FN_B, AB_FIG, FAM_LIST, abShell, fnPicOpts), mas não executam
+   as atividades individuais: não gravam progresso, etapas, níveis nem registros pedagógicos de nenhuma criança.
+   Cada contribuição passa a vez; não há pontos, erros contados nem classificação. */
+var COOP=[["pal","🧩","Completar palavras juntos","Cada um coloca uma letra"],["achar","🔍","Encontrar letras e sílabas","Cada um acha uma"],["rimas","🎵","Desafios de rimas","Cada um resolve uma rima"],["sil","🔤","Organizar sílabas","Cada um coloca uma sílaba"],["fig","🖼️","Figuras correspondentes","Cada um encontra uma figura"]];
+var ALF="ABCDEFGHIJLMNOPRSTUV".split("");
+function coopLive(){return !!(GS&&GS.coop&&stage==="alpha-game"&&GS.coop.tok===abTok)}
+function rnd(a){return a[Math.floor(Math.random()*a.length)]}
+function praise(){try{return typeof fnPraise==="function"?fnPraise():"Muito bem!"}catch(e){return "Muito bem!"}}
+function coopMinC(){return GS.ids.length<=3?2:1}
+function coopFinished(){var C=GS.coop;return C.done>=C.min&&GS.ids.every(function(id){return (C.ct[id]||0)>=coopMinC()})}
+/* próximo a contribuir: quem contribuiu menos nesta atividade; empate = o mais próximo depois de quem acabou de contribuir */
+function coopPick(){var ids=GS.ids,n=ids.length,C=GS.coop;if(n<2)return GS.cur;var best=-1,bt=1e9;for(var k=1;k<=n;k++){var i=(GS.cur+k)%n,t=C.ct[ids[i]]||0;if(t<bt){bt=t;best=i}}return best}
+function decoys(t,n,avoid){return shuffle(ALF.filter(function(c){return c!==t&&(!avoid||avoid.indexOf(c)<0)&&!abSimilar(c,t)})).slice(0,n)}
+function figW(w){return figureMarkup(w)}
+/* --- geradores de desafios --- */
+function genPal(C){var f=function(w){return /^[A-Z]{3,6}$/.test(w.w)&&w.e!==undefined};var pool=WORDS.filter(function(w){return f(w)&&!C.used[w.w]});if(!pool.length){C.used={};pool=WORDS.filter(f)}
+ var w=rnd(pool),L=w.w.split(""),pre=L.length>=4?1:0;C.used[w.w]=1;return {k:"pal",w:w,L:L,step:pre}}
+function genAchar(C){
+ var syl=C.n%2===1,T=Math.min(5,Math.max(3,GS.ids.length)),tiles=[],t,pool;
+ if(!syl){t=rnd(Object.keys(AB_FIG).filter(function(c){return !C.used["l"+c]}).concat(Object.keys(AB_FIG)).slice(0,40));C.used["l"+t]=1;
+  pool=shuffle(AB_LET.filter(function(c){return c!==t&&!abSimilar(c,t)}))}
+ else{var fam=FAM_LIST.filter(function(f){return FAM_GROUPS[f.g].cat==="simples"&&f.id!=="VOG"}),f=rnd(fam),ss=f.syl.filter(function(x){return /^[A-Z]{2,3}$/.test(x)});t=rnd(ss);
+  var others=[];FAM_LIST.forEach(function(g){if(g.id!==f.id&&FAM_GROUPS[g.g].cat==="simples"&&g.id!=="VOG"&&!abSimilar(g.syl[0].charAt(0),f.syl[0].charAt(0)))g.syl.forEach(function(x){if(/^[A-Z]{2,3}$/.test(x)&&x!==t)others.push(x)})});
+  pool=shuffle(others)}
+ for(var i=0;i<12;i++)tiles.push({x:i<T?t:pool[i-T],ok:i<T});
+ return {k:"achar",kind:syl?"sil":"let",t:t,tiles:shuffle(tiles),found:0,T:T}}
+function genRimas(C){var all=[];FN_B.forEach(function(b){b.forEach(function(q){if(q.lv<=2&&!C.used[q.t+q.a])all.push(q)})});if(!all.length){C.used={};FN_B.forEach(function(b){b.forEach(function(q){if(q.lv<=2)all.push(q)})})}
+ var q=rnd(all);C.used[q.t+q.a]=1;return {k:"rimas",q:q,opts:shuffle(q.o.slice())}}
+function genSil(C){var f=function(w){return w.s.length>=2&&w.s.length<=3};var pool=WORDS.filter(function(w){return f(w)&&!C.used[w.w]});if(!pool.length){C.used={};pool=WORDS.filter(f)}
+ var w=rnd(pool);C.used[w.w]=1;return {k:"sil",w:w,toks:shuffleTokens(w.s),step:0,placed:{}}}
+function genFig(C){var fam=FNP.filter(function(f){return f.ws.length>=2&&!C.used[f.g]});if(!fam.length){C.used={};fam=FNP.filter(function(f){return f.ws.length>=2})}
+ var f=rnd(fam),two=shuffle(f.ws.slice()).slice(0,2),ot=shuffle(FNP.filter(function(g){return g.g!==f.g&&FN_PAIR[f.g]!==g.g}));
+ var d=[rnd(ot[0].ws),rnd(ot[1].ws)];C.used[f.g]=1;return {k:"fig",t:two[0],a:two[1],opts:shuffle([two[1],d[0],d[1]])}}
+function coopGen(C){C.n=(C.n||0)+1;return ({pal:genPal,achar:genAchar,rimas:genRimas,sil:genSil,fig:genFig})[C.k](C)}
+/* --- apresentação --- */
+function coopWho(){var C=GS.coop;return '<div class="co-who" aria-label="Quem já contribuiu">'+GS.ids.map(function(x){var q=kidById(x);return q?'<span class="'+(C.ct[x]?'on':'')+'">'+(C.ct[x]?'✔':'○')+' '+esc(firstName(q.name))+'</span>':''}).join("")+'</div>'}
+function coopSub(sub){var C=GS.coop;return sub+' · ⭐ '+C.done+(C.done===1?' desafio':' desafios')+' juntos'}
+function coopShell(o){
+ var C=GS.coop,id=GS.ids[GS.cur],p=kidById(id),pt=partnersOf(id),col=colOf(id);
+ var banner='<div class="co-turn" style="--c:'+col+'"><span class="co-dot" aria-hidden="true">'+esc(String(p.name).trim().charAt(0).toUpperCase())+'</span><span>Vez de <b>'+esc(p.name)+'</b></span></div>'
+  +(pt.length?'<div class="co-obs">👀 '+namesTxt(pt)+(pt.length>1?' ajudam':' observa')+', sem tocar</div>':'');
+ var ori="";try{if(o.ori&&typeof abOri3==="function"&&typeof ori3==="function")ori=abOri3(ori3(o.ori[0],o.ori[1]))}catch(e){}
+ abShell({title:"🤝 Atividade cooperativa",sub:coopSub(o.sub),left:'<div class="ab-left co-left" id="abLeft"><div class="co-info">'+banner+coopWho()+'</div><div class="co-main">'+o.left+'</div></div>',right:o.right,msg:o.msg,ori:ori||undefined,next:{label:"Próxima ▶",disabled:true},onBack:gPanel,onRestart:function(){if(coopLive()){GS.coop.item=coopGen(GS.coop);coopRender()}}});
+ C.tok=abTok;
+}
+function slotsHtml(items,filled){return '<div class="co-slots" id="coSlots">'+items.map(function(x,i){return '<span class="co-slot'+(i<filled?' on':'')+'">'+(i<filled?esc(x):'')+'</span>'}).join("")+'</div>'}
+function gridHtml(cells,cols,rows){return '<div class="ab-board"><div class="ab-grid" style="--cols:'+cols+';--rows:'+rows+'">'+cells.map(function(x,i){return '<button class="ab-tile" type="button" data-i="'+i+'" aria-label="'+esc(x)+'">'+esc(x)+'</button>'}).join("")+'</div></div>'}
+function shake(b){b.classList.remove("shake");void b.offsetWidth;b.classList.add("shake")}
+function coopNextBtn(label,fn){var n=Q("#abNext");if(!n)return;n.disabled=false;n.style.visibility="visible";n.textContent=label;n.onclick=fn}
+function coopLock(){document.querySelectorAll(".ab-tile,.fn-opts .ab-opt").forEach(function(b){b.disabled=true})}
+/* contribuição certa: registra para quem contribuiu e oferece passar a vez (o mediador controla) */
+function coopOk(msg,itemDone){
+ var C=GS.coop,id=GS.ids[GS.cur],s=GS.coopN[id]=GS.coopN[id]||{n:0,t:{}};
+ C.ct[id]=(C.ct[id]||0)+1;GS.hits[id]=(GS.hits[id]||0)+1;s.n++;s.t[C.k]=(s.t[C.k]||0)+1;
+ if(itemDone)C.done++;
+ var fin=itemDone&&coopFinished(),n=GS.ids.length,nx=kidById(GS.ids[coopPick()]),fn=nx?firstName(nx.name):"";
+ abMsg(msg);var w=Q(".co-who");if(w)w.outerHTML=coopWho();var h=Q(".hud-sub");if(h)h.textContent=coopSub(h.textContent.split(" · ⭐")[0]);
+ coopNextBtn(fin?"🌟 Concluir ▶":itemDone?(n>1?"Próximo desafio · vez de "+fn+" ▶":"Próximo desafio ▶"):(n>1?"Passar a vez para "+fn+" ▶":"Continuar ▶"),function(){if(!coopLive())return;fin?coopCelebrate():coopAdvance(itemDone)});
+}
+function coopTry(msg){abMsg(msg||"Quase! Vamos olhar de novo juntos. 👀")}
+function rPal(){
+ var C=GS.coop,it=C.item,cor=it.L[it.step],opts=shuffle([cor].concat(decoys(cor,3,it.L)));
+ coopShell({sub:"Completar palavras",left:'<div class="ab-figwrap"><div class="ab-fig">'+figW(it.w)+'</div></div>'+slotsHtml(it.L,it.step),right:gridHtml(opts,2,2),
+  msg:"🧩 Qual letra vem agora? Cada um coloca uma letra.",ori:["Mostre a figura e diga a palavra devagar. Em cada vez, a criança escolhe a próxima letra; as outras ajudam a conferir, sem tocar. A letra certa completa a palavra de todos.","Fale “"+abHl(it.w.w)+"”."]});
+ document.querySelectorAll(".ab-tile").forEach(function(b){b.onclick=function(){
+  if(!coopLive()||it.locked)return;
+  if(b.textContent===cor){it.locked=true;b.classList.add("found");coopLock();it.step++;var sl=Q("#coSlots");if(sl)sl.outerHTML=slotsHtml(it.L,it.step);var done=it.step>=it.L.length;
+   coopOk(done?"🎉 "+praise()+" A palavra "+it.w.w+" ficou completa, juntos!":praise()+" Falta mais "+(it.L.length-it.step)+(it.L.length-it.step===1?" letra.":" letras."),done)}
+  else{shake(b);coopTry("Quase! Qual letra vem depois? Confiram juntos. 👀")}}});
+}
+function rAchar(){
+ var C=GS.coop,it=C.item,sil=it.kind==="sil";
+ coopShell({sub:sil?"Encontrar sílabas":"Encontrar letras",left:'<div class="ab-figwrap"><div class="ab-letter">'+abPair(it.t,false)+'</div></div><div class="co-prog" aria-live="polite">'+it.found+' de '+it.T+' encontradas</div>',right:gridHtml(it.tiles.map(function(x){return x.x}),4,3),
+  msg:sil?"🔍 Quem acha a sílaba "+it.t+" na sua vez?":"🔍 Quem acha a letra "+it.t+" na sua vez?",ori:[sil?"Mostre a sílaba e leia-a. Cada criança, na sua vez, toca em uma sílaba igual; as outras ajudam a procurar, sem tocar.":"Mostre a letra e diga o nome. Cada criança, na sua vez, toca em uma letra igual; as outras ajudam a procurar, sem tocar.","Fale “"+abHl(it.t)+"”."]});
+ document.querySelectorAll(".ab-tile").forEach(function(b){if(it.tiles[+b.dataset.i].done){b.classList.add("found");b.disabled=true}b.onclick=function(){
+  if(!coopLive()||it.locked||b.classList.contains("found"))return;var x=it.tiles[+b.dataset.i];
+  if(x.ok){it.locked=true;x.done=true;b.classList.add("found");b.disabled=true;it.found++;var pr=Q(".co-prog");if(pr)pr.textContent=it.found+" de "+it.T+" encontradas";var done=it.found>=it.T;
+   if(done)document.querySelectorAll(".ab-tile").forEach(function(t){t.disabled=true});else it.locked=true;
+   coopOk(done?"🎉 "+praise()+" Vocês acharam todas, juntos!":praise()+" Ainda faltam "+(it.T-it.found)+".",done)}
+  else{shake(b);coopTry("Quase! Procurem "+(sil?"a sílaba ":"a letra ")+it.t+" com atenção. 👀")}}});
+}
+function rRimas(){
+ var C=GS.coop,it=C.item,q=it.q;
+ coopShell({sub:"Rimas",left:'<div class="ab-figwrap"><div class="ab-fig">'+fnFig(q.t)+'</div><div class="ab-cap">'+esc(q.t)+'</div></div>',right:fnPicOpts(it.opts,true),
+  msg:"🎵 Qual palavra termina com o mesmo som de "+q.t.toLowerCase()+"?",ori:["Diga a palavra da figura e as palavras das opções, devagar. A criança da vez escolhe a que termina com o mesmo som; as outras ajudam a escutar, sem tocar.","Fale “"+abHl(q.t.toLowerCase())+"”."]});
+ var all=[].slice.call(document.querySelectorAll(".fn-opts .ab-opt"));
+ all.forEach(function(b){b.onclick=function(){
+  if(!coopLive()||it.locked||b.disabled)return;
+  if(b.dataset.w===q.a){it.locked=true;b.classList.add("right");all.forEach(function(x){if(x!==b){if(!x.classList.contains("wrong"))x.classList.add("dim");x.disabled=true}});
+   coopOk("🎉 "+praise()+" "+q.t+" e "+q.a+" terminam com o mesmo som"+(typeof rimaTxt==="function"?": "+rimaTxt(q.a):"")+".",true)}
+  else{b.disabled=true;b.classList.add("wrong");coopTry("Quase! O(A) MEDIADOR(A) DEVE REPETIR AS PALAVRAS. 👂")}}});
+}
+function rSil(){
+ var C=GS.coop,it=C.item,w=it.w;
+ coopShell({sub:"Organizar sílabas",left:'<div class="ab-figwrap"><div class="ab-fig">'+figW(w)+'</div></div>'+slotsHtml(w.s,it.step),right:gridHtml(it.toks.map(function(x){return x.s}),Math.min(3,it.toks.length),Math.ceil(it.toks.length/3)),
+  msg:"🔤 Qual sílaba vem agora? Cada um coloca uma sílaba.",ori:["Mostre a figura e diga a palavra em pedacinhos. A criança da vez escolhe a próxima sílaba; as outras ajudam a conferir, sem tocar.","Fale “"+abHl(w.w)+"” em pedacinhos."]});
+ var tiles=[].slice.call(document.querySelectorAll(".ab-tile"));
+ tiles.forEach(function(b){if(it.placed[b.dataset.i]){b.disabled=true;b.classList.add("found")}b.onclick=function(){
+  if(!coopLive()||it.locked||b.disabled)return;
+  if(it.toks[+b.dataset.i].s===w.s[it.step]){it.locked=true;it.placed[b.dataset.i]=1;b.classList.add("found");coopLock();it.step++;var sl=Q("#coSlots");if(sl)sl.outerHTML=slotsHtml(w.s,it.step);var done=it.step>=w.s.length;
+   coopOk(done?"🎉 "+praise()+" Vocês formaram "+w.w+", juntos!":praise()+" Falta mais "+(w.s.length-it.step)+(w.s.length-it.step===1?" sílaba.":" sílabas."),done)}
+  else{shake(b);coopTry("Quase! Essa sílaba vem em outro lugar. Digam a palavra juntos. 👀")}}});
+}
+function rFig(){
+ var C=GS.coop,it=C.item;
+ coopShell({sub:"Figuras correspondentes",left:'<div class="ab-figwrap"><div class="ab-fig">'+fnFig(it.t)+'</div><div class="ab-cap">'+esc(it.t)+'</div></div>',right:fnPicOpts(it.opts,false),
+  msg:"🖼️ Qual figura começa com o mesmo som de "+it.t.toLowerCase()+"?",ori:["Diga o nome da figura e o das opções, prolongando o som inicial. A criança da vez escolhe a figura que começa com o mesmo som; as outras ajudam a escutar, sem tocar.","Fale “"+abHl(it.t.toLowerCase())+"”."]});
+ var all=[].slice.call(document.querySelectorAll(".fn-opts .ab-opt"));
+ all.forEach(function(b){b.onclick=function(){
+  if(!coopLive()||it.locked||b.disabled)return;
+  if(b.dataset.w===it.a){it.locked=true;b.classList.add("right");all.forEach(function(x){if(x!==b){if(!x.classList.contains("wrong"))x.classList.add("dim");x.disabled=true}});
+   coopOk("🎉 "+praise()+" "+it.a.charAt(0)+it.a.slice(1).toLowerCase()+" começa com o mesmo som de "+it.t.toLowerCase()+".",true)}
+  else{b.disabled=true;b.classList.add("wrong");coopTry("Quase! O(A) MEDIADOR(A) DEVE REPETIR O NOME DAS FIGURAS. 👂")}}});
+}
+function coopRender(){if(!gValid()||!GS.coop)return;({pal:rPal,achar:rAchar,rimas:rRimas,sil:rSil,fig:rFig})[GS.coop.item.k]()}
+/* --- fluxo --- */
+function coopTurn(i){
+ if(!gValid()||!GS.coop)return;var n=GS.ids.length;i=((i%n)+n)%n;var id=GS.ids[i];if(!kidById(id))return;
+ var changed=GS.act!==id;GS.cur=i;activeId=id;activeClassId=GS.classId;
+ if(GS.hand&&changed)GS.hold=true;
+ gTurnTo(id);GS.coop.item.locked=false;coopRender();
+ if(GS.hand&&changed)gHandShow();
+ gBar();
+}
+function coopAdvance(newItem){if(!gValid()||!GS.coop)return;if(newItem)GS.coop.item=coopGen(GS.coop);coopTurn(coopPick())}
+function coopStart(k){
+ if(!gValid())return;
+ gCancelPend();GS.blk=null;GS.coop={k:k,done:0,ct:{},used:{},n:0,min:3,tok:0,item:null};GS.coop.item=coopGen(GS.coop);coopResume(true);
+}
+function coopResume(fresh){
+ if(!gValid()||!GS.coop)return;
+ var id=GS.ids[GS.cur];if(!kidById(id))return;
+ var changed=GS.act!==id;activeId=id;activeClassId=GS.classId;
+ if(GS.hand&&changed)GS.hold=true;
+ gTurnTo(id);GS.coop.item.locked=false;
+ commitStageClock();clearTimeout(autoTimer);coopRender();
+ if(GS.hand&&changed)gHandShow();
+ gBar();
+}
+function coopCelebrate(){
+ if(!gValid()||!GS.coop)return;var C=GS.coop;
+ abShell({title:"🤝 Atividade cooperativa",sub:"Vocês conseguiram juntos!",single:'<div class="co-done"><div class="co-star" aria-hidden="true">🌟</div><h2>Vocês conseguiram juntos!</h2><p>Todos ajudaram a completar a atividade.</p>'+coopWho()+'</div>',msg:"🌟 Parabéns, equipe! Cada um contribuiu.",next:{label:"🔁 Mais desafios ▶",fn:function(){if(!coopLive())return;C.min=C.done+3;coopAdvance(true)}},onBack:gPanel});
+ C.tok=abTok;
+}
+
+/* ---------- encerramento ---------- */
+function gDrop(){if(GS)gCancelPend();var o=Q("#grpHand");if(o)o.remove();GS=null;gBar()}
+function gEnd(){if(GS&&gValid())gLeave();gDrop()}
+function gEndAsk(){
+ if(!gValid())return;
+ gPause();
+ var sem=GS.ids.filter(function(id){return !(GS.turns[id]>0)}).map(function(id){var p=kidById(id);return p?p.name:""}).filter(Boolean);
+ var msg=sem.length?"Ainda não tiveram a vez: "+sem.join(", ")+".\n\nEncerrar o atendimento mesmo assim? O progresso e os registros de cada criança já estão salvos.":"Encerrar o atendimento em grupo? O progresso e os registros de cada criança já estão salvos.";
+ if(!confirm(msg)){if(GS.act&&activeId===GS.act&&!GS.hold)GS.t0=Date.now();return}
+ var cid=GS.classId;gEnd();activeId=null;activeClassId=cid;renderClassDashboard();
+}
+
+/* ---------- pontos de entrada (botões injetados nas telas existentes, sem reescrevê-las) ---------- */
+function gInject(){
+ if(!activeTeacherId)return;
+ if(stage==="home"&&!Q("#grpHomeBtn")){
+  var pn=Q("#appMain .panel");if(!pn)return;
+  var d=document.createElement("div");d.className="class-manager grp-entry";
+  d.innerHTML='<div style="flex:1;min-width:220px"><h2>👥 Atendimento em Grupo</h2><p class="muted small" style="margin:0">Atenda várias crianças na mesma sessão. Cada uma mantém o próprio registro.</p></div><button class="primary" id="grpHomeBtn" type="button">Iniciar atendimento em grupo →</button>';
+  pn.appendChild(d);
+  Q("#grpHomeBtn").onclick=function(){var sel=Q("#classSelectHome");if(sel&&sel.value)activeClassId=sel.value;activeId=null;gSetup(activeClassId,"home")};
+ }
+ if(stage==="classes"&&!Q("#grpDashBtn")){
+  var bk=Q("#backToClassHome");if(!bk||!bk.parentNode)return;
+  var b=document.createElement("button");b.className="secondary";b.id="grpDashBtn";b.type="button";b.textContent="👥 Atendimento em Grupo";
+  bk.parentNode.insertBefore(b,bk);
+  b.onclick=function(){activeId=null;gSetup(activeClassId,"classes")};
+ }
+}
+
+window.gAtendimento={setup:gSetup,panel:gPanel,state:function(){return GS},switchTo:gSwitch,coopStart:coopStart};
+var mn=document.getElementById("appMain");
+if(mn)new MutationObserver(gSync).observe(mn,{childList:true});
+gSync();
 })();
 </script>
 <script type="module">
