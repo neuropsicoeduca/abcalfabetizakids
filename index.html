@@ -5466,6 +5466,100 @@ if(mn)new MutationObserver(gSync).observe(mn,{childList:true});
 gSync();
 })();
 </script>
+<style id="silaba-ajuste-css">
+/* v35 · Sílabas sempre inteiras e dentro do quadrado (computador, tablet e celular).
+   Evita a quebra no meio da sílaba (ex.: RA/N); o tamanho é ajustado pelo script "silaba-ajuste". */
+.ab-opts:not(.fn-opts) .ab-opt,.ab-tile{white-space:nowrap;overflow-wrap:normal;word-break:keep-all;hyphens:none}
+.ab-opts:not(.fn-opts) .ab-opt .ab-pair{white-space:nowrap}
+</style>
+<script id="silaba-ajuste">
+/* Ajuste automático do tamanho do texto de sílabas/letras ao quadrado (somente reduz, nunca amplia).
+   Nas fileiras de alternativas (.ab-opts) todas recebem o mesmo tamanho, para não sugerir a resposta. */
+(function(){
+"use strict";
+var SEL=".ab-opt,.ab-tile,.fchip,.slot2,.cell-t",MARGIN=.9,MINPX=9,ver=0,busy=false,cache=new WeakMap(),
+ ro=window.ResizeObserver?new ResizeObserver(function(){fitAll()}):null;
+function eligible(e){
+ if(e.classList.contains("fn-ghost"))return false;
+ if(e.classList.contains("ab-opt")&&(e.closest(".fn-opts")||e.querySelector(".fn-em")))return false;
+ return true}
+function boxOf(e){return e.classList.contains("cell-t")?(e.closest(".cell,.opt")||e.parentElement||e):e}
+function avail(b){var c=getComputedStyle(b);return b.clientWidth-(parseFloat(c.paddingLeft)||0)-(parseFloat(c.paddingRight)||0)}
+function textW(e,b){/* largura real do texto, descontando transformações (zoom/animações) */
+ var r=document.createRange();r.selectNodeContents(e);
+ var w=r.getBoundingClientRect().width,s=b.offsetWidth?b.getBoundingClientRect().width/b.offsetWidth:1;return w/(s||1)}
+function key(e,b){var g=e.closest(".game");return b.clientWidth+"x"+b.clientHeight+"|"+(g?g.className:"")+"|"+ver+"|"+e.textContent}
+function units(list){
+ var m=new Map(),u=[];
+ list.forEach(function(e){var p=e.parentElement;
+  if(e.classList.contains("ab-opt")&&p&&p.classList.contains("ab-opts")){var a=m.get(p);if(!a){a=[];m.set(p,a);u.push(a)}a.push(e)}
+  else u.push([e])});
+ return u}
+function fitUnit(u){
+ var bx=u.map(boxOf),ks=u.map(function(e,i){return key(e,bx[i])});
+ if(u.every(function(e,i){return cache.get(e)===ks[i]}))return;
+ u.forEach(function(e){e.style.fontSize=""});
+ var min=1;
+ u.forEach(function(e,i){var a=avail(bx[i])*MARGIN;if(a<=0)return;var w=textW(e,bx[i]);if(w>a)min=Math.min(min,a/w)});
+ if(min<1)u.forEach(function(e){var fs=parseFloat(getComputedStyle(e).fontSize)||16;e.style.fontSize=Math.max(MINPX,fs*min)+"px"});
+ u.forEach(function(e,i){cache.set(e,ks[i])});
+ if(ro)u.forEach(function(e){var o=e.closest(".ab-board,.board,.stage-body")||e.parentElement;if(o)ro.observe(o)})}
+function fitAll(){
+ if(busy)return;busy=true;
+ try{units([].slice.call(document.querySelectorAll(SEL)).filter(eligible)).forEach(fitUnit)}
+ catch(err){if(window.console)console.warn("silaba-ajuste:",err)}
+ finally{busy=false}}
+function bump(){ver++;fitAll()}
+/* novas telas / textos trocados (executa antes da pintura, sem "piscar") */
+new MutationObserver(function(rs){
+ for(var i=0;i<rs.length;i++){var r=rs[i];
+  for(var j=0;j<r.addedNodes.length;j++){var n=r.addedNodes[j];
+   if(n.nodeType===1){if(n.matches(SEL)||n.querySelector(SEL)){fitAll();return}}
+   else if(n.nodeType===3&&r.target.nodeType===1&&r.target.closest&&r.target.closest(SEL)){fitAll();return}}}
+}).observe(document.documentElement,{childList:true,subtree:true});
+/* botão ABC (maiúscula/minúscula/cursiva) troca a classe do jogo sem redesenhar */
+new MutationObserver(function(rs){
+ for(var i=0;i<rs.length;i++){var t=rs[i].target;if(t.classList&&t.classList.contains("game")){fitAll();return}}
+}).observe(document.documentElement,{attributes:true,attributeFilter:["class"],subtree:true});
+window.addEventListener("resize",bump);window.addEventListener("orientationchange",bump);
+if(document.fonts){if(document.fonts.addEventListener)document.fonts.addEventListener("loadingdone",bump);if(document.fonts.ready)document.fonts.ready.then(bump)}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",fitAll);else fitAll();
+window.silabaAjuste={fit:bump};
+})();
+</script>
+<script id="atividade-paisagem">
+/* v36 · Em aparelhos de toque (celular/tablet), ao abrir uma atividade: tela cheia + rotação travada na horizontal.
+   Ao voltar ao menu, libera a rotação e sai da tela cheia. Depende do toque que abre a atividade (exigência dos navegadores).
+   Onde o navegador não permite travar a rotação (ex.: iPhone), a atividade abre normalmente, sem erro. */
+(function(){
+"use strict";
+var d=document,el=d.documentElement,done=false,ours=false;
+function touch(){try{return matchMedia("(pointer:coarse)").matches}catch(e){return false}}
+function inGame(){return !!(d.body&&d.body.classList.contains("game-mode"))}
+function isFs(){return !!(d.fullscreenElement||d.webkitFullscreenElement)}
+function lock(){try{var o=screen.orientation;if(o&&o.lock){var p=o.lock("landscape");if(p&&p.catch)p.catch(function(){})}}catch(e){}}
+function unlock(){try{var o=screen.orientation;if(o&&o.unlock)o.unlock()}catch(e){}}
+function enter(){
+ if(done||!touch()||!inGame())return;
+ done=true;
+ var rq=el.requestFullscreen||el.webkitRequestFullscreen;
+ if(!rq||isFs()){lock();return}
+ try{
+  var p=rq.call(el);ours=true;
+  if(p&&p.then)p.then(lock,function(){done=false;ours=false});else lock();
+ }catch(e){done=false;ours=false}}
+function leave(){
+ done=false;unlock();
+ if(ours&&isFs()){try{(d.exitFullscreen||d.webkitExitFullscreen).call(d)}catch(e){}}
+ ours=false}
+new MutationObserver(function(){if(inGame())enter();else if(done||ours)leave()}).observe(d.body||el,{attributes:true,attributeFilter:["class"]});
+/* se a atividade abriu sem toque (ex.: avanço automático), o primeiro toque seguinte ativa */
+d.addEventListener("click",function(){if(inGame()&&!done)enter()},true);
+d.addEventListener("fullscreenchange",function(){if(!isFs()&&ours){unlock();ours=false}});
+d.addEventListener("webkitfullscreenchange",function(){if(!isFs()&&ours){unlock();ours=false}});
+window.atividadePaisagem={entrar:enter,sair:leave};
+})();
+</script>
 <script type="module">
 (async()=>{
  try{
