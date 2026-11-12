@@ -5564,6 +5564,28 @@ window.atividadePaisagem={entrar:enter,sair:leave};
 body.game-mode .app-footer{display:none!important}
 body.game-mode .app{padding-bottom:env(safe-area-inset-bottom,0px)}
 </style>
+<style id="area-segura-css">
+/* v50 · No modo jogo (viewport-fit=cover + tela cheia + horizontal) nada fica sob entalhe/câmera, cantos arredondados ou barra de gestos.
+   O .hud e a barra de grupo continuam indo de ponta a ponta (a cor chega às bordas; só o conteúdo é recuado). */
+body.game-mode,body.game-mode .app{height:100vh;height:100dvh;height:min(100dvh,var(--app-vh,100dvh))}
+body.game-mode .app{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body.game-mode .hud,body.game-mode #grpBar{margin-left:calc(-1*env(safe-area-inset-left,0px));margin-right:calc(-1*env(safe-area-inset-right,0px))}
+</style>
+<script id="altura-real">
+/* Mantém --app-vh = altura realmente visível. Alguns navegadores móveis demoram a atualizar vh/dvh ao entrar em tela cheia
+   ou girar; por isso a medida é refeita em eventos e em pequenos intervalos logo após a mudança. */
+(function(){
+"use strict";
+var r=document.documentElement;
+function set(){try{var h=r.clientHeight||window.innerHeight;if(h>0)r.style.setProperty("--app-vh",h+"px")}catch(e){}}
+function burst(){set();[120,350,800,1600].forEach(function(ms){setTimeout(set,ms)})}
+window.addEventListener("resize",burst);window.addEventListener("orientationchange",burst);
+document.addEventListener("fullscreenchange",burst);document.addEventListener("webkitfullscreenchange",burst);
+if(window.visualViewport)window.visualViewport.addEventListener("resize",set);
+new MutationObserver(function(){if(document.body.classList.contains("game-mode"))burst()}).observe(document.body,{attributes:true,attributeFilter:["class"]});
+set();
+})();
+</script>
 <script type="module">
 (async()=>{
  try{
