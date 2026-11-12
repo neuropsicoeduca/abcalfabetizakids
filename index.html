@@ -5560,6 +5560,12 @@ d.addEventListener("webkitfullscreenchange",function(){if(!isFs()&&ours){unlock(
 window.atividadePaisagem={entrar:enter,sair:leave};
 })();
 </script>
+<style id="rodape-atividade-css">
+/* v37 · Dentro dos blocos e atividades (body.game-mode) o rodapé é ocultado para dar mais espaço à atividade.
+   Na página principal o rodapé continua visível. */
+body.game-mode .app-footer{display:none!important}
+body.game-mode .app{padding-bottom:env(safe-area-inset-bottom,0px)}
+</style>
 <script type="module">
 (async()=>{
  try{
