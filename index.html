@@ -714,9 +714,9 @@ body.game-mode .app-footer p{margin:0}
 .fl-qo.wrong{border-color:#f43f5e;background:#ffe4e8;color:#9f1239;box-shadow:none;transform:translateY(4px);animation:shake .4s}
 .fl-qo.dim{opacity:.35;box-shadow:none}
 .fl-qre{border:2px solid #b9c8f5;border-radius:999px;background:#e9f0ff;color:#1b2250;font:inherit;font-size:clamp(.78rem,2vh,.95rem);font-weight:800;padding:4px 14px;min-height:34px;cursor:pointer;text-transform:none}
-@media(orientation:landscape){.fl-qopts{flex-direction:row;width:100%}.fl-qo{flex:1 1 0;min-width:0}}
+.fl-qopts{align-items:center}.fl-qopts .fl-qo{width:100%}.fl-qopts .fl-qre{align-self:center;width:auto}
 @media(max-height:760px){.fl-qtag{display:none}}
-@media(min-height:761px){.fl-qq{font-size:clamp(1.6rem,5vh,2.8rem)}.fl-qo{font-size:clamp(1.3rem,3.6vh,2.1rem);padding:clamp(12px,2vh,22px) 16px}.fl-qtext{font-size:clamp(1.15rem,3vh,1.7rem)}.fl-qopts{width:min(100%,760px)}}
+@media(min-height:761px){.fl-qq{font-size:clamp(1.6rem,5vh,2.8rem)}.fl-qo{font-size:clamp(1.25rem,3.3vh,1.9rem);padding:clamp(8px,1.4vh,16px) 16px}.fl-qtext{font-size:clamp(1.15rem,3vh,1.7rem)}.fl-qopts{width:min(100%,760px)}}
 .row>.ab-discreet{flex:0 0 auto}.ab-discreet{font-size:.78rem;font-weight:700;letter-spacing:.05em;padding:6px 14px;border-radius:999px;opacity:.9;box-shadow:none}
 .ab-letters{grid-template-columns:minmax(0,1.9fr) minmax(0,1fr)}
 .ab-letters .ab-grid{--cols:7;--rows:4}
@@ -925,8 +925,6 @@ button.stu-stars:focus-visible{outline:3px solid #3b4fd0;outline-offset:2px}
 .cell.fw{gap:.4cqh}
 .cell.fw.wrong{background:#ffe4e8;animation:shake .4s}
 .fw-t{display:flex;gap:.04em;font-weight:900;line-height:1;font-size:min(calc(28cqh / var(--r,2)),calc(78cqw / var(--cols,2) / (var(--len,4) * .62 + .3)))}
-.cell.fw.pseudo{background:#fffaf0}
-.fw-tag{font-size:min(calc(7cqh / var(--r,2)),2.6cqw);font-weight:800;color:#8a6a00}
 .ab-levels.fc-many{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(orientation:portrait){.ab-levels.fc-many{grid-template-columns:minmax(0,1fr);grid-template-rows:none;grid-auto-rows:max-content;overflow-y:auto;align-content:start}}
 /* Treino de Leitura Livre: 4 níveis (categoria simples) em tela vertical empilham com rolagem, sem esmagar os cartões */
@@ -1687,7 +1685,7 @@ function gmCatalog(){
   {t:"📚 Sílabas e palavras",a:["simples","complexas","simples_montar","complexas_montar"].map(c=>["cat:"+c,catLabel(c)])},
   {t:"🧠 Consciência fonológica",a:fn},
   {t:"📖 Treino de Leitura Livre",a:[["fl:1","📘 Textos com palavras simples"],["fl:2","📗 Textos com palavras complexas"]]},
-  {t:"⏱️ Treino de Fluência Leitora",a:[["lg:p","📖 Palavras"],["lg:f","💬 Frases"],["lg:tc","📄 Parágrafos"]]}
+  {t:"⏱️ Treino de Fluência Leitora",a:[["lg:p","📖 Sílabas e Palavras"],["lg:f","💬 Frases"],["lg:tc","📄 Parágrafos"]]}
  ];
 }
 function gmAllKeys(){return gmCatalog().flatMap(g=>g.a.map(x=>x[0]))}
@@ -2048,7 +2046,7 @@ function renderFamStage(){
   /* Etapa 4: o mediador vê só a palavra pedida; a cada acerto todas as palavras são reembaralhadas e vem a próxima solicitação */
   const L4=fam.l4||(fam.l4={order:shuffle(fam.words.map(w=>w.t)),i:0}),total=L4.order.length;
   const ori4=()=>famOriBox(4,abHl(L4.order[L4.i]));
-  body.innerHTML=`${famOri(alreadyDone?famOriBox(4,"a palavra pedida"):ori4())}<div class="board fam-words" style="--rows:${rws};--r:${rws};--cols:${cols}">${W.map(w=>`<button type="button" class="cell fw${w.pseudo?" pseudo":""}" data-t="${esc(w.t)}" style="--len:${w.t.length}" aria-pressed="false"><span class="fw-t">${w.s.map((sy,i)=>`<span style="color:${PALETTE[i%PALETTE.length]}">${esc(sy)}</span>`).join("")}</span>${w.pseudo?'<span class="fw-tag">✨ inventada</span>':""}<span class="chk">✓</span></button>`).join("")}</div>`;
+  body.innerHTML=`${famOri(alreadyDone?famOriBox(4,"a palavra pedida"):ori4())}<div class="board fam-words" style="--rows:${rws};--r:${rws};--cols:${cols}">${W.map(w=>`<button type="button" class="cell fw" data-t="${esc(w.t)}" style="--len:${w.t.length}" aria-pressed="false"><span class="fw-t">${w.s.map((sy,i)=>`<span style="color:${PALETTE[i%PALETTE.length]}">${esc(sy)}</span>`).join("")}</span><span class="chk">✓</span></button>`).join("")}</div>`;
   const els=[...body.querySelectorAll(".fw")];
   const markAll=()=>els.forEach(b=>{b.classList.add("marked");b.setAttribute("aria-pressed","true")});
   /* reembaralha: nenhuma palavra fica na posição anterior (sempre que possível); nada é removido nem duplicado */
@@ -2069,7 +2067,7 @@ function renderFamStage(){
     setTimeout(()=>b.classList.remove("wrong"),650)}
   });
   if(alreadyDone){markAll();next.disabled=false;setFb(doneMsg)}
-  else{next.disabled=true;setFb(W.some(w=>w.pseudo)?"Leia cada palavra. As com ✨ são inventadas: junte os sons!":"Leia cada palavra juntando as sílabas");
+  else{next.disabled=true;setFb("Leia cada palavra juntando as sílabas");
    if(CFG.skip){runFlag("demo");markAll();finishStep();autoNext()}}
  }
 }
@@ -3462,6 +3460,12 @@ function flAdvance(){
  const T=FL.text,lvl=FL_TEXTS.filter(x=>x.lv===T.lv),k=lvl.findIndex(x=>x.id===T.id),nx=lvl[k+1],n=$("#abNext");
  if(n){n.disabled=false;n.textContent=nx?"Próximo texto ▶":"Escolher texto ▶";n.onclick=()=>nx?flStart(nx.id):flTextList(T.lv)}
 }
+/* Orientações ao(à) mediador(a) do Treino de Leitura Livre (mesmo formato de caixa de Vogais e Sílabas): Tela 1 = leitura, Tela 2 = pergunta; Tela 3 (após o acerto) fica sem orientação */
+const FL_ORI1="Peça ao aprendente que leia o texto no próprio ritmo. A cada palavra lida, oriente-o a tocá-la para marcar. Não leia por ele; apenas observe e, se necessário, ofereça pequenas dicas.";
+const FL_ORI2="Leia a pergunta e as opções de resposta. Aguarde a escolha do aprendente e, se necessário, permita que releia o texto para encontrar a resposta.";
+function flOriBox(t){return abOri3(`<div class="ori-l">👩‍🏫 <b>Orientações:</b> ${t}</div>`)}
+function flSetOri(t){const o=document.querySelector(".ab-ori");if(!o)return;const h=document.createElement("div");h.innerHTML=flOriBox(t);const n=h.firstElementChild;if(n){n.classList.add("fl-ori");o.replaceWith(n)}}
+function flHideOri(){const o=document.querySelector(".ab-ori");if(o)o.style.display="none"}
 /* Atividade de compreensão exibida ao terminar a leitura: acertou -> reforço e libera avançar; errou -> avisa e deixa tentar de novo, sem revelar a resposta */
 function flQuiz(){
  const T=FL.text,Q=FL_QUIZ[T.id];
@@ -3470,8 +3474,8 @@ function flQuiz(){
  FL.qErr=0;FL.qDone=false;
  const opts=flShuf([{t:Q[1],ok:true},{t:Q[2]},{t:Q[3]}]);
  const cls=caseMode==="l"?"lc":caseMode==="c"?"cur":"uc";
- board.innerHTML=`<div class="fl-qz ${cls}" id="flQz"><div class="fl-qin"><div class="fl-qtag">❓ Pergunta sobre o texto</div><div class="fl-qq" id="flQq">${esc(Q[0])}</div><div class="fl-qtext hidden" id="flQtx">${esc(T.x)}</div><div class="fl-qopts" id="flQo" role="group" aria-label="Alternativas">${opts.map((o,i)=>`<button type="button" class="fl-qo" data-i="${i}">${esc(o.t)}</button>`).join("")}</div><button type="button" class="fl-qre" id="flQre" aria-expanded="false">📖 Reler o texto</button></div></div>`;
- const oi=document.querySelector(".ab-ori-t");if(oi)oi.textContent=(T.lv<=4?"O(a) mediador(a) lê a pergunta em voz alta (as palavras de pergunta ainda não foram treinadas). A criança lê as respostas e toca na certa. ":T.lv<=11?"A criança lê a pergunta e toca na resposta; ajude com as palavras de pergunta (quem, onde, quando…) se preciso. ":"A criança lê a pergunta e toca na resposta. ")+"Se errar, incentive-a a reler o texto e tentar de novo.";
+ board.innerHTML=`<div class="fl-qz ${cls}" id="flQz"><div class="fl-qin"><div class="fl-qtag">❓ Pergunta sobre o texto</div><div class="fl-qq" id="flQq">${esc(Q[0])}</div><div class="fl-qtext hidden" id="flQtx">${esc(T.x)}</div><div class="fl-qopts" id="flQo" role="group" aria-label="Alternativas">${opts.map((o,i)=>`<button type="button" class="fl-qo" data-i="${i}">${esc(o.t)}</button>`).join("")}<button type="button" class="fl-qre" id="flQre" aria-expanded="false">📖 Reler o texto</button></div></div></div>`;
+ flSetOri(FL_ORI2);
  const sb=document.querySelector(".hud-sub");if(sb)sb.textContent=`${T.e} ${T.t} • Compreensão`;
  $("#flQre").onclick=e=>{const tx=$("#flQtx"),b=e.currentTarget,show=tx.classList.contains("hidden");tx.classList.toggle("hidden",!show);b.textContent=show?"❓ Voltar à pergunta":"📖 Reler o texto";b.setAttribute("aria-expanded",show?"true":"false")};
  const bs=[...document.querySelectorAll(".fl-qo")];
@@ -3484,7 +3488,7 @@ function flQuiz(){
    if(p){const r=flAlpha(p).textos[T.id],md=recMode();if(r){if(md==="auto"){r.qOk=(r.qOk||0)+1;r.qErr=(r.qErr||0)+FL.qErr}else{r.qNA=r.qNA||{demo:0};r.qNA[md]++;regNA("ac")}saveProfiles()}}
    abChime();
    abMsg("Muito bem! 🎉 Resposta certa!"+(FL.lvOk?" 🏆 Nível "+T.lv+" concluído!":""));
-   flAdvance();flAfter();autoClick("#abNext");
+   {const qz=$("#flQz");if(qz)qz.classList.add("fin")}flHideOri();flAdvance();autoClick("#abNext");
   }else{
    FL.qErr++;abTick(false);b.classList.add("wrong");setTimeout(()=>b.classList.remove("wrong"),900);
    abMsg("Ops! Essa resposta não está correta. Leia a pergunta de novo e tente outra vez. 💪");
@@ -3508,7 +3512,7 @@ const FL_OBS={seg:"leu com segurança",ajuda:"precisou de ajuda",rel:"reler outr
 function flMarkStart(){
  const p=active();if(!p||!FL)return;const f=flAlpha(p),r=f.textos[FL.text.id]=f.textos[FL.text.id]||{n:0};
  if(!(r.n>0))r.ini=new Date().toISOString();saveProfiles()}
-/* após acertar a pergunta: convite à releitura + observação opcional do(a) mediador(a) (sem avaliação automática) */
+/* (Tela removida: não é mais chamada após a pergunta.) Convite à releitura + observação opcional do(a) mediador(a) (sem avaliação automática) */
 function flAfter(){
  const box=document.querySelector(".fl-qin");if(!box||!FL||box.querySelector(".fl-after"))return;
  const T=FL.text,tk=FL.tok,w=document.createElement("div"),lab={seg:"✔ Com segurança",ajuda:"🤝 Com ajuda",rel:"🔁 Reler depois"},tt={seg:"Leu com segurança",ajuda:"Precisou de ajuda",rel:"Reler outro dia"};w.className="fl-after";
@@ -3571,7 +3575,7 @@ function flRender(){
  const T=FL.text;const tok0=abTok+1;
  const spans=FL.words.map((w,i)=>`<span class="fl-w" data-i="${i}" role="button" tabindex="0" aria-pressed="false">${esc(w.raw)}</span>`).join(" ");
  abShell({title:"Treino de Leitura Livre",sub:`${FL.re?"🔁 ":""}${T.e} ${esc(T.t)} • 0 de ${FL.words.length} marcadas`,caseBtn:true,noSound:true,
-  ori:abOri(ori2(null,FL.re?"Releia o texto com calma, no seu ritmo.":"Leia o texto no seu ritmo e toque em cada palavra depois de lê-la.","Observe a leitura, sem ler pela criança.")),
+  ori:flOriBox(FL_ORI1),
   single:`<div class="ab-board fl-board"><div class="fl-text" id="flText">${spans}</div></div>`,
   msg:FL.re?"Releitura: leia no seu ritmo e toque nas palavras que já leu":"Leia o texto e toque em cada palavra que já leu",
   next:{label:"Concluir ▶",disabled:true},onBack:()=>flTextList(T.lv),onRestart:()=>flStart(T.id)});
@@ -3604,7 +3608,7 @@ function flComplete(){
  const lvl=FL_TEXTS.filter(x=>x.lv===T.lv);
  const n=$("#abNext");if(n){n.disabled=true;n.textContent="Responda ▶"}
  FL.lvOk=!!p&&flN===1&&lvl.every(x=>{const r=flAlpha(p).textos[x.id];return r&&r.n});
- abMsg(flN===1?"Parabéns! 🎉 Você marcou o texto todo!"+repMsg(true,1)+" Agora responda à pergunta.":"Releitura concluída! 🔁 Esta foi a leitura número "+flN+". Reler ajuda a ler com mais segurança. Agora responda à pergunta.");
+ abMsg(flN===1?"Parabéns! 🎉 Você marcou o texto todo!"+repMsg(true,1)+" Agora responda à pergunta.":"Releitura concluída!");
  celebrateDone();abChime();flQuiz();
 }
 function flMenuMarkup(p){
@@ -3621,10 +3625,10 @@ function lgPaceInfo(){const b=LG_PACE[CFG.pace]||LG_PACE.i;return{n:b.n,e:b.e,s:
 function lgUseMs(x){return (CFG.pace==="p"&&CFG.unit==="ms")||x<1}
 function lgSecTxt(x){if(lgUseMs(x))return Math.round(x*1000)+" ms por palavra";return String(x).replace(".",",")+(x===1?" segundo":" segundos")+" por palavra"}
 const LG_KINDS={
- pbs:{t:"🔤 Sílabas",s:"Famílias silábicas completas, uma sílaba de cada vez",kind:"words"},
- pbp:{t:"📘 Palavras Simples",s:"Palavras só com sílabas simples (CV): curtas, maiores e inéditas",kind:"words"},
- pbe:{t:"🔗 Encontros Consonantais",s:"BL, BR, TR… e sílabas travadas por R ou S, com palavras inéditas ao final",kind:"words"},
- pbd:{t:"🔠 Dígrafos",s:"CH, LH, NH e demais dificuldades ortográficas, uma por lista, com palavras inéditas ao final",kind:"words"},
+ pbs:{t:"🔤 Sílabas",s:"Famílias silábicas, encontros, dígrafos e sílabas travadas, uma sílaba de cada vez • embaralhadas, em 2 rodadas seguidas",kind:"words"},
+ pbp:{t:"📘 Palavras Simples",s:"Palavras só com sílabas simples (CV): curtas e maiores, com palavras novas misturadas",kind:"words"},
+ pbe:{t:"🔗 Encontros Consonantais",s:"BL, BR, TR… e sílabas travadas por R ou S, em 6 grupos",kind:"words"},
+ pbd:{t:"🔠 Dígrafos",s:"CH, LH, NH e demais dificuldades ortográficas, em 8 grupos",kind:"words"},
  fcu:{t:"💬 Frases curtas",s:"Poucas palavras, sílabas simples e letras já ensinadas",kind:"sent"},
  fam:{t:"📏 Frases ampliadas",s:"Frases maiores, ainda com sílabas simples",kind:"sent"},
  fvr:{t:"🔤 Frases com estruturas silábicas variadas",s:"Dígrafos, R e RR, encontros consonantais e sílabas travadas",kind:"sent"},
@@ -3636,7 +3640,7 @@ const LG_KINDS={
  };
 /* Grupos do menu inicial: Palavras (4 blocos na progressão do Método Fônico e Personalizado), Frases (curtas, ampliadas, estruturas silábicas variadas, complexas e inéditas) e Textos curtos */
 const LG_GROUPS={
- p:{t:"📖 Palavras",s:"Escolha o tipo de palavras",kinds:["pbs","pbp","pbe","pbd"],names:{pbs:"🔤 Sílabas",pbp:"📘 Palavras Simples",pbe:"🔗 Encontros Consonantais",pbd:"🔠 Dígrafos"},custom:true},
+ p:{t:"📖 Sílabas e Palavras",s:"Escolha o tipo de palavras",kinds:["pbs","pbp","pbe","pbd"],names:{pbs:"🔤 Sílabas",pbp:"📘 Palavras Simples",pbe:"🔗 Encontros Consonantais",pbd:"🔠 Dígrafos"},custom:true},
  f:{t:"💬 Frases",s:"Uma frase de cada vez",kinds:["fcu","fam","fvr","fcx","fin"],names:{fcu:"💬 Frases curtas",fam:"📏 Frases ampliadas",fvr:"🔤 Frases com estruturas silábicas variadas",fcx:"🧩 Frases complexas",fin:"✨ Frases inéditas"}},
  tc:{t:"📄 Parágrafos",s:"Escolha o nível do texto",kinds:["tci","tcm","tca"],names:{tci:"🌱 Textos iniciais",tcm:"🌿 Textos intermediários",tca:"🌳 Textos avançados"}}
 };
@@ -3678,9 +3682,9 @@ function lgPaceOpen(){
 }
 
 /* Listas de palavras da Leitura guiada, na progressão do Método Fônico (f = foco da lista; w = itens; n = lista de palavras inéditas).
-   Blocos: pbs Sílabas CV • pbp Palavras Simples (curtas, maiores, inéditas) • pbe Encontros Consonantais • pbd Dígrafos e dificuldades ortográficas.
-   Em cada bloco as inéditas vêm ao final, ordenadas pelo nível; só usam letras e sons já treinados antes. */
-const LG_PW={pbs:[{f:"BA BE BI BO BU • DA DE DI DO DU",w:["BA","BE","BI","BO","BU","DA","DE","DI","DO","DU"]},{f:"PA PE PI PO PU • TA TE TI TO TU",w:["PA","PE","PI","PO","PU","TA","TE","TI","TO","TU"]},{f:"FA FE FI FO FU • VA VE VI VO VU",w:["FA","FE","FI","FO","FU","VA","VE","VI","VO","VU"]},{f:"LA LE LI LO LU • MA ME MI MO MU",w:["LA","LE","LI","LO","LU","MA","ME","MI","MO","MU"]},{f:"NA NE NI NO NU • SA SE SI SO SU",w:["NA","NE","NI","NO","NU","SA","SE","SI","SO","SU"]},{f:"JA JE JI JO JU • ZA ZE ZI ZO ZU",w:["JA","JE","JI","JO","JU","ZA","ZE","ZI","ZO","ZU"]},{f:"CA CO CU • GA GO GU (C e G com som forte)",w:["CA","CO","CU","GA","GO","GU"]},{f:"Sílabas misturadas 1",w:["BA","DE","FI","GO","JU","LA","ME","NI","PO","SU","TA","VE"]},{f:"Sílabas misturadas 2",w:["BO","CA","DI","FU","GA","JI","LE","MO","NU","PA","SO","ZE"]}],pbp:[{f:"",w:["DEDO","DADO","BODE","PIPA","PATO","BOTA","TATU","PATA","FADA","OVO","UVA","VIDA"]},{f:"",w:["BOLA","LUA","LOBO","BOLO","LAVA","FILA","LATA","BULE","LUVA","VELA","BALA","TELA"]},{f:"",w:["MALA","MOTO","MAPA","MOLA","MULA","FONE","NEVE","PENA","NOVO","SAPO","SOPA","SINO"]},{f:"",w:["JIPE","LOJA","DOZE","VACA","FOCA","CAMA","COPO","SUCO","CANO","BECA","JACA","BOCA"]},{f:"",w:["CAJU","COCO","FACA","COLA","CONE","GATO","FOGO","GOTA","GALO","LAGO","GATA"]},{f:"",w:["BEBIDA","BATATA","TAPETE","PEPITA","FIVELA","BOLETO","PALITO","VELUDO","PILOTO","TOMADA","TOMATE","MAMUTE"]},{f:"",w:["MALETA","MENINO","MENINA","BANANA","PANELA","NOVELO","PEPINO","NAVIO","MINUTO","BOTINA","LAMINA","TELEFONE"]},{f:"",w:["LIMONADA","SAPATO","SALADA","SALAME","SEMANA","JANELA","JAVALI","JABUTI","PIJAMA","TIJOLO","BUZINA","BELEZA"]},{f:"",w:["CAMELO","MACACO","BONECA","CANETA","CAVALO","CABELO","SACOLA","COMIDA","SINUCA","CUPIDO","CABIDE","CANUDO"]},{f:"",w:["CANECA","TUCANO","COLETE","PIPOCA","CADELA","PETECA","COLUNA","CABELUDO","AMIGO","GAVETA","BIGODE"]},{f:"Inéditas: sílabas simples",n:1,w:["POTE","TOPO","TUBO","FITA","PULO","SALA","SELO"]},{f:"Inéditas: sílabas simples",n:1,w:["MAGO","POMADA","NOVELA","VITAMINA","PATINETE","CANOA","LAGOA"]}],pbe:[{f:"BL, CL, FL, GL, PL, TL",w:["IGLU","BLOCO","PLUMA","PLACA","CLUBE","FLOCO","CLIMA","GLOBO","ATLETA","NUBLADO","PLANETA"]},{f:"BR, CR, DR, FR, GR, PR, TR, VR",w:["PRATO","GRILO","GRAMA","TRIGO","PEDRA","CRAVO","FRUTA","LIVRO","COBRA","PADRE","COFRE"]},{f:"BR, CR, DR, FR, GR, PR, TR, VR",w:["TRONO","ZEBRA","TIGRE","TREVO","FRIO","CREME","PRIMO","LETRA","GRAVATA","GRAMADO","ABRIGO"]},{f:"R travando a sílaba (RT, RC, RF, RM…)",w:["FLOR","BARCO","PORCO","URSO","PORTA","TORTA","CARTA","TRATOR","GARFO","MARTELO","SORVETE"]},{f:"S ou Z travando a sílaba (ST, SC, SP…)",w:["ESCOVA","ESCADA","ESCOLA","ESTRELA","ESTRADA","VESTIDO","CASTELO"]},{f:"Inéditas: BL/PL → BR/TR",n:1,w:["PLANO","CLAVE","SIGLA","TRAPO","BRAVO","TROVA","LEBRE","DRAMA","GRUPO"]},{f:"Inéditas: R travando → S travando",n:1,w:["BARBA","TARDE","VERDE","FORMA","CORDA","FESTA","LISTA","DISCO"]}],pbd:[{f:"CH",w:["CHAVE","CHUVA","TOCHA","FLECHA","CHUCHU","BICHO","BOLACHA"]},{f:"CH",w:["MOCHILA","MACHADO","CHINELO","CHUPETA","FACHADA","CHOCOLATE"]},{f:"LH",w:["MILHO","TELHA","FOLHA","ILHA","ALHO","OLHO","LHAMA","PALHA","BOLHA","COLHER","TRILHO"]},{f:"LH",w:["OVELHA","ABELHA","COELHO","AGULHA","JOELHO","BILHETE","FILHOTE","TELHADO","ESPELHO","TRABALHO"]},{f:"NH",w:["NINHO","VINHO","UNHA","BANHO","SONHO","LINHA","PINHA"]},{f:"NH",w:["LENHA","GALINHA","MINHOCA","CAMINHO","COZINHA","TAMANHO"]},{f:"R entre vogais (som fraco)",w:["SIRI","PERU","CLARO","BARATA","AMORA","GORILA","CARECA","BURACO","PERIGO","MORENO","FIGURA"]},{f:"R entre vogais (som fraco)",w:["MADURO","SEGURO","CARETA","ARANHA","ORELHA","CARINHO","FLORESTA","PIRULITO","CAPIVARA","CARAMELO"]},{f:"R forte (R inicial e RR)",w:["REDE","RATO","RODA","CARRO","ARROZ","TERRA","GARRAFA","CACHORRO","BARRIGA","CORRIDA","CHURRASCO"]},{f:"S entre vogais (som de Z)",w:["CASA","MESA","ROSA","ASA","BLUSA","RAPOSA","CAMISA","CASACO","CASULO"]},{f:"SS",w:["PASSO","OSSO","MASSA","CLASSE","PESSOA","PASSARINHO"]},{f:"C e G suaves (CE, CI, GE, GI)",w:["GELO","DOCE","GEMA","GIRAFA","CEBOLA","CINEMA","CIDADE","TIGELA","VACINA","GELADO","CIGARRA","CIGONHA"]},{f:"QU e GU (QUE, QUI, QUA, GUE, GUI)",w:["QUATI","QUADRO","QUADRA","GUERRA","FOGUETE","QUIABO","GUITARRA","MOSQUITO"]},{f:"X, Ç e H",w:["LIXO","BRUXA","ROXO","XALE","XADREZ","COXA","TAXA","FIXO","FAXINA"]},{f:"X, Ç e H",w:["BEXIGA","XERIFE","ABACAXI","BRAÇO","POÇO","MAÇA","CAÇA","TRAÇO","PRAÇA"]},{f:"X, Ç e H",w:["FAÇA","FUMAÇA","PALHAÇO","ABRAÇO","HORA","HINO","HORTA","HERA","HUMANO"]},{f:"Ditongos (AI, EI, OI, UI, AU, EU, OU)",w:["PRAIA","CAIXA","LEITE","FLAUTA","QUEIJO","VASSOURA"]},{f:"Sílabas nasais (AM, EM, IM, OM, UM, AN, EN…)",w:["TREM","ANJO","DENTE","ONDA","PONTE","PANDA","TAMBOR","PLANTA","FRANGO","CAMPO","BRINCO"]},{f:"Sílabas nasais (AM, EM, IM, OM, UM, AN, EN…)",w:["BRANCO","GRANDE","JARDIM","PRINCESA","QUENTE","CRIANÇA","MONTANHA","PERGUNTA","PRESENTE","ELEFANTE","BRINQUEDO"]},{f:"Final -ÃO",w:["LEÃO","BALÃO","BOTÃO","LIMÃO","MELÃO","PAVÃO","SABÃO","DRAGÃO","LADRÃO","PATRÃO"]},{f:"Final -ÃO",w:["PORTÃO","AVIÃO","TUBARÃO","CAMARÃO","BOTIJÃO","CORAÇÃO","MACARRÃO","FEIJÃO","VIOLÃO"]},{f:"Acentos gráficos (agudo e circunflexo)",w:["BEBÊ","ROBÔ","SOFÁ","CAFÉ","JUDÔ","JACARÉ","XÍCARA"]},{f:"Acentos gráficos (agudo e circunflexo)",w:["DOMINÓ","CHAPÉU","TROFÉU","PLÁSTICO","SANDÁLIA","AQUÁRIO"]},{f:"L no fim da sílaba (som de U)",w:["BOLSA","ANEL","PASTEL","ALFACE","SOLDADO","GIRASSOL"]},{f:"Inéditas: CH → NH",n:1,w:["CHATO","CHEFE","FICHA","BUCHA","FILHA","VELHO","MALHA","MOLHO","BOLINHO","PATINHO","DEDINHO"]},{f:"Inéditas: NH → S = Z",n:1,w:["GATINHO","PERA","PARADA","MARIDO","CARO","RUA","BARRO","TORRE","FERRO","RIMA","VASO"]},{f:"Inéditas: S = Z → C/G suaves",n:1,w:["PESO","PISO","BRISA","TOSSE","PASSA","FOSSA","CERA","CEDO","GIZ","GEADA","MAGIA"]},{f:"Inéditas: QU/GU → X/Ç/H",n:1,w:["QUEDA","TOQUE","QUILO","PEQUENO","PEÇA","XAROPE","LUXO","LIXA","LAÇO","HOJE"]},{f:"Inéditas: ditongos → -ÃO",n:1,w:["BAIXO","OURO","PEIXE","MEIA","BOMBA","MUNDO","NUVEM","JANTAR","MANGA","PÃO"]},{f:"Inéditas: -ÃO → L final",n:1,w:["MÃO","IRMÃO","VOVÔ","ÁRVORE","LÁPIS","MÉDICO","FUTEBOL","SOL","SALTO","AZUL"]}]};
+   Blocos: pbs Sílabas (15 grupos: famílias CV, encontros consonantais, dígrafos e vogal + consoante, com revisões misturadas; i = id fixo da lista, para preservar os registros) • pbp Palavras Simples (8 grupos: curtas e maiores, com as inéditas misturadas; i = id fixo do grupo) • pbe Encontros Consonantais • pbd Dígrafos e dificuldades ortográficas.
+   Em Encontros Consonantais (6 grupos) as inéditas estão misturadas nos grupos, por tema e crescendo em extensão; em Dígrafos as inéditas vêm ao final, ordenadas pelo nível; só usam letras e sons já treinados antes. */
+const LG_PW={pbs:[{f:"BA BE BI BO BU • DA DE DI DO DU",w:["BA","BE","BI","BO","BU","DA","DE","DI","DO","DU"]},{f:"PA PE PI PO PU • TA TE TI TO TU",w:["PA","PE","PI","PO","PU","TA","TE","TI","TO","TU"]},{f:"FA FE FI FO FU • VA VE VI VO VU",w:["FA","FE","FI","FO","FU","VA","VE","VI","VO","VU"]},{f:"LA LE LI LO LU • MA ME MI MO MU",w:["LA","LE","LI","LO","LU","MA","ME","MI","MO","MU"]},{f:"NA NE NI NO NU • SA SE SI SO SU",w:["NA","NE","NI","NO","NU","SA","SE","SI","SO","SU"]},{f:"JA JE JI JO JU • ZA ZE ZI ZO ZU",w:["JA","JE","JI","JO","JU","ZA","ZE","ZI","ZO","ZU"]},{f:"CA CO CU • GA GO GU (C e G com som forte)",w:["CA","CO","CU","GA","GO","GU"]},{f:"R, X, C e G suaves, Ç, QU e GU",w:["RA","RE","RI","RO","RU","XA","XE","XI","XO","XU","CE","CI","GE","GI","ÇA","ÇO","ÇU","QUA","QUE","QUI","QUO","GUA","GUE","GUI"],i:"g8"},{f:"H, K, W, Y + misturadas 1",w:["HA","HE","HI","HO","HU","KA","KE","KI","KO","KU","WA","WE","WI","WO","WU","YA","YE","YI","YO","YU","BA","DE","FI","GO","JU","LA","ME","NI","PO","SU","TA","VE"],i:"g9"},{f:"Encontros com L: BL, CL, FL, GL, PL",w:["BLA","BLE","BLI","BLO","BLU","CLA","CLE","CLI","CLO","CLU","FLA","FLE","FLI","FLO","FLU","GLA","GLE","GLI","GLO","GLU","PLA","PLE","PLI","PLO","PLU"],i:"g10"},{f:"Encontros com R: BR, CR, DR, FR + misturadas 2",w:["BRA","BRE","BRI","BRO","BRU","CRA","CRE","CRI","CRO","CRU","DRA","DRE","DRI","DRO","DRU","FRA","FRE","FRI","FRO","FRU","BO","CA","DI","FU","GA","JI","LE","MO","NU","PA","SO","ZE"],i:"g11"},{f:"Encontros GR, PR, TR + dígrafos CH e NH",w:["GRA","GRE","GRI","GRO","GRU","PRA","PRE","PRI","PRO","PRU","TRA","TRE","TRI","TRO","TRU","CHA","CHE","CHI","CHO","CHU","NHA","NHE","NHI","NHO","NHU"],i:"g12"},{f:"Dígrafos LH, RR, SS + vogal + L e R",w:["LHA","LHE","LHI","LHO","LHU","RRA","RRE","RRI","RRO","RRU","SSA","SSE","SSI","SSO","SSU","AL","EL","IL","OL","UL","AR","ER","IR","OR","UR"],i:"g13"},{f:"Vogal + S, M, N + misturadas 3",w:["AS","ES","IS","OS","US","AM","EM","IM","OM","UM","AN","EN","IN","ON","UN","BA","BLA","CRE","DI","FLO","GRU","LA","MO","PRI","SU","TRA","VE","FRO","PLE"],i:"g14"},{f:"Misturadas 4 e 5 (todos os níveis)",w:["CHA","AL","LHE","ER","NHI","IS","RRO","OM","SSU","UN","XA","QUE","GUI","ÇO","BRA","AR","CHI","TE","PLU","ES","LHO","GA","FRE","UM","NHA","RRI","CLO","OL","ZU","TRO"],i:"g15"}],pbp:[{f:"",w:["DEDO","POTE","DADO","TOPO","BODE","TUBO","PIPA","FITA","PATO","BOBO","BOTA","BABA","TATU","FADO","PATA","FOFO","FADA","FOFA","OVO","PAPA","UVA","TUDO","VIDA","VOTO"]},{f:"",w:["BOLA","LUA","LOBO","PULO","BOLO","LAVA","LOTE","FILA","LATA","BULE","LUTA","LUVA","VELA","PELO","BALA","TELA"],i:"g2"},{f:"",w:["MALA","MOTO","SALA","MAPA","SELO","MOLA","LEMA","MULA","LIMA","FONE","MEDO","NEVE","MOFO","PENA","MUDA","NOVO","MUDO","SAPO","NAVE","SOPA","NOTA","SINO"],i:"g3"},{f:"",w:["JIPE","LOJA","DOZE","VACA","FOCA","CAMA","COPO","SUCO","CANO","BECA","JACA","BOCA","CAJU","COCO","FACA","COLA","CONE","GATO","FOGO","GOTA","GALO","LAGO","GATA"],i:"g4"},{f:"",w:["BEBIDA","NADA","BATATA","NATA","TAPETE","NOME","PEPITA","TIME","FIVELA","SEDA","BOLETO","SOLO","PALITO","MAGO","VELUDO","FUGA","PILOTO","GOMA","TOMADA","GOLA","TOMATE","GULA","MAMUTE","JOGO"],i:"g5"},{f:"",w:["MALETA","TOCA","MENINO","VAGA","MENINA","SECO","BANANA","SUJO","PANELA","POMADA","NOVELO","NOVELA","PEPINO","VITAMINA","NAVIO","PATINETE","MINUTO","CANOA","BOTINA","LAGOA","LAMINA","BONECO","TELEFONE","CAMADA"],i:"g6"},{f:"",w:["LIMONADA","SAPATO","CAPOTE","SALADA","TAPADO","SALAME","PELADO","SEMANA","PEDIDO","JANELA","LIGADO","JAVALI","MALUCO","JABUTI","CAVALETE","PIJAMA","SABONETE","TIJOLO","ABACATE","BUZINA","LOCOMOTIVA","BELEZA"],i:"g7"},{f:"",w:["CAMELO","MACACO","BONECA","CANETA","CAVALO","CABELO","SACOLA","COMIDA","SINUCA","CUPIDO","CABIDE","CANUDO","CANECA","TUCANO","COLETE","PIPOCA","CADELA","PETECA","COLUNA","CABELUDO","AMIGO","GAVETA","BIGODE"],i:"g8"}],pbe:[{"f":"BL, CL, FL, GL, PL, TL","w":["IGLU","BLOCO","PLUMA","PLACA","CLUBE","FLOCO","CLIMA","GLOBO","DUPLO","CLONE","FLUTE","PLANO","CLAVE","SIGLA","ATLETA","NUBLADO","PLANETA"],"i":1},{"f":"BR, CR, DR, FR, GR, PR, TR, VR","w":["FRIO","ABRE","PRATO","GRILO","GRAMA","TRIGO","PEDRA","CRAVO","FRUTA","LIVRO","COBRA","PADRE","COFRE","TRONO","ZEBRA","TIGRE","TREVO","CREME","PRIMO","LETRA","BREVE","BRUTO","BROTO","SOBRA","CREDO","DRAGA","LADRO","FRACO","FRITA","FROTA"],"i":2},{"f":"BR, CR, DR, FR, GR, PR, TR, VR","w":["FRADE","GRITO","GRUTA","GRADE","SOGRA","MAGRO","NEGRO","PRADO","PROVA","PRATA","PREGO","SOPRO","TRAVE","TRAMA","TROCA","TROCO","TRUTA","METRO","LITRO","TRAPO","BRAVO","TROVA","LEBRE","DRAMA","GRUPO","ABRIGO","DRIBLE","GRAVATA","GRAMADO"],"i":3},{"f":"R travando a sílaba (RT, RC, RF, RM…)","w":["FLOR","URSO","ARCO","BARCO","PORCO","PORTA","TORTA","CARTA","GARFO","PARTE","MORTE","SORTE","FORTE","NORTE","CORTE","PORTO","FARDO","CARNE","MARCA"],"i":4},{"f":"R travando a sílaba (RT, RC, RF, RM…)","w":["SERVE","TURMA","CURVA","SURDO","CORVO","BARCA","PERTO","FORNO","CURTO","BARBA","TARDE","VERDE","FORMA","CORDA","TRATOR","MARTELO","SORVETE","CARTOLA","MARMITA"],"i":"4b"},{"f":"S ou Z travando a sílaba (ST, SC, SP…)","w":["PASTA","VESTE","PISTA","COSTA","BASTA","POSTE","GOSTO","MOSCA","TESTA","PESTE","CASCA","TOSTA","GASTO","FESTA","LISTA","DISCO","ESCOVA","ESCADA","ESCOLA","ESPADA","ESPUMA","ESTUDO","ESCUDO","MESTRE","ESTUFA","ESPIGA","ESPETO","ESTRELA","ESTRADA","VESTIDO","CASTELO"],"i":5}],pbd:[{"f":"CH · LH · NH","w":["ILHA","ALHO","OLHO","UNHA","CHAVE","CHUVA","TOCHA","BICHO","MILHO","TELHA","FOLHA","LHAMA","PALHA","BOLHA","NINHO","VINHO","BANHO","SONHO","LINHA","PINHA","FLECHA","CHUCHU","COLHER","TRILHO","BOLACHA"],"i":"m1"},{"f":"R entre vogais (som fraco) • R forte (R inicial e RR)","w":["SIRI","PERU","REDE","RATO","RODA","CLARO","AMORA","CARRO","ARROZ","TERRA","BARATA","GORILA","CARECA","BURACO","PERIGO","MORENO","FIGURA","GARRAFA","BARRIGA","CORRIDA","CACHORRO","CHURRASCO"],"i":"m2"},{"f":"S entre vogais (som de Z) • SS","w":["ASA","CASA","MESA","ROSA","OSSO","BLUSA","PASSO","MASSA","RAPOSA","CAMISA","CASACO","CASULO","CLASSE","PESSOA","PASSARINHO"],"i":"m3"},{"f":"C e G suaves (CE, CI, GE, GI) • QU e GU","w":["GELO","DOCE","GEMA","QUATI","GIRAFA","CEBOLA","CINEMA","CIDADE","TIGELA","VACINA","GELADO","QUADRO","QUADRA","GUERRA","QUIABO","CIGARRA","CIGONHA","FOGUETE","GUITARRA","MOSQUITO"],"i":"m4"},{"f":"X, Ç e H","w":["LIXO","ROXO","XALE","COXA","TAXA","FIXO","BRUXA","XADREZ","FAXINA"],"i":"m5"},{"f":"Ditongos • Sílabas nasais","w":["TREM","ANJO","ONDA","PRAIA","CAIXA","LEITE","DENTE","PONTE","PANDA","CAMPO","FLAUTA","QUEIJO","TAMBOR","PLANTA","FRANGO","BRINCO","VASSOURA"],"i":"m6"},{"f":"Final -ÃO","w":["LEÃO","BALÃO","BOTÃO","LIMÃO","MELÃO","PAVÃO","SABÃO","DRAGÃO","LADRÃO","PATRÃO"],"i":"m7"},{"f":"Acentos gráficos • L no fim da sílaba (som de U)","w":["BEBÊ","ROBÔ","SOFÁ","CAFÉ","JUDÔ","ANEL","BOLSA","JACARÉ","XÍCARA","PASTEL","ALFACE","SOLDADO","GIRASSOL"],"i":"m8"},{"f":"CH","w":["CHAVE","CHUVA","TOCHA","FLECHA","CHUCHU","BICHO","BOLACHA"],"i":1},{"f":"CH","w":["MOCHILA","MACHADO","CHINELO","CHUPETA","FACHADA","CHOCOLATE"],"i":2},{"f":"LH","w":["MILHO","TELHA","FOLHA","ILHA","ALHO","OLHO","LHAMA","PALHA","BOLHA","COLHER","TRILHO"],"i":3},{"f":"LH","w":["OVELHA","ABELHA","COELHO","AGULHA","JOELHO","BILHETE","FILHOTE","TELHADO","ESPELHO","TRABALHO"],"i":4},{"f":"NH","w":["NINHO","VINHO","UNHA","BANHO","SONHO","LINHA","PINHA"],"i":5},{"f":"NH","w":["LENHA","GALINHA","MINHOCA","CAMINHO","COZINHA","TAMANHO"],"i":6},{"f":"R entre vogais (som fraco)","w":["SIRI","PERU","CLARO","BARATA","AMORA","GORILA","CARECA","BURACO","PERIGO","MORENO","FIGURA"],"i":7},{"f":"R entre vogais (som fraco)","w":["MADURO","SEGURO","CARETA","ARANHA","ORELHA","CARINHO","FLORESTA","PIRULITO","CAPIVARA","CARAMELO"],"i":8},{"f":"R forte (R inicial e RR)","w":["REDE","RATO","RODA","CARRO","ARROZ","TERRA","GARRAFA","CACHORRO","BARRIGA","CORRIDA","CHURRASCO"],"i":9},{"f":"S entre vogais (som de Z)","w":["CASA","MESA","ROSA","ASA","BLUSA","RAPOSA","CAMISA","CASACO","CASULO"],"i":10},{"f":"SS","w":["PASSO","OSSO","MASSA","CLASSE","PESSOA","PASSARINHO"],"i":11},{"f":"C e G suaves (CE, CI, GE, GI)","w":["GELO","DOCE","GEMA","GIRAFA","CEBOLA","CINEMA","CIDADE","TIGELA","VACINA","GELADO","CIGARRA","CIGONHA"],"i":12},{"f":"QU e GU (QUE, QUI, QUA, GUE, GUI)","w":["QUATI","QUADRO","QUADRA","GUERRA","FOGUETE","QUIABO","GUITARRA","MOSQUITO"],"i":13},{"f":"X, Ç e H","w":["LIXO","BRUXA","ROXO","XALE","XADREZ","COXA","TAXA","FIXO","FAXINA"],"i":14},{"f":"X, Ç e H","w":["BEXIGA","XERIFE","ABACAXI","BRAÇO","POÇO","MAÇA","CAÇA","TRAÇO","PRAÇA"],"i":15},{"f":"X, Ç e H","w":["FAÇA","FUMAÇA","PALHAÇO","ABRAÇO","HORA","HINO","HORTA","HERA","HUMANO"],"i":16},{"f":"Ditongos (AI, EI, OI, UI, AU, EU, OU)","w":["PRAIA","CAIXA","LEITE","FLAUTA","QUEIJO","VASSOURA"],"i":17},{"f":"Sílabas nasais (AM, EM, IM, OM, UM, AN, EN…)","w":["TREM","ANJO","DENTE","ONDA","PONTE","PANDA","TAMBOR","PLANTA","FRANGO","CAMPO","BRINCO"],"i":18},{"f":"Sílabas nasais (AM, EM, IM, OM, UM, AN, EN…)","w":["BRANCO","GRANDE","JARDIM","PRINCESA","QUENTE","CRIANÇA","MONTANHA","PERGUNTA","PRESENTE","ELEFANTE","BRINQUEDO"],"i":19},{"f":"Final -ÃO","w":["LEÃO","BALÃO","BOTÃO","LIMÃO","MELÃO","PAVÃO","SABÃO","DRAGÃO","LADRÃO","PATRÃO"],"i":20},{"f":"Final -ÃO","w":["PORTÃO","AVIÃO","TUBARÃO","CAMARÃO","BOTIJÃO","CORAÇÃO","MACARRÃO","FEIJÃO","VIOLÃO"],"i":21},{"f":"Acentos gráficos (agudo e circunflexo)","w":["BEBÊ","ROBÔ","SOFÁ","CAFÉ","JUDÔ","JACARÉ","XÍCARA"],"i":22},{"f":"Acentos gráficos (agudo e circunflexo)","w":["DOMINÓ","CHAPÉU","TROFÉU","PLÁSTICO","SANDÁLIA","AQUÁRIO"],"i":23},{"f":"L no fim da sílaba (som de U)","w":["BOLSA","ANEL","PASTEL","ALFACE","SOLDADO","GIRASSOL"],"i":24},{"f":"Inéditas: CH → NH","n":1,"w":["CHATO","CHEFE","FICHA","BUCHA","FILHA","VELHO","MALHA","MOLHO","BOLINHO","PATINHO","DEDINHO"],"i":25},{"f":"Inéditas: NH → S = Z","n":1,"w":["GATINHO","PERA","PARADA","MARIDO","CARO","RUA","BARRO","TORRE","FERRO","RIMA","VASO"],"i":26},{"f":"Inéditas: S = Z → C/G suaves","n":1,"w":["PESO","PISO","BRISA","TOSSE","PASSA","FOSSA","CERA","CEDO","GIZ","GEADA","MAGIA"],"i":27},{"f":"Inéditas: QU/GU → X/Ç/H","n":1,"w":["QUEDA","TOQUE","QUILO","PEQUENO","PEÇA","XAROPE","LUXO","LIXA","LAÇO","HOJE"],"i":28},{"f":"Inéditas: ditongos → -ÃO","n":1,"w":["BAIXO","OURO","PEIXE","MEIA","BOMBA","MUNDO","NUVEM","JANTAR","MANGA","PÃO"],"i":29},{"f":"Inéditas: -ÃO → L final","n":1,"w":["MÃO","IRMÃO","VOVÔ","ÁRVORE","LÁPIS","MÉDICO","FUTEBOL","SOL","SALTO","AZUL"],"i":30}]};
 /* Banco do treino Personalizado: "simples" = bloco Palavras Simples; "complexas" = Encontros Consonantais + Dígrafos */
 function lgBank(cat){
  const ks=cat==="simples"?["pbp"]:["pbe","pbd"],seen=new Set(),out=[];
@@ -3739,17 +3743,12 @@ function lgCustomOpen(k){
 function lgData(p){p.leitura=p.leitura||{};p.leitura.u=p.leitura.u||{};p.leitura.sessoes=p.leitura.sessoes||[];return p.leitura}
 /* Histórico das leituras concluídas e das perguntas de compreensão (leitura.hist, até 400 eventos) */
 function lgHist(d,e){d.hist=Array.isArray(d.hist)?d.hist:[];d.hist.push(e);if(d.hist.length>400)d.hist=d.hist.slice(-400)}
-/* Modo das Sílabas, escolhido no menu: a = em ordem e depois embaralhadas (automático, padrão) • e = só embaralhadas • o = só em ordem */
-function lgSilModo(){const p=active(),v=p&&p.leitura&&p.leitura.sil;return v==="e"||v==="o"?v:"a"}
-/* Botão 🔀 na barra inferior das Sílabas (mesmo padrão dos outros jogos). Toque para alternar:
-   🔀 aceso = automático (em ordem e depois embaralhadas, padrão) • 🎲 = só embaralhadas (já começa embaralhado) • 🔀 apagado = só em ordem */
-function lgSilBtn(note,say){
- const hr=document.querySelector(".bottom .hud-right"),fs=$("#fsBtn");if(!hr||!fs)return;
- const T={a:["🔀",true,"Automático: em ordem e, em seguida, embaralhadas"],e:["🎲",true,"Só embaralhadas"],o:["🔀",false,"Só em ordem"]};
- const sb=document.createElement("button");sb.type="button";sb.id="lgSilShuf";sb.className="hud-btn mini";
- const sync=s=>{const t=T[lgSilModo()];sb.textContent=t[0];sb.classList.toggle("on",t[1]);sb.setAttribute("aria-pressed",t[1]?"true":"false");sb.title="Sílabas: "+t[2].toLowerCase()+" (toque para mudar)";sb.setAttribute("aria-label",sb.title);if(s)abMsg("🔀 "+t[2]+(note||" • toque no botão 🔀 para mudar"))};
- hr.insertBefore(sb,fs);sync(say);
- sb.onclick=e=>{e.stopPropagation();const q=active();if(!q)return;lgData(q).sil={a:"e",e:"o",o:"a"}[lgSilModo()];saveProfiles();sync(true)};
+/* Sílabas: treino sempre embaralhado, com duas rodadas seguidas das mesmas sílabas (sem parar entre uma e outra).
+   Cada rodada tem ordem diferente da lista original e da outra rodada; a última sílaba de uma rodada nunca é a primeira da seguinte. */
+function lgSilSeq(w){
+ const a=shuffleDiff(w);let b=shuffleDiff(w),t=0;
+ while(w.length>2&&(b.join()===a.join()||b[0]===a[a.length-1])&&t++<60)b=shuffleDiff(w);
+ return a.concat(b);
 }
 /* Frases (Treino de Fluência Leitora): cinco subdivisões na progressão do Método Fônico.
    LG_FR_OLD: textos que já existiam, redistribuídos por dificuldade de leitura (id antigo preservado: fs-/fc- + id do texto, então os registros de conclusão continuam valendo).
@@ -3836,7 +3835,7 @@ function lgSentUnits(k){
 /* Seleção de 15 unidades por bloco (os blocos com menos de 15 ficam completos). Escolhidas pela progressão de leitura: uma lista por dificuldade em Dígrafos e, nos demais, as unidades mais adequadas a cada etapa.
    As demais continuam guardadas no código e os registros de conclusão delas não se perdem; só deixam de aparecer no treino. */
 const LG_SEL={
- pbd:["pbd-1","pbd-3","pbd-5","pbd-7","pbd-9","pbd-10","pbd-11","pbd-12","pbd-13","pbd-14","pbd-17","pbd-18","pbd-20","pbd-22","pbd-24"],
+ pbd:["pbd-m1","pbd-m2","pbd-m3","pbd-m4","pbd-m5","pbd-m6","pbd-m7","pbd-m8"],
  fcu:["fs-t33","fs-t31","fcu-1","fs-t34","fs-t63","fcu-2","fcu-3","fcu-4","fcu-5","fcu-6","fcu-7","fcu-8","fcu-9","fcu-10","fcu-12"],
  fam:["fs-t61","fs-t35","fs-t36","fs-t37","fs-t32","fam-1","fam-2","fam-3","fam-4","fam-5","fam-6","fam-7","fam-8","fam-9","fam-10"],
  fvr:["fc-t41","fc-t68","fvr-1","fc-t46","fvr-2","fvr-3","fvr-4","fc-t56","fc-t59","fc-t75","fvr-5","fvr-6","fvr-7","fvr-8","fvr-9"],
@@ -3851,8 +3850,8 @@ function lgUnitsAll(k){
  if(K.kind==="sent")return lgSentUnits(k);
  if(K.kind==="text")return lgTextUnits(k);
  if(K.kind==="words"){
-  const e=K.t.split(" ")[0],sm=lgSilModo();let m=0;
-  return (LG_PW[k]||[]).map((l,i)=>{const n=i+1;return{id:k+"-"+n,t:l.n?"Inéditas "+(++m):"Lista "+n,e:l.n?"✨":e,f:l.f,items:k!=="pbs"?[l.w.slice()]:sm==="a"?[l.w.slice(),shuffleDiff(l.w)]:sm==="e"?[shuffleDiff(l.w)]:[l.w.slice()],rounds:k==="pbs"&&sm==="a",emb:k==="pbs"&&sm==="e",sub:(l.f&&k!=="pbs"?l.f+" • ":"")+(k==="pbs"?l.f:l.w.slice(0,3).join(" • ")+"…")}})}
+  const e=K.t.split(" ")[0];let m=0;
+  return (LG_PW[k]||[]).map((l,i)=>{const n=i+1;return{id:k+"-"+(l.i||n),t:l.n?"Inéditas "+(++m):"Lista "+n,e:l.n?"✨":e,f:l.f,items:k!=="pbs"?[l.w.slice()]:[lgSilSeq(l.w)],emb:k==="pbs",rod:k==="pbs"?2:0,sub:(l.f&&k!=="pbs"?l.f+" • ":"")+(k==="pbs"?l.f:l.w.slice(0,3).join(" • ")+"…")}})}
  const seen=new Set();
  return FL_TEXTS.filter(x=>x.n===K.lv&&!seen.has(x.id)&&seen.add(x.id)).map(x=>{
   const sents=(x.x.match(/[^.!?]+[.!?]+/g)||[x.x]).map(z=>z.trim());
@@ -3899,11 +3898,11 @@ function lgGroup(g){
  LG=null;LGK=g;const d=lgData(p),G=LG_GROUPS[g],pc=lgPaceInfo();
  if(g==="p"||g==="f"||g==="tc"){
   /* Palavras e Frases: cartões no mesmo formato dos outros menus (título numerado, subtítulo, barra de progresso e contagem) */
-  const SUB={pbs:"Famílias silábicas • em ordem e embaralhadas",pbp:"Palavras curtas e maiores, só com sílabas simples (CV)",pbe:"BL · BR · TR… e R ou S travando a sílaba",pbd:"CH · LH · NH e demais dificuldades ortográficas",fcu:"Poucas palavras, só com sílabas simples e letras já ensinadas",fam:"Frases maiores, com mais palavras e sílabas simples",fvr:"CH · LH · NH · R · RR · encontros consonantais e sílabas travadas",fcx:"Duas ideias na frase, vírgulas, perguntas e diálogos",fin:"Frases novas com sons já treinados, para aplicar o que aprendeu",tci:"Sílabas simples (CV), com começo, meio e fim",tcm:"Mais vocabulário: R, RR, CE/CI, GE/GI, QUE/QUI e GUE/GUI",tca:"CH · LH · NH, encontros consonantais, sílabas travadas, diálogos e entonações"};
+  const SUB={pbs:"Famílias silábicas, encontros, dígrafos e sílabas travadas • embaralhadas, 2 rodadas",pbp:"Palavras curtas e maiores, só com sílabas simples (CV)",pbe:"BL · BR · TR… e R ou S travando a sílaba",pbd:"CH · LH · NH e demais dificuldades ortográficas",fcu:"Poucas palavras, só com sílabas simples e letras já ensinadas",fam:"Frases maiores, com mais palavras e sílabas simples",fvr:"CH · LH · NH · R · RR · encontros consonantais e sílabas travadas",fcx:"Duas ideias na frase, vírgulas, perguntas e diálogos",fin:"Frases novas com sons já treinados, para aplicar o que aprendeu",tci:"Sílabas simples (CV), com começo, meio e fim",tcm:"Mais vocabulário: R, RR, CE/CI, GE/GI, QUE/QUI e GUE/GUI",tca:"CH · LH · NH, encontros consonantais, sílabas travadas, diálogos e entonações"};
   const cards=G.kinds.map((k,i)=>{const U=lgUnits(k),c=U.filter(u=>d.u[u.id]&&d.u[u.id].n).length,nm=G.names[k],ic=nm.split(" ")[0],tx=nm.slice(ic.length+1),pct=Math.round(c/Math.max(1,U.length)*100);
    return `<button class="ab-lvl lg-gcard${c>0&&c===U.length?" lido":""}" data-k="${k}" type="button"><strong>${c>0&&c===U.length?"✅":ic} ${i+1}. ${esc(tx)}</strong><span class="ab-lvl-d">${esc(SUB[k]||"")}</span><div class="progress"><span style="width:${pct}%"></span></div><span class="small">${c} de ${U.length} ${g==="f"?"atividades lidas":g==="tc"?"textos lidos":"listas lidas"}</span></button>`}).join("");
   const DSM={p:"p",f:"f",tc:"t"}[g],DSN={p:["📖","Desafio de palavras","Palavras novas, sem ver antes"],f:["💬","Desafio de frases","Frases novas, no nível escolhido"],t:["📄","Desafio de textos","Textos novos, com perguntas"]}[DSM],DSR=dsData(p).regs.filter(r=>r.m===DSM).length;
-  const des=`<button class="ab-lvl lg-gcard lg-des" data-des="${DSM}" type="button"><strong>🏆 ${DSN[1]}</strong><span class="ab-lvl-d">${DSN[2]}</span><span class="small">${dsCountTxt(DSR)}</span></button>`;
+  const des=g==="p"?"":`<button class="ab-lvl lg-gcard lg-des" data-des="${DSM}" type="button"><strong>🏆 ${DSN[1]}</strong><span class="ab-lvl-d">${DSN[2]}</span><span class="small">${dsCountTxt(DSR)}</span></button>`;
   const cu=G.custom?`<button class="ab-lvl lg-gcard lg-custom" data-custom="1" type="button"><strong>✏️ Personalizado</strong><span class="ab-lvl-d">Escolha o tipo e a quantidade de palavras</span><span class="small">Misture simples e complexas</span></button>`:"";
   abShell({title:"Treino de Fluência Leitora",rp:"lg:"+g,abCase:true,lgPace:true,sub:G.t.replace(/^\S+\s/,""),
    single:`<div class="ab-board ab-levels" style="overflow-y:auto;align-content:start;grid-template-rows:none;grid-auto-rows:minmax(clamp(96px,22vh,150px),auto)">${cards}${cu}${des}</div>`,
@@ -4035,9 +4034,9 @@ const DS_T={
 };
 /* Desafio de leitura distribuído nos blocos do Treino de Fluência Leitora (o menu "Desafio" saiu da página inicial).
    Cada material entra no bloco de mesmo nível, ao final e em ordem crescente de dificuldade, sem mudar os ids das unidades que já existiam (os registros de conclusão continuam valendo).
-   Palavras: listas "Inéditas" no padrão do bloco • Frases: atividades com 4–5 frases • Textos: com perguntas de compreensão. */
+   Palavras: listas "Inéditas" no padrão do bloco (em Palavras Simples as palavras novas já estão misturadas nos 8 grupos do próprio bloco) • Frases: atividades com 4–5 frases • Textos: com perguntas de compreensão. */
 (function(){
- ["pbp","pbe","pbd"].forEach(k=>(DS_W[k]||[]).forEach(g=>LG_PW[k].push({f:"Inéditas: "+g.f,n:1,w:g.w.slice()})));
+ ["pbd"].forEach(k=>(DS_W[k]||[]).forEach(g=>LG_PW[k].push({f:"Inéditas: "+g.f,n:1,i:LG_PW[k].length-7,w:g.w.slice()})));
  const FF={fcu:"sílabas simples",fam:"frases maiores, sílabas simples",fvr:"dígrafos, R e RR, encontros",fcx:"duas ideias, vírgulas e diálogos"},FR={fcu:4.5,fam:4.6,fvr:12,fcx:12.6};
  Object.keys(FF).forEach(k=>(DS_F[k]||[]).forEach((u,i)=>LG_FR[k].push({t:u.t,e:u.e,f:FF[k],r:FR[k]+(i+1)/100,s:u.s.slice()})));
  const TF={tci:["Sílabas simples (CV) • narrativo","Sílabas simples (CV) • informativo","Sílabas simples (CV) • narrativo","Sílabas simples (CV) • narrativo"],
@@ -4080,10 +4079,11 @@ function dsPick(m,k,D){
  /* O mesmo material também está no treino do bloco: o que a criança já leu no treino deixa de ser "inédito" e fica fora do sorteio (se acabar, a sequência recomeça) */
  const TU=lgUnitsAll(k),LR=lgData(active()||{}).u;
  const trRead=sig=>{const u=TU.find(x=>JSON.stringify(x.items)===sig);return !!(u&&LR[u.id]&&LR[u.id].n>0)};
+ const wRead=w=>k==="pbp"&&TU.some(u=>LR[u.id]&&LR[u.id].n>0&&u.items.some(it=>Array.isArray(it)&&it.includes(w)));
  if(m==="p"){
   const groups=(DS_W[k]||[]).map((g,gi)=>g.w.map((w,i)=>({id:k+"."+gi+"."+i,w})));
   const gRead=(DS_W[k]||[]).map(g=>trRead(JSON.stringify([g.w])));
-  let pool=groups.map((g,gi)=>gRead[gi]?[]:g.filter(x=>!seen.includes(x.id)));
+  let pool=groups.map((g,gi)=>gRead[gi]?[]:g.filter(x=>!seen.includes(x.id)&&!wRead(x.w)));
   const N=8;
   if(pool.reduce((s,g)=>s+g.length,0)<N){D.seen[k]=[];pool=groups.map(g=>g.slice());reset=true}
   pool=shuffle(pool.filter(g=>g.length).map(g=>shuffle(g.slice())));
@@ -4214,7 +4214,6 @@ function lgMenu(k){
  abShell({title:"Treino de Fluência Leitora",abCase:true,lgPace:true,sub:K.t.replace(/^\S+\s/,""),
   single:`<div class="ab-board fl-pick fl-one"><div class="fl-block"><div class="fl-block-t">${K.t}</div><div class="fl-block-s">${K.s} • ${pc.e} ${pc.n} (${lgSecTxt(pc.s)}) — mude no botão 🕒 da barra de baixo</div><div class="fl-texts">${U.length?U.map(card).join(""):'<p class="muted">Novos textos serão acrescentados a esta etapa em breve.</p>'}${cust}</div></div></div>`,
   msg:"",bare:true,noSound:true,onBack:()=>lgBackTo(k)});
- if(k==="pbs")lgSilBtn("",true);
  document.querySelectorAll(".fl-card").forEach(b=>b.onclick=()=>lgStart(k,b.dataset.id,0));
 }
 function lgStart(k,id,i){
@@ -4235,13 +4234,12 @@ function lgFit(){
 function lgRender(){
  LGK=null;const L=LG,total=L.u.items.length,pc=lgPaceInfo();
  const spans=L.isList?`<span class="lg-w idle" id="lgOne">Pronto? 👀</span>`:L.words.map((w,n)=>`<span class="lg-w" data-i="${n}">${esc(w)}</span>`).join("");
- const sub=`${L.u.e} ${esc(L.u.t)}${L.u.rounds?` • treino ${L.i+1} de ${total} (${L.i?"embaralhadas":"em ordem"})`:total>1?` • frase ${L.i+1} de ${total}`:""}${L.u.emb?" • embaralhadas":""}${L.isList?` • ${L.words.length} palavras`:""}`;
+ const sub=`${L.u.e} ${esc(L.u.t)}${L.u.rounds?` • treino ${L.i+1} de ${total} (${L.i?"embaralhadas":"em ordem"})`:total>1?` • frase ${L.i+1} de ${total}`:""}${L.u.emb?" • embaralhadas"+(L.u.rod?" • "+L.u.rod+" rodadas":""):""}${L.isList?` • ${L.words.length} palavras`:""}`;
  abShell({title:"Treino de Fluência Leitora",abCase:true,lgPace:true,sub,noSound:true,
   single:`<div class="ab-board lg-board"><div class="lg-wrap"><div class="lg-text${L.isList?" lg-list lg-one":""}" id="lgText">${spans}</div><div class="lg-bar"><span id="lgFill"></span></div><div class="lg-ctrl"><button class="go-btn" id="lgPlay" type="button">▶ Começar</button><span class="lg-clock" id="lgClock">⏱ 0:00</span>${L.isList?`<span class="lg-clock" id="lgNum">Palavra 0 de ${L.words.length}</span>`:""}</div><div class="lg-count off" id="lgCount" aria-live="assertive"></div></div></div>`,
   msg:L.isList?"Aperte ▶ Começar. As palavras aparecem uma de cada vez":"Aperte ▶ Começar e leia a palavra que está acesa",next:{label:"Próxima ▶",disabled:true},
   onBack:()=>L.u.custom?lgBackTo(L.kind,true):lgMenu(L.kind),onRestart:()=>lgStart(L.kind,L.id,L.i)});
  L.tok=abTok;
- if(L.kind==="pbs")lgSilBtn(" • vale a partir da próxima leitura",false);
  $("#lgPlay").onclick=lgToggle;
  const cb=$("#abCase");if(cb)cb.addEventListener("click",()=>setTimeout(lgFit,30));
  lgFit();requestAnimationFrame(lgFit);setTimeout(lgFit,150);
