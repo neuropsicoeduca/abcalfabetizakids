@@ -832,6 +832,7 @@ button.stu-stars:focus-visible{outline:3px solid #3b4fd0;outline-offset:2px}
 .mt-act button{min-height:40px;padding:0 12px;font-size:.95rem;border-radius:14px;box-shadow:none}
 .mt-act .mt-go{font-size:1rem;min-height:40px;padding:0 16px;box-shadow:0 4px 0 #178a56}
 .mt-act .mt-del{color:#a33}
+.mt-bw{line-height:1.7;overflow-wrap:anywhere;max-height:30vh;overflow:auto}
 .mt-empty{text-align:center;color:#5b6280;font-weight:800;line-height:1.6;padding:clamp(16px,6vh,48px) 8px;font-size:clamp(.95rem,2.6vh,1.2rem)}
 .mt-box{max-width:min(920px,100%);display:flex;flex-direction:column}
 .mt-l{display:block;margin:10px 0 4px;font-weight:900;color:var(--ink2,#1c2150)}
@@ -4272,7 +4273,7 @@ function lgRender(){
  abShell({title:"Treino de Fluência Leitora",abCase:true,lgPace:true,sub,noSound:true,
   single:`<div class="ab-board lg-board"><div class="lg-wrap"><div class="lg-text${L.isList?" lg-list lg-one":""}${L.u.mine?" lg-long":""}" id="lgText">${spans}</div><div class="lg-bar"><span id="lgFill"></span></div><div class="lg-ctrl"><button class="go-btn" id="lgPlay" type="button">▶ Começar</button><span class="lg-clock" id="lgClock">⏱ 0:00</span>${L.isList||L.u.mine?`<span class="lg-clock" id="lgNum">Palavra 0 de ${L.words.length}</span>`:""}</div><div class="lg-count off" id="lgCount" aria-live="assertive"></div></div></div>`,
   msg:L.isList?"Aperte ▶ Começar. As palavras aparecem uma de cada vez":"Aperte ▶ Começar e leia a palavra que está acesa",next:{label:"Próxima ▶",disabled:true},
-  onBack:()=>L.u.mine?lgMine():L.u.custom?lgBackTo(L.kind,true):lgMenu(L.kind),onRestart:()=>lgStart(L.kind,L.id,L.i)});
+  onBack:()=>L.u.mine||L.u.mw?lgMine():L.u.custom?lgBackTo(L.kind,true):lgMenu(L.kind),onRestart:()=>lgStart(L.kind,L.id,L.i)});
  L.tok=abTok;
  $("#lgPlay").onclick=lgToggle;
  const cb=$("#abCase");if(cb)cb.addEventListener("click",()=>setTimeout(lgFit,30));
@@ -4284,6 +4285,7 @@ function lgRender(){
 }
 function lgNextInfo(){
  const L=LG,total=L.u.items.length;
+ if(L.u.mw)return{label:"Escolher ▶",go:lgMine};
  if(L.u.mine){const T=mtList(active()),ix=T.findIndex(x=>"mt-"+x.id===L.id),nx=ix>=0?T[ix+1]:null;return nx?{label:"Próximo texto ▶",go:()=>mtRead(nx.id)}:{label:"Escolher ▶",go:lgMine}}
  if(L.i<total-1)return{label:L.u.rounds?"Embaralhar ▶":"Próxima frase ▶",go:()=>lgStart(L.kind,L.id,L.i+1)};
  if(L.u.custom)return{label:"Escolher ▶",go:()=>lgBackTo(L.kind,true)};
@@ -4451,7 +4453,7 @@ function lgMine(){
  const d=lgData(p),T=mtList(p),pc=lgPaceInfo();
  const card=t=>{
   const r=d.u["mt-"+t.id],lido=r&&r.n,n=mtCount(t.x),pa=mtParas(t.x).length,pv=String(t.x).replace(/\s+/g," ").trim();
-  return `<div class="ab-lvl fl-card mt-card${lido?" lido":""}" data-id="${esc(t.id)}"><strong>📝 ${esc(t.t)}</strong><span class="ab-lvl-s">${n} ${n===1?"palavra":"palavras"} • ${pa} ${pa===1?"parágrafo":"parágrafos"} • ${lido?"✅ Lido "+r.n+"x":"Não lido"}</span><span class="mt-prev">${esc(pv.length>110?pv.slice(0,110)+"…":pv)}</span><div class="mt-act"><button class="go-btn mt-go" data-act="read" type="button">▶ Ler</button><button class="secondary" data-act="des" type="button">🏆 Desafio</button><button class="secondary" data-act="edit" type="button">✏️ Editar</button><button class="secondary mt-del" data-act="del" type="button">🗑️ Excluir</button></div></div>`};
+  return `<div class="ab-lvl fl-card mt-card${lido?" lido":""}" data-id="${esc(t.id)}"><strong>📝 ${esc(t.t)}</strong><span class="ab-lvl-s">${n} ${n===1?"palavra":"palavras"} • ${pa} ${pa===1?"parágrafo":"parágrafos"} • ${lido?"✅ Lido "+r.n+"x":"Não lido"}</span><span class="mt-prev">${esc(pv.length>110?pv.slice(0,110)+"…":pv)}</span><div class="mt-act"><button class="go-btn mt-go" data-act="read" type="button">▶ Ler</button><button class="secondary" data-act="des" type="button">🏆 Desafio</button><button class="secondary" data-act="words" type="button">🔤 Palavras</button><button class="secondary" data-act="edit" type="button">✏️ Editar</button><button class="secondary mt-del" data-act="del" type="button">🗑️ Excluir</button></div></div>`};
  abShell({title:"Treino de Fluência Leitora",abCase:true,lgPace:true,sub:"Meus textos",
   single:`<div class="ab-board fl-pick fl-one mt-board"><div class="fl-block"><div class="mt-head"><div><div class="fl-block-t">📝 Meus Textos</div><div class="fl-block-s">${pc.e} ${pc.n} (${lgSecTxt(pc.s)}) — mude no botão 🕒 da barra de baixo</div></div><button class="go-btn mt-new" id="mtNew" type="button">➕ Novo texto</button></div><div class="mt-ori">👩‍🏫 <b>ORIENTAÇÃO:</b> cadastre o texto que a criança vai ler, escolha-o abaixo e toque em ▶ Ler. O aplicativo acende cada palavra no ritmo escolhido; quem avalia a leitura é você. <button class="secondary lg-guide-btn" id="mtGuide" type="button">📋 Guia de orientação</button></div>${T.length?`<div class="mt-list">${T.map(card).join("")}</div>`:`<p class="mt-empty">Você ainda não cadastrou nenhum texto.<br>Toque em <b>➕ Novo texto</b> para escrever ou colar um texto.</p>`}</div></div>`,
   msg:"",bare:true,noSound:true,onBack:renderStudentMenu});
@@ -4459,13 +4461,76 @@ function lgMine(){
  $("#mtGuide").onclick=lgGuideOpen;
  document.querySelectorAll(".mt-card").forEach(c=>c.addEventListener("click",e=>{
   const b=e.target.closest("button[data-act]");if(!b)return;const id=c.dataset.id,a=b.dataset.act;
-  if(a==="read")mtRead(id);else if(a==="des")mtDesafio(id);else if(a==="edit")mtEdit(id);else if(a==="del")mtDelete(id)}));
+  if(a==="read")mtRead(id);else if(a==="des")mtDesafio(id);else if(a==="words")mtBankOpen(id);else if(a==="edit")mtEdit(id);else if(a==="del")mtDelete(id)}));
+}
+
+/* Banco de palavras de cada texto: palavras únicas do texto, separadas em simples e complexas, para o treino de palavras (uma de cada vez, como em Sílabas e Palavras).
+   Simples = todas as sílabas são consoante+vogal (ou só vogal), com consoantes de som único (B C D F G J L M N P S T V Z; C e G só antes de A, O, U; S só no começo da palavra) e sem vogal nasal (ã, õ).
+   Complexa = qualquer outra (R, RR, X, Ç, H, QU/GU, CH/LH/NH, encontros consonantais, sílabas travadas, ditongos, S com som de Z, acentos nasais etc.). Palavras de uma letra ficam de fora. */
+function mtSimpleSyl(sl,first){
+ const m=/^([^aeiouáéíóúâêôàü]?)([aeiouáéíóúâêôàü])$/i.exec(sl);if(!m)return false;
+ const c=m[1].toLowerCase(),v=m[2].toLowerCase();
+ if(!c)return true;
+ if("bdfjlmnptvz".includes(c))return true;
+ if(c==="s")return first;
+ if(c==="c"||c==="g")return "aoáâôàu".includes(v)||v==="ó";
+ return false;
+}
+function mtBank(x){
+ const seen=new Set(),S=[],C=[];
+ String(x||"").split(/[\s\-–—/]+/).forEach(tk=>{
+  const w=tk.replace(/^[^\p{L}]+|[^\p{L}]+$/gu,"");
+  if(!w||!/^\p{L}+$/u.test(w)||w.length<2)return;
+  const k=w.normalize("NFC").toLowerCase();if(seen.has(k))return;seen.add(k);
+  let ok=false;try{const sy=lgSyl(k);ok=sy.length>0&&sy.every((z,i)=>mtSimpleSyl(z,i===0))}catch(_){ok=false}
+  (ok?S:C).push(k);
+ });
+ return{s:S,c:C};
+}
+function mtBankOpen(id){
+ if(document.getElementById("mtBkOv"))return;
+ const p=active(),t=mtList(p).find(x=>x.id===id);if(!p||!t)return;
+ const B=mtBank(t.x),n={s:B.s.length,c:B.c.length,m:B.s.length+B.c.length};
+ const ov=document.createElement("div");ov.className="cfg-ov";ov.id="mtBkOv";
+ const prev=a=>a.length?`<details class="ds-rev"><summary>Ver as palavras</summary><p class="mt-bw">${a.map(esc).join(" • ")}</p></details>`:"";
+ const rad=(v,txt,dis)=>`<label><input type="radio" name="mbT" value="${v}" ${dis?"disabled":""}>${txt}</label>`;
+ const first=n.s?"s":n.c?"c":"";
+ ov.innerHTML=`<div class="cfg-box" role="dialog" aria-modal="true" aria-labelledby="mtBT"><h2 id="mtBT">🔤 Banco de palavras</h2><p class="muted small" style="margin:0 0 8px">📝 ${esc(t.t)} • ${n.m} palavras diferentes, separadas automaticamente. Treine uma de cada vez, no tempo do botão 🕒.</p>
+ ${n.m?`<div class="cfg-sec"><b>📘 Simples: ${n.s}</b><span>Só sílabas consoante + vogal</span></div>${prev(B.s)}<div class="cfg-sec"><b>📗 Complexas: ${n.c}</b><span>R, RR, CH/LH/NH, encontros, sílabas travadas, acentos…</span></div>${prev(B.c)}
+ <div class="cfg-sec"><b>Quais palavras treinar?</b></div><div class="cfg-pace">${rad("s",`📘 Só simples (${n.s})`,!n.s)}${rad("c",`📗 Só complexas (${n.c})`,!n.c)}${rad("m",`🔀 Misturar simples e complexas (${n.m})`,!(n.s&&n.c))}</div>
+ <div class="cfg-sec"><b>Quantas palavras?</b></div><div class="cfg-pace"><label>Quantidade: <input type="number" id="mbQ" min="1" step="1" inputmode="numeric" aria-label="Quantidade de palavras"> palavras</label><span class="small muted" id="mbMax"></span></div>
+ <div class="cfg-sec"><b>Ordem</b></div><div class="cfg-pace"><label><input type="radio" name="mbO" value="r" checked>🎲 Sorteadas</label><label><input type="radio" name="mbO" value="o">🔢 Na ordem em que aparecem no texto</label></div>`:`<p class="mt-empty" style="padding:12px 0">Este texto não tem palavras para o banco.</p>`}
+ <div class="cfg-actions"><button class="secondary" id="mbCancel" type="button">${n.m?"Cancelar":"Fechar"}</button>${n.m?'<button class="primary" id="mbOk" type="button">Começar ▶</button>':""}</div></div>`;
+ document.body.appendChild(ov);
+ const close=()=>ov.remove();
+ ov.onclick=e=>{if(e.target===ov)close()};
+ ov.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
+ ov.querySelector("#mbCancel").onclick=close;
+ if(!n.m)return;
+ const q=ov.querySelector("#mbQ"),mx=ov.querySelector("#mbMax");
+ const tipo=()=>(ov.querySelector('input[name=mbT]:checked')||{value:first}).value;
+ ov.querySelector('input[name=mbT][value='+first+']').checked=true;
+ const upd=(init)=>{const m=n[tipo()];q.max=m;mx.textContent="Máximo: "+m+" palavras";q.value=init?Math.min(m,12):Math.min(m,Math.max(1,+q.value||1))};
+ ov.querySelectorAll('input[name=mbT]').forEach(r=>r.onchange=()=>upd(false));upd(true);
+ ov.querySelector("#mbOk").onclick=()=>{
+  const tp=tipo(),o=(ov.querySelector('input[name=mbO]:checked')||{value:"r"}).value;
+  let k=Math.round(+q.value);if(!(k>=1))k=12;k=Math.min(k,n[tp]);
+  let w;
+  if(tp==="s")w=B.s.slice();else if(tp==="c")w=B.c.slice();
+  else{w=[];let i=0,j=0;const S=B.s,C=B.c;while(i<S.length||j<C.length){if(w.length%2===0){w.push(i<S.length?S[i++]:C[j++])}else{w.push(j<C.length?C[j++]:S[i++])}}}
+  if(o==="r")w=shuffle(w.slice());
+  w=w.slice(0,k);
+  const uid="mt-"+t.id+"~"+tp,nm=tp==="s"?"simples":tp==="c"?"complexas":"mistas";
+  LGCUST[uid]={id:uid,t:"Palavras "+nm+" • "+t.t,e:"🔤",items:[w],mw:true,sub:""};
+  close();lgStart("mt",uid,0);
+ };
+ ov.querySelector("#mbOk").focus({preventScroll:true});ov.querySelector(".cfg-box").scrollTop=0;
 }
 function mtDelete(id){
  const p=active(),t=mtList(p).find(x=>x.id===id);if(!p||!t)return;
  if(!confirm("Excluir o texto “"+t.t+"”?\n\nEle sai da lista de Meus Textos. Esta ação não pode ser desfeita."))return;
  p.meusTextos=mtList(p).filter(x=>x.id!==id);
- if(p.leitura&&p.leitura.u)delete p.leitura.u["mt-"+id];
+ if(p.leitura&&p.leitura.u)Object.keys(p.leitura.u).forEach(k=>{if(k==="mt-"+id||k.indexOf("mt-"+id+"~")===0)delete p.leitura.u[k]});
  delete LGCUST["mt-"+id];
  saveProfiles();lgMine();
 }
