@@ -833,6 +833,25 @@ button.stu-stars:focus-visible{outline:3px solid #3b4fd0;outline-offset:2px}
 .mt-act .mt-go{font-size:1rem;min-height:40px;padding:0 16px;box-shadow:0 4px 0 #178a56}
 .mt-act .mt-del{color:#a33}
 .mt-bw{line-height:1.7;overflow-wrap:anywhere;max-height:30vh;overflow:auto}
+.mt-fs{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-weight:900;color:var(--ink2,#1c2150)}
+.mt-fsc{min-height:40px;padding:0 12px;border-radius:14px;font-weight:900}
+.mt-fsc.on{background:#3b4fd0;color:#fff;border-color:#3b4fd0}
+.mt-fsx{font-weight:800;color:var(--ink2,#1c2150);background:#fff;border:2px dashed #cfd6f0;border-radius:12px;padding:6px 12px;line-height:1.4;overflow-wrap:anywhere}
+.mt-fsb{min-height:40px;padding:0 14px;border-radius:14px;font-weight:900}
+/* barra inferior mais estreita em todo o jogo (mais espaço para as atividades) */
+.game .bottom{padding:3px 10px;margin:0 8px 3px;border-width:2px;border-radius:16px;row-gap:2px;gap:8px}
+.game .bottom .round-btn{width:38px;height:38px;font-size:1rem;box-shadow:0 2px 0 #e3d3a8}
+.game .bottom .hud-btn,.game .bottom .hud-pill{min-height:0;height:38px;min-width:38px;padding:0 10px;font-size:.85rem;box-shadow:0 2px 0 #e3d3a8}
+.game .bottom .go-btn{min-height:0;padding:6px 18px;font-size:1rem;box-shadow:0 3px 0 #178a56}
+.game .bottom .feedback{font-size:.85rem}
+/* Treino de Fluência Leitora (todo o bloco): linhas mais próximas e marcador justo sobre cada palavra */
+.lg-text:not(.lg-one){row-gap:.38em}
+.lg-text:not(.lg-one) .lg-w:not(.ds-sent){padding:0 .14em;line-height:1.12;border-radius:.18em}
+.lg-text:not(.lg-one) .lg-w.cur{transform:none;box-shadow:inset 0 -.07em 0 #e0a800}
+.lg-text:not(.lg-one) .ds-w:not(.ds-sent){border:0}
+.lg-text:not(.lg-one) .ds-w.flag{box-shadow:inset 0 0 0 .05em #f0b24a}
+.lg-w.ds-sent{line-height:1.25}
+.lg-text.lg-scroll{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;align-content:flex-start;align-content:safe center}
 .mt-empty{text-align:center;color:#5b6280;font-weight:800;line-height:1.6;padding:clamp(16px,6vh,48px) 8px;font-size:clamp(.95rem,2.6vh,1.2rem)}
 .mt-box{max-width:min(920px,100%);display:flex;flex-direction:column}
 .mt-l{display:block;margin:10px 0 4px;font-weight:900;color:var(--ink2,#1c2150)}
@@ -841,11 +860,13 @@ button.stu-stars:focus-visible{outline:3px solid #3b4fd0;outline-offset:2px}
 .mt-in:focus,.mt-ta:focus{outline:3px solid #b9c4ff;border-color:#3b4fd0}
 .mt-cnt{margin:6px 2px 0}
 .mt-err{color:#b54747;font-weight:800;margin:6px 0 0}
-.lg-text.lg-long{display:flex;flex-direction:column;flex-wrap:nowrap;justify-content:flex-start;align-content:stretch;align-items:stretch;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;text-align:left;font-weight:700;line-height:1.8;padding:.2em .5em;scroll-behavior:auto}
+.lg-text.lg-long{display:flex;flex-direction:column;flex-wrap:nowrap;justify-content:flex-start;align-content:stretch;align-items:stretch;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;text-align:left;font-weight:700;line-height:1.5;padding:.2em .5em;scroll-behavior:auto}
 .lg-long .mt-body{flex:none;margin:auto 0;width:100%}
-.lg-long .mt-p{margin:0 0 .75em;overflow-wrap:anywhere;word-break:normal}
+.lg-long .mt-p{margin:0 0 .4em;overflow-wrap:anywhere;word-break:normal}
 .lg-long .mt-p:last-child{margin-bottom:0}
-.lg-long .lg-w{white-space:normal;overflow-wrap:anywhere;padding:.02em .12em}
+.lg-long .lg-w{white-space:normal;overflow-wrap:anywhere;padding:0 .14em;line-height:1.12;border:0;border-radius:.18em;vertical-align:baseline}
+.lg-long .lg-w.cur{box-shadow:inset 0 -.07em 0 #e0a800}
+.lg-long .ds-w.flag{box-shadow:inset 0 0 0 .05em #f0b24a}
 .lg-long .lg-w.cur{transform:none}
 
 .lg-w .sy.on{opacity:1;background:#fff;color:#3b2a00;border-radius:.12em;box-shadow:0 0 0 .03em #fff,0 .05em 0 .03em #c98f00}
@@ -4153,7 +4174,7 @@ function dsRender(){
  const ori=abOri(ori2(null,"Leia em voz alta, sozinha.",`Não leia pela criança. Toque em ${what} para marcar uma dificuldade e, ao final, em “Terminei”.`));
  const sub=`Desafio de leitura • ${esc(DS_MODN[S.m].replace(/^Desafio de /,""))} • ${esc(lv)}`;
  abShell({title:"Treino de Fluência Leitora",abCase:true,sub,ori,
-  single:`<div class="ab-board lg-board"><div class="lg-wrap"><div class="lg-text ds-text ds-${S.m}${S.mine?" lg-long":""}" id="dsText">${body}</div></div></div>`,
+  single:`<div class="ab-board lg-board"><div class="lg-wrap"><div class="lg-text ds-text ds-${S.m}${S.mine?" lg-long":""}" id="dsText">${body}</div>${S.mine?`<div class="lg-ctrl"><button class="secondary mt-fsb" id="mtFsB" type="button" aria-label="Mudar o tamanho da letra">🔠 Letra: ${mtFsInfo().n}</button></div>`:""}${S.m==="t"&&!S.mine?`<div class="lg-ctrl"><button class="secondary mt-fsb" id="pgFsB" type="button" aria-label="Mudar o tamanho da letra">🔠 Letra: ${pgFsInfo().n}</button></div>`:""}</div></div>`,
   msg:(U.reset?"Todo o material deste nível já foi usado; a sequência recomeçou • ":"")+"🏆 Leia em voz alta, no seu ritmo. Sem pressa!",
   next:{label:"Terminei ▶",fn:dsDone},noSound:true,onBack:()=>S.mine?lgMine():dsLevels(S.m),onRestart:()=>dsRender()});
  const tk=abTok;
@@ -4271,10 +4292,11 @@ function lgRender(){
  const spans=L.u.mine?mtParaHtml(L.u.paras,(w,n)=>`<span class="lg-w" data-i="${n}">${esc(w)}</span>`):L.isList?`<span class="lg-w idle" id="lgOne">Pronto? 👀</span>`:L.words.map((w,n)=>`<span class="lg-w" data-i="${n}">${esc(w)}</span>`).join("");
  const sub=`${L.u.e} ${esc(L.u.t)}${L.u.rounds?` • treino ${L.i+1} de ${total} (${L.i?"embaralhadas":"em ordem"})`:total>1?` • frase ${L.i+1} de ${total}`:""}${L.u.emb?" • embaralhadas"+(L.u.rod?" • "+L.u.rod+" rodadas":""):""}${L.isList?` • ${L.words.length} palavras`:""}`;
  abShell({title:"Treino de Fluência Leitora",abCase:true,lgPace:true,sub,noSound:true,
-  single:`<div class="ab-board lg-board"><div class="lg-wrap"><div class="lg-text${L.isList?" lg-list lg-one":""}${L.u.mine?" lg-long":""}" id="lgText">${spans}</div><div class="lg-bar"><span id="lgFill"></span></div><div class="lg-ctrl"><button class="go-btn" id="lgPlay" type="button">▶ Começar</button><span class="lg-clock" id="lgClock">⏱ 0:00</span>${L.isList||L.u.mine?`<span class="lg-clock" id="lgNum">Palavra 0 de ${L.words.length}</span>`:""}</div><div class="lg-count off" id="lgCount" aria-live="assertive"></div></div></div>`,
+  single:`<div class="ab-board lg-board"><div class="lg-wrap"><div class="lg-text${L.isList?" lg-list lg-one":""}${L.u.mine?" lg-long":""}" id="lgText">${spans}</div><div class="lg-bar"><span id="lgFill"></span></div><div class="lg-ctrl"><button class="go-btn" id="lgPlay" type="button">▶ Começar</button><span class="lg-clock" id="lgClock">⏱ 0:00</span>${L.isList||L.u.mine?`<span class="lg-clock" id="lgNum">Palavra 0 de ${L.words.length}</span>`:""}${L.u.mine?`<button class="secondary mt-fsb" id="mtFsB" type="button" aria-label="Mudar o tamanho da letra">🔠 Letra: ${mtFsInfo().n}</button>`:""}${lgGroupOf(L.kind)==="tc"&&!L.isList?`<button class="secondary mt-fsb" id="pgFsB" type="button" aria-label="Mudar o tamanho da letra">🔠 Letra: ${pgFsInfo().n}</button>`:""}</div><div class="lg-count off" id="lgCount" aria-live="assertive"></div></div></div>`,
   msg:L.isList?"Aperte ▶ Começar. As palavras aparecem uma de cada vez":"Aperte ▶ Começar e leia a palavra que está acesa",next:{label:"Próxima ▶",disabled:true},
   onBack:()=>L.u.mine||L.u.mw?lgMine():L.u.custom?lgBackTo(L.kind,true):lgMenu(L.kind),onRestart:()=>lgStart(L.kind,L.id,L.i)});
  L.tok=abTok;
+ if(L.u.mine||L.u.mw)$("#game").classList.add("mt-ctx");
  $("#lgPlay").onclick=lgToggle;
  const cb=$("#abCase");if(cb)cb.addEventListener("click",()=>setTimeout(lgFit,30));
  lgFit();requestAnimationFrame(lgFit);setTimeout(lgFit,150);
@@ -4383,6 +4405,7 @@ function lgStep(){
  L.idx++;
  if(L.idx>=L.words.length){lgFinish(false);return}
  els[L.idx].classList.add("cur");
+ if(lgGroupOf(L.kind)==="tc"&&pgFsInfo().k>1)mtFollow(els[L.idx]);
  if(L.u.mine){mtFollow(els[L.idx]);const nn=$("#lgNum");if(nn)nn.textContent="Palavra "+(L.idx+1)+" de "+L.words.length}
  const f=$("#lgFill");if(f)f.style.width=Math.round(L.idx/L.words.length*100)+"%";
  lgSylRun(els[L.idx],L.words[L.idx],lgPaceInfo().s*1000);
@@ -4413,6 +4436,36 @@ function lgFinish(skipped){
    A leitura usa o mesmo motor do bloco Parágrafos (lgStart: ritmo por palavra, cronômetro, registro em leitura.u / sessoes) e o Desafio (toque para marcar dificuldades + registro do mediador).
    Sem limite por texto; só um teto muito alto por participante (documento do participante na nuvem). */
 const MT_TOTAL=500000;
+/* Tamanhos de letra predefinidos (por participante, em p.mtFs). Vale para a leitura e o Desafio dos textos; 0 = Padrão (ajuste automático ao espaço). */
+const MT_FS=[{n:"Padrão",px:0},{n:"Grande",px:32},{n:"Muito grande",px:44},{n:"Enorme",px:58},{n:"Gigante",px:74}];
+function mtFsInfo(){const p=active(),i=p&&MT_FS[p.mtFs]?p.mtFs:0;return{i,n:MT_FS[i].n,px:MT_FS[i].px}}
+function mtFsSet(i){
+ const p=active();if(!p||!MT_FS[i])return;
+ p.mtFs=i;saveProfiles();
+ const t=$("#lgText")||$("#dsText");
+ if(t){mtFit(t);const b=$("#mtFsB");if(b)b.textContent="🔠 Letra: "+MT_FS[i].n;const c=t.querySelector(".cur");if(c)mtFollow(c);else t.scrollTop=0}
+}
+/* Mesmos tamanhos de letra no bloco Parágrafos (leitura e Desafio), guardados à parte em p.pgFs. Com tamanho escolhido, o texto rola em vez de encolher. */
+const PG_FS=[{n:"Padrão",k:1},{n:"Grande",k:1.3},{n:"Enorme",k:1.7}];/* Em Parágrafos o Padrão já é grande: Grande e Enorme ampliam o tamanho automático em 30% e 70% */
+function pgFsInfo(){const p=active(),i=p&&PG_FS[p.pgFs]?p.pgFs:0;return{i,n:PG_FS[i].n,k:PG_FS[i].k}}
+function pgPost(t,on){
+ if(!t)return;t.classList.remove("lg-scroll");
+ const f=pgFsInfo();if(!on||f.k<=1)return;
+ const a=parseFloat(t.style.fontSize||0)||32,want=Math.min(a*f.k,Math.max(a,t.clientWidth/3.2),120);
+ t.style.fontSize=want+"px";t.classList.add("lg-scroll")
+}
+{const a=lgFit;lgFit=function(){a.apply(this,arguments);pgPost($("#lgText"),!!(LG&&lgGroupOf(LG.kind)==="tc"&&!$("#lgText").classList.contains("lg-long")))}}
+{const a=dsFit;dsFit=function(){a.apply(this,arguments);pgPost($("#dsText"),!!(DS&&DS.m==="t"&&!DS.mine))}}
+function pgFsSet(i){
+ const p=active();if(!p||!PG_FS[i])return;
+ p.pgFs=i;saveProfiles();
+ const t=$("#lgText")||$("#dsText");if(!t)return;
+ const b=$("#pgFsB");if(b)b.textContent="🔠 Letra: "+PG_FS[i].n;
+ t.style.fontSize="";if(typeof lgFit==="function"&&$("#lgText"))lgFit();else if(typeof dsFit==="function")dsFit();
+ const c=t.querySelector(".cur");if(c)mtFollow(c);else t.scrollTop=0;
+}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("#pgFsB");if(b)pgFsSet((pgFsInfo().i+1)%PG_FS.length)});
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("#mtFsB");if(b)mtFsSet((mtFsInfo().i+1)%MT_FS.length)});
 DS_LV.mt=[["mt","📝","Meus textos","Textos cadastrados pelo(a) mediador(a)"]];
 function mtList(p){return p&&Array.isArray(p.meusTextos)?p.meusTextos:[]}
 function mtParas(x){return String(x||"").split(/\r?\n/).map(s=>s.split(/\s+/).filter(Boolean)).filter(a=>a.length)}
@@ -4420,11 +4473,14 @@ function mtCount(x){return mtParas(x).reduce((n,a)=>n+a.length,0)}
 function mtUnit(t){const paras=mtParas(t.x),n=paras.reduce((s,a)=>s+a.length,0);return{id:"mt-"+t.id,t:t.t,e:"📝",items:[paras.map(a=>a.join(" ")).join(" ")],paras,mine:true,sub:n+" palavras"}}
 function mtParaHtml(paras,fn){let i=0;return `<div class="mt-body">${paras.map(a=>`<p class="mt-p">${a.map(w=>fn(w,i++)).join(" ")}</p>`).join("")}</div>`}
 function mtFit(t){
- const w=t.clientWidth,h=t.clientHeight,mn=w<520?19:22;
- /* mede primeiro no tamanho mínimo: se já rola, fica nele (uma só medição, mesmo com milhares de palavras); se cabe, amplia até o maior tamanho que ainda cabe */
- t.style.fontSize=mn+"px";if(t.scrollHeight>t.clientHeight+2)return;
- let fs=Math.max(mn,Math.min(w/16,h/5,44)),g=0;t.style.fontSize=fs+"px";
- while(t.scrollHeight>t.clientHeight+2&&fs>mn&&g++<60){fs=Math.max(mn,fs*.95);t.style.fontSize=fs+"px"}
+ const w=t.clientWidth,h=t.clientHeight,mn=w<520?19:22,pf=mtFsInfo();
+ /* ajuste automático ao espaço (nunca abaixo do mínimo); o tamanho escolhido vale como mínimo: se for maior, o texto rola */
+ t.style.fontSize=mn+"px";
+ if(t.scrollHeight<=t.clientHeight+2){
+  let fs=Math.max(mn,Math.min(w/16,h/5,44)),g=0;t.style.fontSize=fs+"px";
+  while(t.scrollHeight>t.clientHeight+2&&fs>mn&&g++<60){fs=Math.max(mn,fs*.95);t.style.fontSize=fs+"px"}
+ }
+ if(pf.px){const want=Math.min(pf.px,Math.max(mn,w/3.2));if(want>parseFloat(t.style.fontSize))t.style.fontSize=want+"px"}
 }
 function mtFollow(el){
  const t=$("#lgText");if(!t||!el)return;
@@ -4453,15 +4509,15 @@ function lgMine(){
  const d=lgData(p),T=mtList(p),pc=lgPaceInfo();
  const card=t=>{
   const r=d.u["mt-"+t.id],lido=r&&r.n,n=mtCount(t.x),pa=mtParas(t.x).length,pv=String(t.x).replace(/\s+/g," ").trim();
-  return `<div class="ab-lvl fl-card mt-card${lido?" lido":""}" data-id="${esc(t.id)}"><strong>📝 ${esc(t.t)}</strong><span class="ab-lvl-s">${n} ${n===1?"palavra":"palavras"} • ${pa} ${pa===1?"parágrafo":"parágrafos"} • ${lido?"✅ Lido "+r.n+"x":"Não lido"}</span><span class="mt-prev">${esc(pv.length>110?pv.slice(0,110)+"…":pv)}</span><div class="mt-act"><button class="go-btn mt-go" data-act="read" type="button">▶ Ler</button><button class="secondary" data-act="des" type="button">🏆 Desafio</button><button class="secondary" data-act="words" type="button">🔤 Palavras</button><button class="secondary" data-act="edit" type="button">✏️ Editar</button><button class="secondary mt-del" data-act="del" type="button">🗑️ Excluir</button></div></div>`};
+  return `<div class="ab-lvl fl-card mt-card${lido?" lido":""}" data-id="${esc(t.id)}"><strong>📝 ${esc(t.t)}</strong><span class="ab-lvl-s">${n} ${n===1?"palavra":"palavras"} • ${pa} ${pa===1?"parágrafo":"parágrafos"} • ${lido?"✅ Lido "+r.n+"x":"Não lido"}</span><span class="mt-prev">${esc(pv.length>110?pv.slice(0,110)+"…":pv)}</span><div class="mt-act"><button class="go-btn mt-go" data-act="read" type="button">▶ Ler</button><button class="secondary" data-act="words" type="button">🔤 Palavras</button><button class="secondary" data-act="edit" type="button">✏️ Editar</button><button class="secondary mt-del" data-act="del" type="button">🗑️ Excluir</button></div></div>`};
  abShell({title:"Treino de Fluência Leitora",abCase:true,lgPace:true,sub:"Meus textos",
-  single:`<div class="ab-board fl-pick fl-one mt-board"><div class="fl-block"><div class="mt-head"><div><div class="fl-block-t">📝 Meus Textos</div><div class="fl-block-s">${pc.e} ${pc.n} (${lgSecTxt(pc.s)}) — mude no botão 🕒 da barra de baixo</div></div><button class="go-btn mt-new" id="mtNew" type="button">➕ Novo texto</button></div><div class="mt-ori">👩‍🏫 <b>ORIENTAÇÃO:</b> cadastre o texto que a criança vai ler, escolha-o abaixo e toque em ▶ Ler. O aplicativo acende cada palavra no ritmo escolhido; quem avalia a leitura é você. <button class="secondary lg-guide-btn" id="mtGuide" type="button">📋 Guia de orientação</button></div>${T.length?`<div class="mt-list">${T.map(card).join("")}</div>`:`<p class="mt-empty">Você ainda não cadastrou nenhum texto.<br>Toque em <b>➕ Novo texto</b> para escrever ou colar um texto.</p>`}</div></div>`,
+  single:`<div class="ab-board fl-pick fl-one mt-board"><div class="fl-block"><div class="mt-head"><div><div class="fl-block-t">📝 Meus Textos</div><div class="fl-block-s">${pc.e} ${pc.n} (${lgSecTxt(pc.s)}) — mude no botão 🕒 da barra de baixo</div></div><button class="go-btn mt-new" id="mtNew" type="button">➕ Novo texto</button></div>${T.length?`<div class="mt-list">${T.map(card).join("")}</div>`:`<p class="mt-empty">Você ainda não cadastrou nenhum texto.<br>Toque em <b>➕ Novo texto</b> para escrever ou colar um texto.</p>`}</div></div>`,
   msg:"",bare:true,noSound:true,onBack:renderStudentMenu});
+ $("#game").classList.add("mt-ctx");
  $("#mtNew").onclick=()=>mtEdit();
- $("#mtGuide").onclick=lgGuideOpen;
  document.querySelectorAll(".mt-card").forEach(c=>c.addEventListener("click",e=>{
   const b=e.target.closest("button[data-act]");if(!b)return;const id=c.dataset.id,a=b.dataset.act;
-  if(a==="read")mtRead(id);else if(a==="des")mtDesafio(id);else if(a==="words")mtBankOpen(id);else if(a==="edit")mtEdit(id);else if(a==="del")mtDelete(id)}));
+  if(a==="read")mtRead(id);else if(a==="words")mtBankOpen(id);else if(a==="edit")mtEdit(id);else if(a==="del")mtDelete(id)}));
 }
 
 /* Banco de palavras de cada texto: palavras únicas do texto, separadas em simples e complexas, para o treino de palavras (uma de cada vez, como em Sílabas e Palavras).
