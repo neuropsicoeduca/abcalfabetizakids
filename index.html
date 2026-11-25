@@ -947,6 +947,7 @@ button.stu-stars:focus-visible{outline:3px solid #3b4fd0;outline-offset:2px}
 @media(orientation:portrait){.ab-levels.fl-lv-board.fc-two{grid-template-columns:minmax(0,1fr);grid-template-rows:none;grid-auto-rows:max-content;overflow-y:auto;align-content:start}}
 @media(orientation:landscape) and (max-height:520px){.ab-levels.fl-lv-board{grid-template-rows:none;grid-auto-rows:max-content;overflow-y:auto;align-content:start}}
 .hud-btn.mini.on{background:#e9f0ff;box-shadow:0 4px 0 #9db4ff}
+.esc-mod.esc-hid{font-size:clamp(3rem,16vh,7rem)!important;opacity:.5;letter-spacing:0}
 </style>
 <style>
 .pw-ear{font:inherit;font-size:clamp(1rem,3.2vh,1.5rem);font-weight:900;border:0;border-radius:18px;padding:.55em 1.1em;margin-bottom:clamp(6px,1.4vh,14px);background:#2f9cf4;color:#fff;box-shadow:0 5px 0 #1b6fb5;cursor:pointer}
@@ -1084,6 +1085,17 @@ html[data-ori-m="v"] .pw-ori[data-ori-h]{padding-right:revert!important}
 .rp-main .ab-lvl .ab-lvl-d,.rp-main .ab-lvl .ab-lvl-s,.rp-main .ab-lvl .small{display:none}
 /* Consciência fonológica (telas de 3 níveis): cartões compactos, mesmo desenho do Alfabeto (título + barra de progresso, centralizados no quadro) */
 .stage-body.ab-wori.ab-single .ab-levels.fn-lv3{grid-template-rows:none;grid-auto-rows:max-content;align-content:center}
+/* v2.33 — Escrita e ditado */
+.fn-slot.fx{background:#eef1fb;color:#5d6380;box-shadow:inset 0 -6px 0 #b8bfd6;cursor:default}
+.fn-slots.esc-syl{width:min(94cqw,calc(var(--n) * 26cqh))}
+.fn-slots.esc-syl .fn-slot{aspect-ratio:auto;min-height:min(22cqh,15cqw);font-size:min(10cqh,calc(34cqw / var(--n)))}
+.esc-mod{font-size:min(26cqh,calc(76cqw / var(--len,2)));font-weight:900;color:var(--ink2);line-height:1.1}
+.esc-line{font-weight:800;color:var(--ink2);font-size:min(7cqh,calc(110cqw / var(--len,14)));text-align:center;white-space:nowrap}
+.esc-line.esc-big{font-size:min(10cqh,calc(120cqw / var(--len,14)))}
+.esc-gap{display:inline-block;color:#8a93b8;border-bottom:4px solid #b8bfd6;min-width:1.2em;text-align:center;letter-spacing:.12em}
+.esc-gap.ok{color:#0f6b43;border-bottom-color:#8ad9b1}
+.esc-bank .ab-tile.hint{animation:fnHint .7s ease-in-out infinite;background:#fff1c2;box-shadow:0 0 0 5px #ff9f1c}
+.esc-pt{font-size:min(18cqh,22cqw);font-weight:900}
 </style>
 </head>
 <body>
@@ -1860,12 +1872,28 @@ function relAlfabeto(p){
  const rows=A.slice().sort((x,y)=>String(y.quando||"").localeCompare(String(x.quando||""))).map(x=>{const d=dem(x),m=x.modo==="misto"?"parte em demonstração":x.modo==="demonstrativo"?"em demonstração":"";
   return relLi("<b>"+esc(relFmt(x.quando))+"</b> · "+esc(N[x.jogo]||x.jogo)+esc(nv(x)),esc([pl(+x.acertos||0," acerto"," acertos"),pl(+x.erros||0," erro"," erros"),"tentativas: "+((+x.acertos||0)+(+x.erros||0)),d?"em demonstração: "+pl(d," resposta"," respostas"):"",m].filter(Boolean).join(" · ")))});
  return relSec("🔤 Alfabeto e Sons das letras","Registro próprio deste bloco (até as 60 sessões mais recentes). Acertos e erros são das respostas autônomas; respostas dadas em demonstração ficam à parte. Tentativas = acertos + erros.",relPerLine(sum)+(A.length?relUl(Object.keys(g).map(k=>relLi("<b>"+esc(N[k]||k)+"</b>",pl(g[k].n," sessão"," sessões")+" · "+pl(g[k].a," acerto"," acertos")+" · "+pl(g[k].e," erro"," erros")+(g[k].d?" · em demonstração: "+pl(g[k].d," resposta"," respostas"):"")+(g[k].q?" · última: "+esc(relFmt(g[k].q)):""))),20)+'<h3 class="rel-h">Sessões (mais recentes primeiro)</h3>'+relUl(rows,8):""))}
+function relEscrita(F){const E=F&&F.esc;if(!E||!E.k)return[];
+ const G=[["✂️ Cópia de sílabas",k=>k===102||k===103,1],["🔍 Reconhecer a sílaba (só reconhecimento, sem escrita)",k=>k===101,1],["🧩 Completar sílabas e palavras",k=>k===201||k===202],["🎧 Ditado de sílabas",k=>k===301||k===302],["✏️ Ditado de palavras",k=>k<100],["📝 Escrita de frases curtas (palavras e sinal final)",k=>k>=500]],rows=[],F6=["n","aut","cor","ajd","dem","err"];
+ const sum=(src,f)=>{const a={n:0,aut:0,cor:0,ajd:0,dem:0,err:0},g={},gn={};Object.keys(src||{}).forEach(key=>{if(!f(+key))return;const r=src[key]||{};F6.forEach(x=>{a[x]+=+r[x]||0});Object.keys(r.g||{}).forEach(x=>{g[x]=(g[x]||0)+(+(r.g[x]||{}).e||0)});Object.keys(r.gn||{}).forEach(x=>{gn[x]=(gn[x]||0)+(+r.gn[x]||0)})});return{a,g,gn}};
+ const line=(lab,o)=>{const a=o.a,g=o.g,gn=o.gn;if(!a.n)return;const top=Object.keys(g).filter(x=>g[x]>0).sort((x,y)=>g[y]-g[x]).slice(0,5).map(x=>esc(x)+" ("+g[x]+(g[x]===1?" erro":" erros")+(gn[x]?", em "+gn[x]+(gn[x]===1?" item":" itens")+" com essa peça":"")+")");
+  rows.push(relLi("<b>"+lab+"</b>",a.n+(a.n===1?" item":" itens")+" · autônomos: "+(a.aut+a.cor)+" (de primeira: "+a.aut+"; com autocorreção: "+a.cor+") · com ajuda (💡): "+a.ajd+" · em demonstração: "+a.dem+" · peças erradas: "+a.err+(top.length?" · onde mais errou: "+top.join(", "):"")))};
+ let sepUsado=false;
+ G.forEach(([lab,f,sep])=>{const T=sum(E.k,f);if(!T.a.n)return;
+  if(!sep){line(lab,T);return}
+  const S=sum(E.sm,f);
+  if(!S.a.n){line(lab,T);return}
+  sepUsado=true;
+  /* E.k soma tudo; o que não é "sem modelo" foi feito com o modelo na tela */
+  const C={a:{},g:{},gn:T.gn};F6.forEach(x=>{C.a[x]=Math.max(0,T.a[x]-S.a[x])});Object.keys(T.g).forEach(x=>{C.g[x]=Math.max(0,T.g[x]-(S.g[x]||0))});
+  line(lab+" — com modelo na tela",C);line(lab+" — sem modelo (o mediador fala o som)",S)});
+ if(rows.length)rows.push(relLi("<b>ℹ️ Como ler os registros de escrita</b>",ESC_NOTA+" Itens em demonstração e com ajuda não entram como desempenho autônomo."+(sepUsado?" Com modelo, a criança copia ou reconhece olhando a sílaba; sem modelo, ela ouve o som e escolhe ou monta, e o modelo só aparece depois. Só o registro sem modelo se aproxima da correspondência som–letra; os dois não devem ser somados.":"")));
+ return rows}
 function relFonologica(p){
  const F=p.fono;if(!F)return"";const n=F.n||{},h=F.h||{},rows=[];
  FN_ET.forEach(e=>{let c=0,a=0;Object.keys(n).forEach(k=>{if(k.indexOf(e[0]+"|")===0){c+=+n[k]||0;a+=+h[k]||0}});if(c)rows.push(relLi("<b>"+e[1]+" "+esc(e[2])+"</b>",c+(c===1?" atividade concluída":" atividades concluídas")+" · "+a+(a===1?" acerto":" acertos")))});
  const cx=F.cx||{};let ca=0,ce=0,cj=0,cw=0,cd=0;Object.keys(cx).forEach(k=>{const r=cx[k]||{};ca+=+r.acertos||0;ce+=+r.erros||0;cj+=+r.ajudas||0;cw+=+r.palavras||0;cd+=+r.demo||0});
  if(ca+ce+cj+cw+cd)rows.push(relLi("<b>📦 Caixas de sons</b>",cw+" palavras · "+ca+" acertos · "+ce+" erros · "+cj+(cj===1?" ajuda (💡)":" ajudas (💡)")+(cd?" · em demonstração: "+cd+(cd===1?" peça":" peças"):"")));
- if(!rows.length)return"";
+ relEscrita(F).forEach(r=>rows.push(r));if(!rows.length)return"";
  return relSec("🎵 Consciência fonológica","Contadores próprios deste bloco (acertos, erros e ajudas, quando registrados).",relPerLine("contadores acumulados; este bloco não guarda a data de cada sessão, por isso não muda com o período escolhido")+'<ul class="rel-list">'+rows.join("")+'</ul>')}
 function relLeituraLivre(p){
  const f=p.fluencia;if(!f||!f.textos)return"";const T=f.textos;let c=0,rel=0,qo=0,qe=0,last="";
@@ -2431,6 +2459,10 @@ function openCfg(){
   
   <div class="cfg-sec"><b>🔤 Tipo de letra</b><span>Como as letras aparecem nos jogos do Alfabeto.</span></div>
  <div class="cfg-delay cfg-letter">${[["u","ABC",""],["l","abc",""],["c","Abc","cs"],["m","Misto",""]].filter(d=>!(d[0]==="m"&&fnCtx())).map(d=>`<label class="${d[2]}"><input type="radio" name="cfgL" value="${d[0]}" ${(fnCtx()&&CFG.letter==="m"?"u":CFG.letter)===d[0]?"checked":""}>${d[1]}</label>`).join("")}</div>
+ <div class="cfg-sec"><b>✍️ Ditado: reconhecer sílabas</b><span>Etapa 1 do Ditado com letras. Sem modelo, o mediador fala o som e a sílaba só aparece na tela depois da resposta. Vale a partir da próxima pergunta.</span></div>
+ <div class="cfg-delay cfg-letter" id="cfgReco">${(()=>{const cur=(pp.cfg&&pp.cfg.recoSemModelo===true)?"s":"c";return [["c","👀 Com modelo (padrão)"],["s","👂 Sem modelo"]].map(d=>`<label><input type="radio" name="cfgRM" value="${d[0]}" ${cur===d[0]?"checked":""}>${d[1]}</label>`).join("")})()}</div>
+ <div class="cfg-sec"><b>✂️ Ditado: copiar sílabas</b><span>Etapa 2 do Ditado com letras. Sem modelo, o mediador fala o som e a sílaba só aparece na tela depois da resposta. Vale a partir da próxima pergunta.</span></div>
+ <div class="cfg-delay cfg-letter" id="cfgCopia">${(()=>{const cur=(pp.cfg&&pp.cfg.copiaSemModelo===true)?"s":"c";return [["c","👀 Com modelo (padrão)"],["s","👂 Sem modelo"]].map(d=>`<label><input type="radio" name="cfgCM" value="${d[0]}" ${cur===d[0]?"checked":""}>${d[1]}</label>`).join("")})()}</div>
  <div class="cfg-sec"><b>🔓 Etapas dos jogos</b><span>Todas liberadas por padrão. Ou mantenha o bloqueio: cada etapa abre quando a anterior é concluída.</span></div>
  <div class="cfg-delay cfg-letter" id="cfgSeq">${(()=>{const cur=(pp.cfg&&pp.cfg.seqFree===false)?"b":"f";return [["f","🔓 Liberar tudo (padrão)"],["b","🔒 Manter o bloqueio"]].map(d=>`<label><input type="radio" name="cfgSeq" value="${d[0]}" ${cur===d[0]?"checked":""}>${d[1]}</label>`).join("")})()}</div>
  <div class="cfg-actions"><button class="primary" id="cfgOk" type="button">Salvar</button></div></div>`;
@@ -2445,6 +2477,8 @@ function openCfg(){
   const d=ov.querySelector('input[name=cfgD]:checked');
   {const r=ov.querySelector("input[name=cfgOD]:checked");if(r&&["t","p","v"].includes(r.value)){const q=active();q.cfg=Object.assign({},q.cfg,{oriDica:r.value})}}
   {const r=ov.querySelector("input[name=cfgOT]:checked"),nv=ov.querySelector("#cfgOTV"),nu=ov.querySelector("#cfgOTU");if(r&&["d","c","p"].includes(r.value)){let v=Math.round(parseFloat(nv&&nv.value));if(!(v>=1))v=5;if(v>99)v=99;const q=active();q.cfg=Object.assign({},q.cfg,{oriT:r.value,oriTV:v,oriTU:(nu&&nu.value==="m")?"m":"s"})}}
+  {const r=ov.querySelector("input[name=cfgCM]:checked");if(r){const q=active();q.cfg=Object.assign({},q.cfg,{copiaSemModelo:r.value==="s"})}}
+  {const r=ov.querySelector("input[name=cfgRM]:checked");if(r){const q=active();q.cfg=Object.assign({},q.cfg,{recoSemModelo:r.value==="s"})}}
   {const r=ov.querySelector("input[name=cfgSeq]:checked");if(r){const q=active();q.cfg=Object.assign({},q.cfg,{seqFree:r.value==="f"})}}
   setCfg({auto:au.checked,skip:false,letter:(ov.querySelector('input[name=cfgL]:checked')||{}).value,delay:d?+d.value:4});
   close();clearTimeout(autoTimer);abApplyCase();if(window.pwRefresh)pwRefresh();
@@ -3122,7 +3156,7 @@ window.FN_BANCO={palavras:FNW,familias:FN_FAM,blocos:FN_B};
 /* Sílabas: palavra:divisão:figura */
 const FN_SIL="SOL:sol:☀️,PÃO:pão:🍞,MÃO:mão:✋,PÉ:pé:🦶,FLOR:flor:🌸,TREM:trem:🚆,LUZ:luz:💡,BOLA:bo-la:⚽,GATO:ga-to:🐱,CASA:ca-sa:🏠,PATO:pa-to:🦆,VACA:va-ca:🐄,SAPO:sa-po:🐸,FACA:fa-ca:🔪,LUA:lu-a:🌙,BOLO:bo-lo:🎂,DADO:da-do:🎲,JANELA:ja-ne-la:🪟,BANANA:ba-na-na:🍌,SAPATO:sa-pa-to:👞,CAVALO:ca-va-lo:🐴,MACACO:ma-ca-co:🐒,TOMATE:to-ma-te:🍅,CAMISA:ca-mi-sa:👕,LARANJA:la-ran-ja:🍊,PIPOCA:pi-po-ca:🍿,MOCHILA:mo-chi-la:🎒,ABELHA:a-be-lha:🐝,TELEFONE:te-le-fo-ne:📞,BORBOLETA:bor-bo-le-ta:🦋,ELEFANTE:e-le-fan-te:🐘,MELANCIA:me-lan-ci-a:🍉,TARTARUGA:tar-ta-ru-ga:🐢,ABACAXI:a-ba-ca-xi:🍍,BICICLETA:bi-ci-cle-ta:🚲,CHOCOLATE:cho-co-la-te:🍫".split(",").map(x=>{const a=x.split(":");return{w:a[0],s:a[1].split("-"),e:a[2]}});
 const FN_DIT=[["BOLA GATO PATO VACA FACA LUA SAPO MALA UVA JACA","⚽ 🐱 🦆 🐄 🔪 🌙 🐸 🧳 🍇 "],["CHAVE BANANA JANELA PIPOCA MACACO TOMATE SAPATO CAMISA","🔑 🍌 🪟 🍿 🐒 🍅 👞 👕"],["CAFÉ SOFÁ AVIÃO MAÇÃ LIMÃO BEBÊ JACARÉ FEIJÃO"," 🛋️ ✈️ 🍎 🍋 👶 🐊 🫘"]].map(x=>{const w=x[0].split(" "),e=x[1].split(" ");return w.map((a,i)=>({w:a,e:e[i]||""}))});
-const FN_ET=[["rimas","🎵","Rimas","Palavras que terminam com o mesmo som"],["silabas","👏","Conte as sílabas","Bata palmas e conte os pedacinhos"],["inicial","🔤","Som inicial","Descubra com que som a palavra começa"],["ditado","✏️","Ditado com letras","O(a) mediador(a) fala a palavra; escreva letra por letra"]];
+const FN_ET=[["rimas","🎵","Rimas","Palavras que terminam com o mesmo som"],["silabas","👏","Conte as sílabas","Bata palmas e conte os pedacinhos"],["inicial","🔤","Som inicial","Descubra com que som a palavra começa"],["ditado","✏️","Ditado com letras","Copie, complete e escreva sílabas, palavras e frases com letras"]];
 const FN_LV={silabas:[["1 e 2 sílabas","Palavras curtas e familiares."],["2 e 3 sílabas","Palavras um pouco maiores."],["1 a 4 sílabas","Todas as extensões, até 4 pedacinhos."]],inicial:[["Sílaba inicial","Qual figura começa com a sílaba?"],["Mesmo som inicial","O(a) mediador(a) fala a palavra; o som vale mais que a letra."],["Som da letra","O som da letra, não o nome dela."]],ditado:[["Palavras curtas","Palavras de 3 e 4 letras."],["Palavras maiores","Dígrafos e mais letras."],["Acentos e til","É, Á, Ã, Ê, Ç… cada marca conta."]]};
 function fnData(p){p.fono=p.fono||{};p.fono.n=p.fono.n||{};p.fono.h=p.fono.h||{};return p.fono}
 const fnN=(p,et,k)=>fnData(p).n[et+"|"+k]||0;
@@ -3289,18 +3323,22 @@ function fnCxR(){
   abMsg("💡 Ajuda: a peça certa está brilhando. O(A) MEDIADOR(A) DEVE REPETIR O SOM.")};
  paint();
  if(CFG.skip)setTimeout(()=>{const step=()=>{if(!abAlive(tok)||done)return;const c=cur(),t=tiles.find(x=>x.c===q.g[c]&&!slots.some(s=>s&&s.id===x.id));if(!t)return;asAuto(()=>place(t,true));if(!done)setTimeout(step,350)};step()},900)}
+const ESC_CARD={101:["① 🔍 Cópia • Reconhecer","Reconheça a sílaba","Escolha a sílaba igual ao modelo (sem escrever)"],102:["① ✂️ Cópia • Sílabas simples","Copie a sílaba","Modelo na tela; monte com as letras"],103:["① ✂️ Cópia • Sinais, dígrafos e travadas","Copie a sílaba","Sílabas com sinal, dígrafo ou letra final"],
+ 201:["② 🔤 Completar • Letra que falta","Complete a palavra","Falta uma letra, com figura"],202:["② 🧩 Completar • Sílaba que falta","Complete a palavra","Falta uma sílaba, com figura"],
+ 301:["③ 🎧 Ditado de sílabas • Simples","Escreva a sílaba","O(a) mediador(a) fala; sem modelo"],302:["③ 🎧 Ditado de sílabas • Sinais, dígrafos e travadas","Escreva a sílaba","Sílabas com sinal, dígrafo ou letra final"],
+ 501:["⑤ 📝 Frases curtas • 2 e 3 palavras","Escreva a frase","Uma palavra de cada vez e o sinal final"],502:["⑤ 📝 Frases curtas • 4 palavras","Escreva a frase","Uma palavra de cada vez e o sinal final"]};
 const FN_DL=[["Palavras curtas","3 e 4 letras"],["Palavras maiores","3 sílabas, letras simples"],["Acentos e til","É, Á, Ã, Ê, Ç: cada marca conta"],["Dígrafos","CH, LH, NH, QU, RR: 2 letras, 1 som"]];
-function fnKeys(et){return et==="caixas"?[1,2,3]:et==="rimas"?FN_B.map((_,i)=>i+1):et==="inicial"?[1,2,3].flatMap(L=>[0,1,2].map(P=>P*3+L)).concat([10,11]):et==="ditado"?[1,11,2,12,4,14,3,13]:[1,2,3]}
+function fnKeys(et){return et==="caixas"?[1,2,3]:et==="rimas"?FN_B.map((_,i)=>i+1):et==="inicial"?[1,2,3].flatMap(L=>[0,1,2].map(P=>P*3+L)).concat([10,11]):et==="ditado"?[101,102,103,201,202,301,302,1,11,2,12,4,14,3,13,501,502]:[1,2,3]}
 function fnCard(et,k){const I=["🌱","🌿","🌳","🌲"];
  if(et==="caixas")return[`${I[k-1]} Nível ${k}`,FN_LV.caixas[k-1][0],FN_LV.caixas[k-1][1]];
  if(et==="inicial"&&k>=10)return[`🌲 Nível ${k-6}`,FN_LV.inicial[k-7][0],FN_LV.inicial[k-7][1]];
  if(et==="inicial"){const L=(k-1)%3+1,P=Math.floor((k-1)/3);return[`${I[L-1]} Nível ${L} • Parte ${P+1}`,FN_LV.inicial[L-1][0],"Sons: "+FN_PN[P]]}
- if(et==="ditado"){const id=k%10,n=[1,2,4,3].indexOf(id)+1;return[`${I[n-1]} Nível ${n} • ${k>10?"🎧 Só ouvindo":"🖼️ Com figura"}`,FN_DL[id-1][0],FN_DL[id-1][1]]}
+ if(et==="ditado"){if(ESC_CARD[k])return ESC_CARD[k];const id=k%10,n=[1,2,4,3].indexOf(id)+1;return[`④ ${I[n-1]} Nível ${n} • ${k>10?"🎧 Só ouvindo":"🖼️ Com figura"}`,FN_DL[id-1][0],FN_DL[id-1][1]]}
  return[`${I[k-1]} Nível ${k}`,FN_LV[et][k-1][0],FN_LV[et][k-1][1]]}
 function fnCardMarkup(p,e,n){
  const ks=fnKeys(e[0]);let c=0;ks.forEach(k=>{if(fnN(p,e[0],k))c++});
- const nota=e[0]==="ditado"?`<span class="small fn-dit-note">✍️ Codificação escrita • após sílabas e palavras</span>`:"";
- return `<button class="category" data-fn="${e[0]}" type="button"><strong>${n?n+". ":""}${e[1]} ${e[2]}</strong><div class="progress" style="margin:12px 0 6px"><span style="width:${Math.round(c/ks.length*100)}%"></span></div><span class="small">${c} de ${ks.length} concluídas</span>${nota}</button>`}
+ const nome=e[0]==="ditado"?"Ditado":e[2],nota="";
+ return `<button class="category" data-fn="${e[0]}" type="button"><strong>${n?n+". ":""}${e[1]} ${nome}</strong><div class="progress" style="margin:12px 0 6px"><span style="width:${Math.round(c/ks.length*100)}%"></span></div><span class="small">${c} de ${ks.length} concluídas</span>${nota}</button>`}
 /* Blocos da página inicial alimentados por FN_ET (a ordem do array continua valendo): g = "sil" (Consciência silábica e de rimas) ou "fon" (Consciência fonêmica) */
 function fnMenuMarkup(p,g){
  if(!g)return fnMenuMarkup(p,"sil")+fnMenuMarkup(p,"fon");
@@ -3326,12 +3364,11 @@ function fnIniQs(k){if(k>=10)return fnPosQs(k);const L=(k-1)%3+1,P=Math.floor((k
   const pr=part.find(x=>x.g===FN_PAIR[e.g]),order=(L===3&&pr?[pr]:[]).concat(shuffle(part.filter(x=>x!==e&&x!==pr))),n=L<3?2:3,ds=[],gs=[e.g];
   order.forEach(x=>{if(ds.length>=n)return;if(L<3&&gs.some(g=>FN_PAIR[g]===x.g||FN_PAIR[x.g]===g))return;const c=shuffle(x.ws.filter(d=>d!==w&&!ds.includes(d)&&(L!==3||d[0]!==e.g[0])&&(L!==1||FNW[d].s.split("-")[0].toUpperCase()!==syl)))[0];if(c){ds.push(c);gs.push(x.g)}});
   return{e,w,syl,model,o:[w,...ds]}})}
-function fnDitQs(k){const oral=k>10;return shuffle(FN_DIT[k%10-1].slice()).slice(0,6).map(x=>Object.assign({},x,{oral}))}
 function fnJunQs(k){const L=FN_JS[k-1];return L.map(([w,p,e])=>{const ph=p.split(","),sc=o=>o[1].split(",").reduce((n,x,i)=>n+(x===ph[i]?1:0),0),ds=shuffle(L.filter(o=>o[0]!==w)).sort((a,b)=>sc(b)-sc(a)).slice(0,2).map(o=>o[0]);return{w,ph,e,o:[w,...ds]}})}
 function fnStart(et,k){let qs;
  if(et==="rimas")qs=FN_B[k-1].slice();else if(et==="silabas")qs=fnSilQs(k);else if(et==="inicial")qs=fnIniQs(k);else if(et==="ditado")qs=fnDitQs(k);else if(et==="caixas")qs=fnCxQs(k);else if(et==="igual")qs=fnIgQs(k);else if(et==="troca")qs=fnTrQs(k);else qs=fnJunQs(k);
  FN={et,k,qs,i:0,hit:0,err:0,re:0};fnRound()}
-function fnRound(){const S=FN;S.re=0;({rimas:fnRimaR,silabas:fnSilR,inicial:fnIniR,ditado:fnDitR,juntar:fnJunR,caixas:fnCxR,igual:fnIgR,troca:fnTrR})[S.et]()}
+function fnRound(){const S=FN;S.re=0;S.fw=0;({rimas:fnRimaR,silabas:fnSilR,inicial:fnIniR,ditado:fnDitR,juntar:fnJunR,caixas:fnCxR,igual:fnIgR,troca:fnTrR})[S.et]()}
 /* ---- apoio ---- */
 const fnHL=(a,b)=>`${esc(a)}<b style="color:#e11d48;text-decoration:underline">${esc(b)}</b>`;
 function fnPicOpts(words,cap){return `<div class="ab-board"><div class="ab-opts fn-opts" style="--n:${words.length}">${words.map(w=>`<div class="fn-col"><button class="ab-opt" type="button" data-w="${esc(w)}" aria-label="Opção"><span class="fn-em">${fnFig(w)}</span>${cap?`<span class="fn-cap ab-cap"${cap==="h"?' style="visibility:hidden"':""}>${esc(w)}</span>`:""}</button></div>`).join("")}</div></div>`}
@@ -3380,27 +3417,133 @@ function fnIniR(){if(FN.k>=10)return fnPosR();
  fnBindLeft(seq[0],tok,seq);
  fnBindPics(q.w,()=>{fnCapsRev(q.w,L===1?q.syl.length:q.w.match(/^(CH|QU(?=[EIÉÊÍ])|GU(?=[EIÉÊÍ])|[^])/)[0].length);
   fnOk(tok,`${fnPraise()} ${q.w.charAt(0)+q.w.slice(1).toLowerCase()} começa ${L===1?"com a sílaba "+q.syl:"com o som "+fnSn(e,q.w)}.`,abWordSay(q.w))},()=>fnBad("Tente de novo! O(A) MEDIADOR(A) DEVE REPETIR O NOME DAS FIGURAS. 👂"),tok)}
-/* ---- 4. Ditado com letras: oral (sem figura nem escrita) e com figura ---- */
-function fnDitR(){
- const S=FN,q=S.qs[S.i],tok=abTok+1,w=q.w,L=[...w],say=abWordSay(w),oral=!!q.oral,lv=S.k%10;
- const tiles=fnUnhintT(shuffle([...L,...fnDecoys(w,lv===1?2:3)].map((c,i)=>({c,id:i}))),L.length);
- const slots=L.map(()=>null),cols=tiles.length<=6?3:4,rows=Math.ceil(tiles.length/cols),fig=figureMarkup({w,e:q.e,img:FN_IMG[w]||(q.e?null:IMAGENS_NOVAS[w])});
- abShell(Object.assign(fnHead([]),{say,
-  left:fnLeft(`<div class="ab-figwrap fn-dit"><div class="ab-fig" id="fnFig"${oral?' style="font-size:min(20cqh,32cqw)"':""}>${oral?"👂":fig}</div><div class="fn-slots" id="fnSlots" style="--n:${L.length}"></div><button class="round-btn fn-erase" id="fnErase" type="button" aria-label="Apagar a última letra">⌫</button><div class="fn-tip" id="fnExp"></div></div>`),
-  right:`<div class="ab-board"><div class="ab-grid" style="--cols:${cols};--rows:${rows}">${tiles.map(t=>`<button class="ab-tile" type="button" data-id="${t.id}" aria-label="Letra ${t.c}">${t.c}</button>`).join("")}</div></div>`,
-  msg:oral?"🎧 O(a) mediador(a) fala a palavra; monte com as letras.":"✏️ O(a) mediador(a) fala a palavra. Escreva letra por letra.",next:{label:fnNextLbl(),disabled:true},onBack:fnBackFn(),onRestart:fnRound}));
- fnBindLeft(say,tok,["O(a) mediador(a) fala a palavra. Escreva letra por letra. Toque nas letras na ordem certa.",say]);let done=false,busy=false;const bt=[...document.querySelectorAll(".ab-tile")];
- const paint=bad=>{$("#fnSlots").innerHTML=slots.map((s,i)=>`<button type="button" class="fn-slot${s?" fill":""}${bad&&bad[i]?" bad":""}${done?" ok":""}" data-i="${i}" aria-label="Posição ${i+1}">${s?esc(s.c):""}</button>`).join("");
-  document.querySelectorAll(".fn-slot").forEach(b=>b.onclick=()=>{if(done||busy)return;if(slots[+b.dataset.i])rm(+b.dataset.i)});
+/* ---- 4. Escrita e ditado (v2.33): 1 cópia e reconhecimento de sílabas · 2 completar · 3 ditado de sílabas · 4 ditado de palavras · 5 frases curtas ----
+   Um único motor (fnDitR → escEngine) atende todas as etapas; q.st define a etapa: reco | copia | completar | silaba | palavra | frase.
+   Chaves de progresso (fnKeys): 1xx = etapa 1, 2xx = etapa 2, 3xx = etapa 3, 1-14 = etapa 4 (chaves antigas preservadas), 5xx = etapa 5.
+   Registro novo em p.fono.esc (não altera p.fono.n/h): sequência de peças colocadas (inclui apagamentos ⌫), erros por grafema, ajuda 💡 e demonstração,
+   sempre separados do acerto autônomo. Selecionar letras na tela NÃO equivale à avaliação da escrita manuscrita. */
+const ESC_NOTA="Escolher letras na tela mostra como a criança monta a palavra, mas não substitui a avaliação da escrita com lápis e papel, que cabe ao(à) mediador(a).";
+function escGraf(w){const a=[...String(w).toUpperCase()],o=[];for(let i=0;i<a.length;i++){const p=a[i]+(a[i+1]||"");if(/^(CH|LH|NH|RR|SS)$/.test(p)||(/^(QU|GU)$/.test(p)&&/[EIÉÊÍ]/.test(a[i+2]||""))){o.push(p);i++}else o.push(a[i])}return o}
+function escGOf(w,i){let n=0;for(const g of escGraf(w)){n+=g.length;if(i<n)return g}return String(w)[i]||""}
+const ESC_PH=(()=>{const m={};try{FN_CXW.forEach(L=>L.forEach(x=>{m[x.w]=x.ph.join(",")}))}catch(e){}return m})();
+function escRec(k,A,modo){const p=active();if(!p)return;const d=fnData(p);d.esc=d.esc||{k:{},log:[]};const E=d.esc;E.k=E.k||{};E.log=E.log||[];
+ const r=E.k[k]=E.k[k]||{n:0,aut:0,cor:0,ajd:0,dem:0,err:0,ms:0,g:{},gn:{},w:{}};r.g=r.g||{};r.gn=r.gn||{};r.w=r.w||{};
+ r.n++;r[modo]=(r[modo]||0)+1;r.err+=A.er;r.ms+=A.ms;
+ const w=r.w[A.t]=r.w[A.t]||{n:0,aut:0,cor:0,ajd:0,dem:0,err:0};w.n++;w[modo]=(w[modo]||0)+1;w.err+=A.er;
+ if(A.u==="l")escGraf(A.t).forEach(g=>{r.gn[g]=(r.gn[g]||0)+1});
+ A.ge.forEach(x=>{const g=r.g[x.e]=r.g[x.e]||{e:0,x:{}};g.e++;g.x[x.x]=(g.x[x.x]||0)+1});
+ const row={k:+k,t:A.t,m:modo,s:A.seq.join(" "),e:A.er,a:A.aj,ms:A.ms,at:new Date().toISOString()};if(ESC_PH[A.t])row.f=ESC_PH[A.t];if(A.sm)row.sm=1;
+ if(A.sm){E.sm=E.sm||{};const s=E.sm[k]=E.sm[k]||{n:0,aut:0,cor:0,ajd:0,dem:0,err:0,g:{}};s.g=s.g||{};s.n++;s[modo]=(s[modo]||0)+1;s.err+=A.er;A.ge.forEach(x=>{const g=s.g[x.e]=s.g[x.e]||{e:0};g.e++})}
+ E.log.push(row);if(E.log.length>40)E.log.splice(0,E.log.length-40);saveProfiles()}
+const escModo=A=>recMode()==="demo"?"dem":A.aj?"ajd":A.er?"cor":"aut";
+const escNew=t=>({t,u:"l",seq:[],er:0,aj:0,ge:[],t0:Date.now(),ms:0});
+/* bancos: sílabas e palavras vêm do banco de ditado já existente (FN_DIT + FNW), sem lista nova */
+let ESC_SP=null;
+function escSylPool(){if(ESC_SP&&ESC_SP.length)return ESC_SP;const o=[];FN_DIT.forEach(L=>L.forEach(x=>{const s=(FNW[x.w]||{}).s;if(!s)return;s.split("-").forEach(sy=>{const u=sy.toUpperCase();if(u.length<2||!/[BCDFGHJLMNPQRSTVXZÇ]/.test(u)||o.some(z=>z.sy===u))return;o.push({sy:u,w:x.w,cv:/^[BCDFGJLMNPQRSTVXZ][AEIOU]$/.test(u)})})}));return ESC_SP=o}
+function escWordsS(){const o=[];[0,1].forEach(i=>FN_DIT[i].forEach(x=>{const s=(FNW[x.w]||{}).s;if(!s)return;const sy=s.toUpperCase().split("-");if(sy.length>=2&&sy.join("")===x.w&&!o.some(z=>z.w===x.w))o.push({w:x.w,e:x.e,sy})}));return o}
+function escLDec(l,w,n){const sim=(FN_CXF[l]||"").split(" ").filter(x=>x.length===1&&!w.includes(x)),V="AEIOU".includes(l),pool=(V?"AEIOU":"BCDFGLMNPRSTV").split("").filter(x=>x!==l&&!w.includes(x)&&!sim.includes(x));return[...sim,...shuffle(pool)].slice(0,n)}
+function escSDec(sy,ex,n){const P=escSylPool().map(x=>x.sy).filter(x=>x!==sy&&!ex.includes(x)&&x.length===sy.length),sim=P.filter(x=>x[0]===sy[0]||x[x.length-1]===sy[sy.length-1]);return shuffle(sim).concat(shuffle(P.filter(x=>!sim.includes(x)))).slice(0,n)}
+function escSents(n4){const out=[],seen={};((typeof LG_FR!=="undefined"&&LG_FR.fcu)||[]).forEach(g=>(g.s||[]).forEach(s=>{if(seen[s])return;seen[s]=1;const m=s.match(/^([^.?!,;:]+)([.?!])$/);if(!m)return;const ws=m[1].trim().split(/\s+/);if(ws.some(w=>!/^[A-Za-zÀ-ÿ]+$/.test(w)))return;const L=ws.join("").length;if(n4?(ws.length===4&&L<=17):(ws.length>=2&&ws.length<=3))out.push({st:"frase",s,ws,p:m[2],w:s})}));return out}
+function escQs(k){const st=Math.floor(k/100),pk=(a,n)=>shuffle(a.slice()).slice(0,n);
+ if(st===1||st===3){const lvl=(k===103||k===302)?2:1,pool=escSylPool().filter(x=>(lvl===1)===x.cv);return pk(pool,6).map(x=>({w:x.sy,e:"",st:k===101?"reco":st===1?"copia":"silaba",from:x.w}))}
+ if(st===2){const W=pk(escWordsS(),6);return W.map(x=>{if(k===202){const cand=x.sy.map((s,i)=>i).filter(i=>x.sy[i].length>=2),j=pk(cand,1)[0],fx=x.sy.map((_,i)=>i).filter(i=>i!==j);return{w:x.w,e:x.e,st:"completar",md:"s",U:x.sy,fx,dc:escSDec(x.sy[j],x.sy,2)}}
+   const cand=x.sy.map((s,i)=>i).filter(i=>x.sy[i].length===2&&/[BCDFGJLMNPQRSTVXZ]/.test(x.sy[i][0])),j=pk(cand.length?cand:x.sy.map((s,i)=>i),1)[0],off=x.sy.slice(0,j).join("").length+(Math.random()<.7?0:1),U=[...x.w],fx=U.map((_,i)=>i).filter(i=>i!==off);
+   return{w:x.w,e:x.e,st:"completar",md:"l",U,fx,dc:escLDec(U[off],x.w,2)}})}
+ if(st===5)return pk(escSents(k===502),5);
+ return[]}
+function fnDitQs(k){if(k>=100)return escQs(k);const oral=k>10;return shuffle(FN_DIT[k%10-1].slice()).slice(0,6).map(x=>Object.assign({},x,{oral,st:"palavra"}))}
+/* orientações ao mediador de cada etapa (texto; sem áudio automático) */
+function escOri(q){const Y=abHl,st=q.st||"palavra",S=FN,sy=q.w?((FNW[q.w]&&FNW[q.w].s||"").toUpperCase()):"",nota=fnOL("✏️","Atenção:","letras na tela não substituem a escrita com lápis e papel; observe também o traçado.");
+ if(st==="reco")return fnOriBox((escSemMod()?ori3("Sem modelo na tela: fale o som e peça ao aprendente que encontre, entre as opções, a sílaba que combina. A sílaba aparece depois da resposta. Ainda não é escrita.",`Fale o som da sílaba ${Y(q.w)} (o som, não o nome das letras).`):ori3("Mostre a sílaba modelo e peça ao aprendente que encontre, entre as opções, a sílaba igual. É reconhecimento visual: ainda não é escrita.",`Fale o som da sílaba ${Y(q.w)} (o som, não o nome das letras).`))+nota);
+ if(st==="copia")return fnOriBox((escSemCopia()?ori3("Sem modelo na tela: fale a sílaba e peça ao aprendente que monte com as letras, da esquerda para a direita. O modelo aparece depois do acerto.",`Fale o som da sílaba ${Y(q.w)} (o som, não o nome das letras).`):ori3("Peça ao aprendente que olhe o modelo e monte a mesma sílaba, letra por letra, da esquerda para a direita. O modelo fica na tela: é cópia.",`Fale a sílaba ${Y(q.w)} e mostre cada letra do modelo.`))+nota);
+ if(st==="completar")return fnOriBox(ori3(q.md==="s"?"Mostre a figura, fale a palavra e peça ao aprendente que escolha a sílaba que falta. Depois, que leia a palavra completa.":"Mostre a figura, fale a palavra e peça ao aprendente que escolha a letra que falta. Depois, que leia a palavra completa.",`Fale: ${Y(q.w)}${sy?" ("+Y(sy)+")":""}. ${q.md==="s"?"Falta uma sílaba.":"Falta uma letra."}`)+nota);
+ if(st==="silaba")return fnOriBox(ori3("Fale a sílaba (o som, não o nome das letras) e peça ao aprendente que escolha as letras na ordem. Não há modelo na tela: é ditado de sílaba.",`Fale: ${Y(q.w)}.`)+nota);
+ if(st==="frase"){const i=Math.min(S.fw||0,q.ws.length-1),fim=(S.fw||0)>=q.ws.length;return fnOriBox(ori3("Fale a frase inteira e depois só a palavra da vez; o aprendente escreve uma palavra de cada vez e, no fim, escolhe o sinal. A frase começa com letra maiúscula e termina com sinal.",`Fale a frase: ${Y(q.s)} ${fim?"Agora, o sinal que termina a frase.":"Palavra da vez: "+Y(q.ws[i])+"."}`)+nota)}
+ if(q.oral)return fnOriBox(ori3("Pronuncie a palavra-dica por sílabas e peça ao aprendente que selecione as letras na ordem correta para formar a palavra.",`Fale: ${Y(q.w)}.`)+nota);
+ return fnOriBox(ori3("Peça ao aprendente que nomeie a figura apresentada e, em seguida, que selecione as letras na ordem correta para formar seu nome.",`Fale: ${Y(q.w)}.`+(sy?` Se necessário, pronuncie a palavra por sílabas: ${Y(sy)}.`:""))+nota)}
+/* configuração de cada etapa para o motor */
+function escCfg(q){const st=q.st||"palavra",S=FN,w=q.w,k=S.k,rep=st==="silaba"||st==="copia"?"A SÍLABA.":"A PALAVRA.";
+ const c={st,q,t:w,U:[...w],fx:[],lt:true,model:"",fig:"",oral:false,line:"",say:abWordSay(w),rep,badMsg:"Quase! Corrija as letras vermelhas. ✏️",ok:null,msg:""};
+ if(st==="palavra"){const lv=k%10;c.oral=!!q.oral;c.fig=figureMarkup({w,e:q.e,img:FN_IMG[w]||(q.e?null:IMAGENS_NOVAS[w])});c.dc=fnDecoys(w,lv===1?2:3);
+  c.msg=c.oral?"🎧 O(a) mediador(a) fala a palavra; monte com as letras.":"✏️ O(a) mediador(a) fala a palavra. Escreva letra por letra.";
+  c.ok=(A,md,tok)=>{if(c.oral){$("#fnFig").style.fontSize="";$("#fnFig").innerHTML=c.fig}$("#fnExp").textContent=fnExp(w);fnOk(tok,`${fnPraise()} Você escreveu ${w.charAt(0)}${w.slice(1).toLowerCase()}!`,c.say)}}
+ else if(st==="copia"){const sm=escSemCopia();c.dc=fnDecoys(w,w.length>2||k===103?3:2);c.say=w.toLowerCase();
+  if(!sm){c.model=w;c.msg="✂️ Olhe o modelo e copie a sílaba com as letras.";c.ok=(A,md,tok)=>fnOk(tok,`${fnPraise()} Você copiou ${w}!`,c.say)}
+  else{/* sem modelo: o mediador fala o som; o modelo só aparece depois do acerto ou, como demonstração, depois da 2ª tentativa errada */
+   c.sm=true;c.oral=true;c.msg="🎧 O(a) mediador(a) fala a sílaba; monte com as letras.";c.badMsg="Ouça o som de novo e corrija as letras vermelhas. ✏️";
+   const show=()=>{const f=$("#fnFig");if(f){f.className="ab-cap esc-mod";f.removeAttribute("style");f.style.setProperty("--len",Math.max(2,w.length));f.textContent=w}};let at=0;
+   c.onBad=A=>{at++;if(at>=2&&!c.dem){c.dem=true;show();c.badMsg="Veja o modelo: esta é a sílaba "+w+". O(A) MEDIADOR(A) DEVE FALAR O SOM E MOSTRAR. Monte igual. ✏️"}};
+   c.ok=(A,md,tok)=>{show();fnOk(tok,`${fnPraise()} Você escreveu a sílaba ${w}!`,c.say)}}}
+ else if(st==="silaba"){c.oral=true;c.dc=fnDecoys(w,w.length>2||k===302?3:2);c.say=w.toLowerCase();c.msg="🎧 O(a) mediador(a) fala a sílaba; escreva com as letras.";
+  c.ok=(A,md,tok)=>fnOk(tok,`${fnPraise()} Você escreveu a sílaba ${w}!`,c.say)}
+ else if(st==="completar"){c.U=q.U;c.fx=q.fx;c.lt=q.md==="l";c.dc=q.dc;c.fig=figureMarkup({w,e:q.e,img:FN_IMG[w]||(q.e?null:IMAGENS_NOVAS[w])});c.rep="A PALAVRA.";
+  c.badMsg=q.md==="s"?"Quase! Veja a sílaba em vermelho e tente outra. ✏️":"Quase! Veja a letra em vermelho e tente outra. ✏️";
+  c.msg=q.md==="s"?"🧩 Falta uma sílaba. Escolha a que completa a palavra.":"🔤 Falta uma letra. Escolha a que completa a palavra.";
+  c.ok=(A,md,tok)=>{$("#fnExp").textContent=fnExp(w);fnOk(tok,`${fnPraise()} ${w.charAt(0)}${w.slice(1).toLowerCase()} está completa!`,c.say)}}
+ return c}
+function escEngine(c){
+ const S=FN,tok=abTok+1,U=c.U,n=U.length,fx=new Set(c.fx||[]),need=U.filter((_,i)=>!fx.has(i)),syl=!c.lt;
+ const tiles=fnUnhintT(shuffle([...need,...c.dc].map((u,i)=>({c:u,id:i}))),need.length),slots=U.map((u,i)=>fx.has(i)?{c:u,id:-1,fx:true}:null),cols=tiles.length<=6?3:4,rows=Math.ceil(tiles.length/cols);
+ const A=escNew(c.t);A.u=c.lt?"l":"s";if(c.sm)A.sm=1;let done=false,busy=false,hT=0;
+ const fig=c.model?`<div class="ab-cap esc-mod" id="fnFig" style="--len:${Math.max(2,c.model.length)}">${esc(c.model)}</div>`:`<div class="ab-fig" id="fnFig"${c.oral?' style="font-size:min(20cqh,32cqw)"':""}>${c.oral?"👂":c.fig}</div>`;
+ abShell(Object.assign(fnHead([]),{say:c.say,
+  left:fnLeft(`<div class="ab-figwrap fn-dit">${c.line?`<div class="esc-line" id="escLine" style="--len:${Math.max(10,c.line.replace(/<[^>]*>/g,"").length)}">${c.line}</div>`:""}${fig}<div class="fn-slots${syl?" esc-syl":""}" id="fnSlots" style="--n:${n}"></div><button class="round-btn fn-erase" id="fnErase" type="button" aria-label="Apagar a última peça">⌫</button><div class="fn-tip" id="fnExp"></div></div>`),
+  right:`<div class="ab-board esc-bank"><div class="ab-grid" style="--cols:${cols};--rows:${rows}">${tiles.map(t=>`<button class="ab-tile" type="button" data-id="${t.id}" aria-label="${syl?"Sílaba":"Letra"} ${esc(t.c)}">${esc(t.c)}</button>`).join("")}</div></div>`,
+  extra:'<button class="round-btn" id="fnHelp" type="button" aria-label="Ajuda: mostrar a peça certa" title="Ajuda: mostrar a peça certa">💡</button>',
+  msg:c.msg,next:{label:fnNextLbl(),disabled:true},onBack:fnBackFn(),onRestart:fnRound}));
+ const bt=[...document.querySelectorAll(".esc-bank .ab-tile")],T=id=>tiles.find(t=>t.id===id);
+ const paint=bad=>{$("#fnSlots").innerHTML=slots.map((s,i)=>`<button type="button" class="fn-slot${s?" fill":""}${s&&s.fx?" fx":""}${bad&&bad[i]?" bad":""}${done?" ok":""}" data-i="${i}" aria-label="Posição ${i+1}">${s?esc(s.c):""}</button>`).join("");
+  document.querySelectorAll(".fn-slot").forEach(b=>b.onclick=()=>{if(done||busy)return;const i=+b.dataset.i;if(slots[i]&&!slots[i].fx)rm(i)});
   bt.forEach(b=>{const u=slots.some(s=>s&&s.id===+b.dataset.id);b.disabled=u||done;b.classList.toggle("used",u)})};
- const rm=i=>{slots[i]=null;paint()};
- const chk=()=>{if(slots.some(s=>!s))return;const got=slots.map(s=>s.c).join("");
-  if(got===w){done=true;paint();if(oral){$("#fnFig").style.fontSize="";$("#fnFig").innerHTML=fig}$("#fnExp").textContent=fnExp(w);fnOk(tok,`${fnPraise()} Você escreveu ${w.charAt(0)}${w.slice(1).toLowerCase()}!`,say)}
-  else{const bad=slots.map((s,i)=>s.c!==L[i]);busy=true;paint(bad);fnBad("Quase! Corrija as letras vermelhas. ✏️");setTimeout(()=>{if(!abAlive(tok))return;bad.forEach((b,i)=>{if(b)slots[i]=null});busy=false;paint()},1100)}};
- bt.forEach(b=>b.onclick=()=>{if(!abAlive(tok)||done||busy)return;const i=slots.findIndex(s=>!s);if(i<0)return;slots[i]=tiles.find(t=>t.id===+b.dataset.id);paint();chk()});
- $("#fnErase").onclick=e=>{e.stopPropagation();if(done||busy)return;for(let i=slots.length-1;i>=0;i--)if(slots[i]){rm(i);break}};
+ const rm=i=>{A.seq.push("⌫");slots[i]=null;paint()};
+ const chk=()=>{if(slots.some(s=>!s))return;const got=slots.map(s=>s.c),bad=got.map((g,i)=>g!==U[i]);
+  if(!bad.some(Boolean)){done=true;A.ms=Date.now()-A.t0;const md=c.dem?"dem":escModo(A);paint();escRec(S.k,A,md);c.ok(A,md,tok)}
+  else{bad.forEach((b,i)=>{if(b){A.er++;A.ge.push({e:c.lt?escGOf(c.t,i):U[i],x:got[i]})}});busy=true;paint(bad);if(c.onBad)c.onBad(A);fnBad(c.badMsg);setTimeout(()=>{if(!abAlive(tok))return;bad.forEach((b,i)=>{if(b)slots[i]=null});busy=false;paint()},1100)}};
+ bt.forEach(b=>b.onclick=()=>{if(!abAlive(tok)||done||busy)return;const i=slots.findIndex(s=>!s);if(i<0)return;const t=T(+b.dataset.id);slots[i]=t;A.seq.push(t.c);paint();chk()});
+ $("#fnErase").onclick=e=>{e.stopPropagation();if(done||busy)return;for(let i=slots.length-1;i>=0;i--)if(slots[i]&&!slots[i].fx){rm(i);break}};
+ $("#fnHelp").onclick=e=>{e.stopPropagation();if(!abAlive(tok)||done||busy)return;const i=slots.findIndex(s=>!s);if(i<0)return;const b=bt.find(x=>!x.disabled&&T(+x.dataset.id).c===U[i]);if(!b)return;A.aj++;S.re=Math.max(S.re,1);
+  bt.forEach(x=>x.classList.remove("hint"));b.classList.add("hint");clearTimeout(hT);hT=setTimeout(()=>b.classList.remove("hint"),3500);abMsg("💡 Ajuda: a peça certa está brilhando. O(A) MEDIADOR(A) DEVE REPETIR "+c.rep)};
  paint();
- if(CFG.skip)setTimeout(()=>{if(!abAlive(tok)||done)return;L.forEach((c,i)=>{slots[i]=tiles.find(x=>x.c===c&&!slots.some(s=>s&&s.id===x.id))});paint();asAuto(chk)},900)}
+ if(CFG.skip)setTimeout(()=>{if(!abAlive(tok)||done)return;U.forEach((u,i)=>{if(!slots[i])slots[i]=tiles.find(x=>x.c===u&&!slots.some(s=>s&&s.id===x.id))});paint();asAuto(chk)},900)}
+function fnDitR(){const S=FN,q=S.qs[S.i];
+ if(q.st==="reco")return escRecoR(q);
+ if(q.st==="frase")return escFraseR(q);
+ escEngine(escCfg(q))}
+/* etapa 1 (reconhecer): escolher a sílaba igual ao modelo; só reconhecimento, não é escrita */
+/* opção por participante (⚙️): etapa 1 sem modelo na tela; padrão = com modelo */
+const escSemCopia=()=>{const p=active();return !!(p&&p.cfg&&p.cfg.copiaSemModelo===true)};
+const escSemMod=()=>{const p=active();return !!(p&&p.cfg&&p.cfg.recoSemModelo===true)};
+function escRecoR(q){const S=FN,tok=abTok+1,sy=q.w,sm=escSemMod(),pool=escSylPool().filter(x=>x.cv&&x.sy!==sy),sim=pool.filter(x=>x.sy[0]===sy[0]||x.sy[1]===sy[1]),
+  ds=shuffle((sim.length>=2?sim:pool).slice()).slice(0,2).map(x=>x.sy),opts=shuffle([sy,...ds]),A=escNew(sy);A.u="s";let solved=false,demo=false;if(sm)A.sm=1;
+ abShell(Object.assign(fnHead([]),{say:sy.toLowerCase(),
+  left:fnLeft(`<div class="ab-figwrap fn-dit"><div class="ab-cap esc-mod${sm?" esc-hid":""}" id="fnFig" style="--len:${Math.max(2,sy.length)}"${sm?' aria-label="Modelo escondido: aparece depois da resposta"':""}>${sm?"👂":esc(sy)}</div></div>`),
+  right:`<div class="ab-board"><div class="ab-opts esc-reco" style="--n:${opts.length}">${opts.map(o=>`<button class="ab-opt" type="button" data-s="${esc(o)}" aria-label="Sílaba ${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`,
+  msg:sm?"👂 Ouça o som e toque na sílaba que combina.":"🔍 Olhe o modelo e toque na sílaba igual.",next:{label:fnNextLbl(),disabled:true},onBack:fnBackFn(),onRestart:fnRound}));
+ const showModel=()=>{const f=document.getElementById("fnFig");if(f){f.textContent=sy;f.classList.remove("esc-hid");f.removeAttribute("aria-label")}};
+ const bs=[...document.querySelectorAll(".esc-reco .ab-opt")];
+ bs.forEach(b=>b.onclick=()=>{if(!abAlive(tok)||solved||b.disabled)return;const o=b.dataset.s;A.seq.push(o);
+  if(o===sy){solved=true;A.ms=Date.now()-A.t0;b.classList.add("right");bs.forEach(x=>{if(x!==b){if(!x.classList.contains("wrong"))x.classList.add("dim");x.disabled=true}});if(sm)showModel();escRec(S.k,A,demo?"dem":escModo(A));fnOk(tok,`${fnPraise()} Esta é a sílaba ${sy}.`,sy.toLowerCase())}
+  else{A.er++;A.ge.push({e:sy,x:o});b.disabled=true;b.classList.add("wrong");
+   if(sm&&A.er>=2&&!demo){demo=true;showModel();fnBad("Veja o modelo: esta é a sílaba "+sy+". O(A) MEDIADOR(A) DEVE FALAR O SOM E MOSTRAR. Agora toque na sílaba igual. 🔍")}
+   else fnBad(sm?"Ouça o som de novo e tente outra sílaba. 👂":"Olhe bem o modelo e tente outra sílaba. 🔍")}});
+ if(CFG.skip)setTimeout(()=>{if(abAlive(tok)&&!solved){const r=bs.find(x=>x.dataset.s===sy);if(r)asAuto(()=>r.click())}},900)}
+/* etapa 5 (frases curtas): uma palavra de cada vez, com as letras; no fim, o sinal que termina a frase */
+function escFraseR(q){const S=FN,i=S.fw||0;if(i>=q.ws.length)return escPunctR(q);
+ const w=q.ws[i].toUpperCase(),prev=q.ws.slice(0,i).join(" "),line=esc(prev)+(prev?" ":"")+`<span class="esc-gap">${"_".repeat(Math.max(2,w.length))}</span>`;
+ const c={st:"frase",q,t:w,U:[...w],fx:[],lt:true,model:"",fig:"",oral:true,line,say:q.s,rep:"A PALAVRA.",badMsg:"Quase! Corrija as letras vermelhas. ✏️",dc:fnDecoys(w,2),
+  msg:`✍️ Escreva a palavra ${i+1} de ${q.ws.length} da frase.`,
+  ok:(A,md,tok)=>{abMsg(`${fnPraise()} ${q.ws[i]}! `+(i+1<q.ws.length?"Agora a próxima palavra.":"Agora o sinal que termina a frase."));setTimeout(()=>{if(!abAlive(tok))return;S.fw=i+1;escFraseR(q)},1100)}};
+ escEngine(c)}
+function escPunctR(q){const S=FN,tok=abTok+1,exp=q.p,A=escNew(exp),NM={".":"ponto final",["?"]:"ponto de interrogação","!":"ponto de exclamação"};A.u="p";let solved=false;
+ abShell(Object.assign(fnHead([]),{say:q.s,
+  left:fnLeft(`<div class="ab-figwrap fn-dit"><div class="esc-line esc-big" id="escLine" style="--len:${Math.max(10,q.s.length)}">${esc(q.ws.join(" "))}<span class="esc-gap" id="escPt">&nbsp;&nbsp;</span></div><div class="fn-tip" id="fnExp"></div></div>`),
+  right:`<div class="ab-board"><div class="ab-opts esc-reco" style="--n:3">${[".","?","!"].map(o=>`<button class="ab-opt esc-pt" type="button" data-s="${o}" aria-label="${NM[o]}">${o}</button>`).join("")}</div></div>`,
+  msg:"✍️ Qual sinal termina a frase? Ponto (.), interrogação (?) ou exclamação (!).",next:{label:fnNextLbl(),disabled:true},onBack:fnBackFn(),onRestart:fnRound}));
+ const bs=[...document.querySelectorAll(".esc-reco .ab-opt")];
+ bs.forEach(b=>b.onclick=()=>{if(!abAlive(tok)||solved||b.disabled)return;const o=b.dataset.s;A.seq.push(o);
+  if(o===exp){solved=true;A.ms=Date.now()-A.t0;b.classList.add("right");bs.forEach(x=>{if(x!==b){if(!x.classList.contains("wrong"))x.classList.add("dim");x.disabled=true}});$("#escPt").textContent=exp;$("#escPt").classList.add("ok");escRec(S.k,A,escModo(A));fnOk(tok,`${fnPraise()} A frase termina com ${NM[exp]}. Agora leia a frase inteira.`,q.s)}
+  else{A.er++;A.ge.push({e:exp,x:o});b.disabled=true;b.classList.add("wrong");fnBad("Quase! Pense: a frase conta, pergunta ou exclama? Tente outro sinal.")}});
+ if(CFG.skip)setTimeout(()=>{if(abAlive(tok)&&!solved){const r=bs.find(x=>x.dataset.s===exp);if(r)asAuto(()=>r.click())}},900)}
 /* ---- 5. Junte os Sons: síntese fonêmica ---- */
 function fnJunR(){
  const S=FN,q=S.qs[S.i],tok=abTok+1,opts=shuffle(q.o.slice()),sym=q.ph.map(x=>"/"+fnPhS(x)+"/").join(" ");
@@ -3447,15 +3590,13 @@ function fnOri(opts){
   if(Lv===1)return fnOriBox(ori3(`Selecione a figura cujo nome começa com a seguinte sílaba: ${Y(q.syl)}`,`FALE: ${Y(q.syl)}${fg}.`));
   if(Lv===2)return fnOriBox(ori3(`Selecione a figura cujo nome começa com o seguinte som: ${Y(fnSnd(e,q.w))}`,`FALE: o som ${Y(fnSnd(e,q.w))} (não o nome da letra)${fg}.`));
   return fnOriBox(ori3("Procure a figura cujo nome começa com o som dessa letra.",`FALE: o som ${Y(fnSnd(e,q.w))} (não o nome da letra)${fg}.`))}
- if(et==="ditado"){
-  if(q.oral)return fnOriBox(ori3("Pronuncie a palavra-dica por sílabas e peça ao aprendente que selecione as letras na ordem correta para formar a palavra.",`Fale: ${Y(q.w)}.`));
-  return fnOriBox(ori3("Peça ao aprendente que nomeie a figura apresentada e, em seguida, que selecione as letras na ordem correta para formar seu nome.",`Fale: ${Y(q.w)}.`+(sy?` Se necessário, pronuncie a palavra por sílabas: ${Y(sy)}.`:"")))}
+ if(et==="ditado")return escOri(q);
  if(et==="igual")return fnIgOri(q);
  if(et==="troca")return fnTrOri(q,list);
  if(et==="caixas")return fnCxOri(q);
  const pn=q.ph.map(x=>{const s=FN_CXD[x]||fnPhL(x),mm=/^(\S+)(.*)$/.exec(s);return Y("/"+mm[1]+"/")+mm[2]});
  return fnOriBox(ori3("Pronuncie os sons das letras da palavra-dica e, em seguida, fale os nomes das figuras. Peça ao aprendente que selecione a figura cujo nome contém esses sons.",`Fale os sons (não os nomes das letras): ${pn.join(" – ")}.${q.ph.some(x=>x==="ɔ"||x==="ɛ")&&!/[ÓÉÔÊ]/.test(q.w)?" (/ó/ e /é/ são sons abertos; a palavra não tem acento.)":""} Fale os nomes das figuras${list?" "+list:""}.`)+fnRevNota(q.w,q.ph,q.g))}
-function fnStageOri(et){const N={rimas:"Rimas: o som final da palavra, a partir da vogal mais forte. É consciência de rima (parte da sílaba), ainda não de fonema",silabas:"Consciência SILÁBICA: a sílaba é o pedaço que se bate com palmas e tem sempre uma vogal. Os fonemas (sons menores) vêm nas atividades seguintes",inicial:"Consciência FONÊMICA: os níveis 1 e 2 são orais (o(a) mediador(a) fala a sílaba ou o som); o nível 3 associa o som à letra e rende mais depois de Sons das letras; os níveis 4 e 5 (som final e som do meio) são orais e vêm depois do som inicial",igual:"Atividade oral e auditiva: a criança só ouve e decide se os sons são iguais ou diferentes, sem ver as figuras antes de responder. Comece pelo começo (nível 1) e pelo fim (nível 2); o nível 3 usa palavras quase iguais, em que muda um só som",troca:"Manipulação de fonemas (a mais difícil): faça depois de Junte os Sons e de Caixas de Som. É oral: o(a) mediador(a) fala a instrução e a criança escolhe a nova palavra, sem ler",juntar:"Atividade oral: a criança escolhe a figura, sem precisar ler. Pode ser feita antes do Alfabeto",caixas:"Exige conhecer as letras: faça depois de Sons das letras e das Sílabas Simples. O nível 3 (dígrafos e casos especiais) só depois das Sílabas Complexas",ditado:"Última atividade deste bloco: a criança escreve a palavra inteira. Faça depois do Alfabeto, das Sílabas e Palavras simples e das Caixas de Som. Os níveis com dígrafos, acentos e til só depois de estudados nas Sílabas Complexas"},ex=N[et]?". "+N[et]:"";return fnOriBox(`<div class="ori-l">👩‍🏫 <b>Orientação:</b> Escolha uma das opções para iniciar${ex}</div>`)}
+function fnStageOri(et){const N={rimas:"Rimas: o som final da palavra, a partir da vogal mais forte. É consciência de rima (parte da sílaba), ainda não de fonema",silabas:"Consciência SILÁBICA: a sílaba é o pedaço que se bate com palmas e tem sempre uma vogal. Os fonemas (sons menores) vêm nas atividades seguintes",inicial:"Consciência FONÊMICA: os níveis 1 e 2 são orais (o(a) mediador(a) fala a sílaba ou o som); o nível 3 associa o som à letra e rende mais depois de Sons das letras; os níveis 4 e 5 (som final e som do meio) são orais e vêm depois do som inicial",igual:"Atividade oral e auditiva: a criança só ouve e decide se os sons são iguais ou diferentes, sem ver as figuras antes de responder. Comece pelo começo (nível 1) e pelo fim (nível 2); o nível 3 usa palavras quase iguais, em que muda um só som",troca:"Manipulação de fonemas (a mais difícil): faça depois de Junte os Sons e de Caixas de Som. É oral: o(a) mediador(a) fala a instrução e a criança escolhe a nova palavra, sem ler",juntar:"Atividade oral: a criança escolhe a figura, sem precisar ler. Pode ser feita antes do Alfabeto",caixas:"Exige conhecer as letras: faça depois de Sons das letras e das Sílabas Simples. O nível 3 (dígrafos e casos especiais) só depois das Sílabas Complexas",ditado:"Última atividade deste bloco, em 5 etapas: ① cópia e reconhecimento de sílabas, ② completar sílabas e palavras, ③ ditado de sílabas, ④ ditado de palavras e ⑤ escrita de frases curtas. Faça depois do Alfabeto, das Sílabas e Palavras simples e das Caixas de Som. Os níveis com dígrafos, acentos e til só depois de estudados nas Sílabas Complexas. O app registra a montagem com letras na tela; a escrita com lápis e papel deve ser observada pelo(a) mediador(a)"},ex=N[et]?". "+N[et]:"";return fnOriBox(`<div class="ori-l">👩‍🏫 <b>Orientação:</b> Escolha uma das opções para iniciar${ex}</div>`)}
 function fnFinOri(){return fnOriBox(`<div class="ori-l">👩‍🏫 <b>Orientações:</b> Se houve muitos erros nas respostas do aprendente, repita a atividade (as que foram erradas no mesmo bloco) antes de avançar.</div>`)}
 
 /* ===== Consciência fonológica v4 (v2.22): consciência SILÁBICA × FONÊMICA, som final e do meio, iguais/diferentes, troca de sons =====
@@ -5079,7 +5220,7 @@ function pwMigra(p,d){const sum=(a,b)=>{for(const k in b)if(typeof b[k]==="numbe
 function D(p){const d=p.pw=p.pw||{};d.w=d.w||{};d.q=d.q||{};pwMigra(p,d);return d}
 function isDone(p,w){const s=D(p).w[w.w];if(s&&s.n>0)return true;const c=(p.done||{});return !w.p&&((c.simples_montar||[]).includes(w.w)||(c.complexas_montar||[]).includes(w.w))}
 const doneN=(p,l)=>inLv(l).filter(w=>isDone(p,w)).length;
-function rec(w,o){const p=active();if(!p)return;const s=D(p).w[w]=D(p).w[w]||{att:0,ok:0,err:0,help:0,n:0};for(const k in o)s[k]=(s[k]||0)+o[k];saveProfiles()}
+function rec(w,o){const p=active();if(!p)return;const s=D(p).w[w]=D(p).w[w]||{att:0,ok:0,err:0,help:0,n:0};for(const k in o)s[k]=(s[k]||0)+o[k];saveProfiles();if(window.medPwRec)try{window.medPwRec(w,o)}catch(e){}}
 function recQ(k,o){const p=active();if(!p)return;const s=D(p).q[k]=D(p).q[k]||{att:0,ok:0,err:0,help:0,n:0};for(const k2 in o)s[k2]=(s[k2]||0)+o[k2];saveProfiles()}
 /* ---- áudio: gravação do educador (IndexedDB) > voz do aparelho com grafia fonética ---- */
 const REC=new Map();let tok=0,voice=null,idb=null;
@@ -5134,7 +5275,7 @@ function trail(g){say([]);grp=g||grp;const p=active();if(!p){renderClassDashboar
  document.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>b.dataset.act==="rr"?lesson():startQ(b.dataset.act))}
 /* ---- palavra: etapa 1 ditado, etapa 2 leitura ---- */
 let ST=null;
-function startLv(l){const p=active(),list=inLv(l);let i=list.findIndex(x=>!isDone(p,x));if(i<0)i=0;ST={lv:l,list,i};word1()}
+function startLv(l){const p=active(),list=inLv(l);let i=list.findIndex(x=>!isDone(p,x));if(i<0)i=0;ST={lv:l,list,i};if(window.medPwMix)try{window.medPwMix(ST,{bank,isDone,D})}catch(e){}word1()}
 function distract(x){const pool=bank().filter(y=>y.lv<=x.lv&&!y.p===!x.p).flatMap(y=>y.s),need=new Set(x.s);
  const sim=distinct(pool).filter(s=>!need.has(s)&&x.s.some(t=>t[0]===s[0]||t.slice(-1)===s.slice(-1)));
  return shuf(sim.length>=2?sim:distinct(pool).filter(s=>!need.has(s))).slice(0,2)}
@@ -5273,6 +5414,229 @@ new MutationObserver(function(rs){for(var i=0;i<rs.length;i++){if(touches(rs[i])
 var orig=window.pwRefresh;
 window.pwRefresh=function(){var r=typeof orig==="function"?orig.apply(this,arguments):undefined;applyMode();sync();return r};
 applyMode();sync();
+})();
+</script>
+<style id="mediacao-ajuda-css">
+#medAjuda.med-ajuda{position:fixed!important;left:50%;transform:translateX(-50%);bottom:72px;z-index:60;width:min(98vw,800px);max-height:46vh;overflow:auto;box-sizing:border-box;margin:0!important;padding:.3em .6em;border-radius:14px;border:2px solid #cfd4e6!important;text-align:left;line-height:1.22;box-shadow:0 4px 14px rgba(31,42,90,.2);font-size:clamp(.7rem,2.05vh,.9rem)!important}
+#medAjuda .ma-h{display:flex;align-items:center;gap:.4em;flex-wrap:wrap}
+#medAjuda .ma-s{flex:1 1 260px;min-width:0}
+#medAjuda .ma-c{white-space:normal}
+#medAjuda .ma-c.ma-now{background:#e9e4ff;border-radius:6px;padding:0 .2em;outline:1px solid #a88be8}
+#medAjuda .ma-n{font-size:.9em;opacity:.8}
+#medAjuda button{filter:none;cursor:pointer;font-family:inherit}
+#medAjuda .ma-t,#medAjuda .ma-x{flex:0 0 auto;min-width:44px;min-height:44px;border:0;background:transparent;font-size:1.15em;color:#5b3fb8}
+#medAjuda .ma-r{display:inline-flex;gap:.35em;flex:0 0 auto}
+#medAjuda .ma-r button{min-height:44px;padding:.15em .7em;border-radius:12px;border:2px solid #a88be8;background:#fff;color:#2b3358;font-weight:800;font-size:1em}
+#medAjuda .ma-r button[aria-pressed="true"]{background:#5b3fb8;border-color:#5b3fb8;color:#fff}
+#medAjuda ol{list-style:none;margin:.2em 0 0;padding:0}
+#medAjuda li{margin:.14em 0;padding:.08em .3em;border-radius:8px}
+#medAjuda li.ma-dim{opacity:.62}
+#medAjuda li.ma-now{background:#e9e4ff;outline:1px solid #a88be8}
+@media(orientation:landscape) and (max-height:520px){#medAjuda.med-ajuda{bottom:56px;max-height:50vh;width:min(94vw,800px);padding:.15em .5em;font-size:clamp(.6rem,2.5vh,.78rem)!important}#medAjuda .ma-r button,#medAjuda .ma-t,#medAjuda .ma-x{min-height:40px}#medAjuda.med-ajuda.ma-open{width:min(92vw,560px);max-height:92vh;font-size:clamp(.62rem,2.6vh,.8rem)!important}}
+#medAjuda.med-ajuda.ma-open{top:50%!important;bottom:auto!important;transform:translate(-50%,-50%);width:min(94vw,560px);max-height:88vh;padding:.5em .8em;font-size:clamp(.78rem,2.4vh,1rem)!important}
+#medAjudaBd{position:fixed;inset:0;z-index:59;background:rgba(31,42,90,.38)}
+#medAjuda .ma-back{text-align:center;margin-top:.3em}
+#medAjuda .ma-back .ma-t{min-width:0;padding:.2em 1.2em;border:2px solid #a88be8;border-radius:12px;background:#fff;font-size:1em;font-weight:800}
+@media print{#medAjuda.med-ajuda,#medAjudaBd{display:none!important}}
+</style>
+<script id="mediacao-ajuda">
+/* Mediação e revisão cumulativa.
+   1) Ao errar, mostra ao(à) mediador(a) passos curtos (reapresentar → demonstrar se preciso → repetir/observar → nova chance → registrar) e guarda o nível de apoio (independente, com pista, após demonstração).
+   2) Usa esse registro (p.apoio, somente acréscimo) para intercalar, com baixa frequência, itens já vistos que deram dificuldade nas atividades de Consciência fonológica e do Alfabeto.
+   Não grava áudio, não pontua e não bloqueia a criança. */
+(function(){
+"use strict";
+if(window.__medAjuda)return;window.__medAjuda=1;
+var CAP=500,LOGN=40,GAP=[0,1,2,3],STREAK_END=4;
+var ctx="",cur=null,lastTap=0,card=null,hideT=0,flushT=0,ev=[];
+function P(){try{return typeof active==="function"?active():null}catch(e){return null}}
+function E(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function store(p,create){if(!p)return null;if(!p.apoio){if(!create)return null;p.apoio={v:1,n:0,m:{},l:[]}}var a=p.apoio;a.m=a.m||{};a.l=a.l||[];a.n=a.n||0;return a}
+function save(){try{if(typeof saveProfiles==="function")saveProfiles()}catch(e){}}
+function norm(k){return String(k==null?"":k).trim().toUpperCase().replace(/\s+/g," ").replace(/[.\/\\\[\]*`~]/g,"_")}
+function keyOfQ(q){if(q==null)return"";if(typeof q==="string")return norm(q);
+ var k=q.w||q.t||q.from||(q.a&&q.b?q.a+"/"+q.b:"")||(q.e&&q.e.g)||q.c||"";return norm(k)}
+/* ---------- contexto: qual item está na tela ---------- */
+var flq=0;
+function curItem(){
+ var abFb=document.getElementById("abFb");
+ try{
+  if(abFb){
+   if(ctx==="fn"&&typeof FN!=="undefined"&&FN&&FN.qs){var q=FN.qs[FN.i]||{};return{k:"fn:"+FN.et,key:keyOfQ(q),eng:"fn",lbl:FN.et,ans:FN.et==="rimas"&&q.a?norm(q.a)+" (rima com "+norm(q.t)+")":FN.et==="troca"&&q.to?norm(q.to):FN.et==="igual"?(q.same?"IGUAIS":"DIFERENTES"):""}}
+   if(ctx==="ab"&&typeof AB!=="undefined"&&AB&&AB.queue){var w=AB.queue[AB.i];return{k:"ab:"+AB.game,key:keyOfQ(w),eng:"ab",lbl:AB.game}}
+   if(ctx==="sg"&&typeof SG!=="undefined"&&SG&&SG.queue){return{k:"sg:"+SG.kind,key:keyOfQ(SG.queue[SG.i]),eng:"sg",lbl:SG.kind}}
+   if(ctx==="fl"&&typeof FL!=="undefined"&&FL&&FL.text){return{k:"fl:texto",key:norm(FL.text.id)+"#"+(flq+1),eng:"fl",lbl:"texto",noans:1}}
+   return{k:"?",key:"",eng:"?",lbl:""}
+  }
+ }catch(e){}
+ var hl=document.querySelector(".pw-ori:not(.med-ajuda) .pw-hl"),key=hl?norm(hl.textContent).replace(/[-\s]/g,""):"";
+ return{k:"pw",key:key,eng:"pw",lbl:""}}
+var KT={"fn:rimas":{n:"a palavra que rima",o:"as palavras, destacando o finalzinho (a rima)"},"fn:silabas":{n:"as sílabas",o:"a palavra batendo palmas a cada sílaba"},"fn:inicial":{n:"o primeiro som",o:"a palavra, prolongando o primeiro som"},"fn:ditado":{n:"a palavra",o:"a palavra devagar, som por som"},"fn:caixas":{n:"os sons",o:"a palavra devagar, um som de cada vez"},"fn:igual":{n:"o que é igual ou diferente",o:"as duas palavras, devagar, uma de cada vez"},"fn:troca":{n:"o som que mudou",o:"a palavra e o som que muda"},"fn:juntar":{n:"a palavra formada",o:"os sons, um a um, e depois junte"},"ab:inicial":{n:"o primeiro som",o:"a palavra, destacando o primeiro som"},"ab:caca":{n:"a letra",o:"o nome ou o som da letra"},"fl:texto":{n:"a resposta",o:"o trecho do texto, relendo juntos"}};
+function kindTxt(it,msg,el){
+ var m=String(msg||"").toUpperCase();
+ if(KT[it.k]){var z=KT[it.k];return{n:z.n,o:z.o,t:it.lbl}}
+ if(el&&el.closest&&el.closest(".slot2")||/ORDEM/.test(m))return{n:"a ordem das sílabas",o:"a palavra inteira, devagar",t:"ordem"};
+ if(/S[ÍI]LABA/.test(m))return{n:"a sílaba",o:"a sílaba, em voz alta",t:"sílaba"};
+ if(/SOM/.test(m))return{n:"o som",o:"o som (não o nome da letra)",t:"som"};
+ if(/LETRA/.test(m)||it.eng==="sg"||it.lbl==="caca")return{n:"a letra",o:"o nome ou o som da letra",t:"letra"};
+ if(/PERGUNTA|LEIA/.test(m)||el&&el.closest&&el.closest(".fl-q,[data-q]"))return{n:"a pergunta",o:"o trecho do texto, relendo juntos",t:"texto"};
+ return{n:"a palavra",o:"a palavra, devagar, por sílabas",t:"palavra"}}
+/* ---------- cartão do mediador ---------- */
+function anchor(){var b=document.querySelector(".bottom")||(document.getElementById("abFb")&&document.getElementById("abFb").parentElement);return b}
+function place(){if(!card)return;var b=anchor(),r=b&&b.getBoundingClientRect?b.getBoundingClientRect():null;
+ var bt=r&&r.height>0?Math.max(8,window.innerHeight-r.top+6):72;card.style.bottom=Math.min(bt,window.innerHeight*.5)+"px"}
+function bd(on){var b=document.getElementById("medAjudaBd");if(on&&!b){b=document.createElement("div");b.id="medAjudaBd";b.setAttribute("aria-hidden","true");document.body.appendChild(b)}else if(!on&&b&&b.parentNode)b.parentNode.removeChild(b)}
+function closeCard(){clearTimeout(hideT);if(card&&card.parentNode)card.parentNode.removeChild(card);card=null;bd(false)}
+function showCard(it,msg,el){
+ var kt=kindTxt(it,msg,el),n=cur.e,demoNow=n>=2||cur.lvl==="d",open=!!cur.open;
+ var an=it.noans?"":(it.ans||it.key),hlTxt=an?" <b class=\"pw-hl\">"+E(an)+"</b>":"";
+ var rg="<span class=\"ma-r\"><button type=\"button\" data-lv=\"p\" aria-pressed=\""+(cur.lvl==="p"?"true":"false")+"\">💡 Pista</button><button type=\"button\" data-lv=\"d\" aria-pressed=\""+(cur.lvl==="d"?"true":"false")+"\">👩‍🏫 Demonstrei</button></span>";
+ var tg="<button type=\"button\" class=\"ma-t\" aria-expanded=\""+(open?"true":"false")+"\" aria-label=\"Ver os passos\">"+(open?"▴":"▾")+"</button><button type=\"button\" class=\"ma-x\" aria-label=\"Fechar\">✕</button>";
+ var html;
+ if(!open){
+  html="<div class=\"ma-h\"><span class=\"ma-s\">🧭 <b>Mediador:</b> <span class=\"ma-c\">1 Mostre de novo</span> · <span class=\"ma-c"+(demoNow?" ma-now":"")+"\">2 "+(demoNow?"Demonstre agora"+hlTxt:"Demonstre se precisar")+"</span> · <span class=\"ma-c\">3 Peça que repita</span> · <span class=\"ma-c\">4 Nova chance</span></span>"+rg+tg+"</div>"
+ }else{
+  html="<div class=\"ma-h\"><span class=\"ma-s\">🧭 <b>Passos do mediador</b> <span class=\"ma-n\">"+(n===1?"(1 erro neste item)":"("+n+" erros neste item)")+"</span></span>"+tg+"</div><ol>"+
+  "<li>1️⃣ <b>Mostre de novo:</b> fale "+kt.o+", apontando para o que a criança vê.</li>"+
+  "<li class=\""+(demoNow?"ma-now":"ma-dim")+"\">2️⃣ <b>Demonstre"+(demoNow?"":" (se precisar)")+":</b> "+(it.noans?"releia o trecho e mostre onde está a resposta":"mostre "+(demoNow?"a resposta":"a resposta certa")+hlTxt+" e diga como você sabe")+".</li>"+
+  "<li>3️⃣ <b>Peça que repita ou observe:</b> a criança fala "+kt.n+" ou aponta olhando.</li>"+
+  "<li>4️⃣ <b>Nova chance:</b> ela responde de novo, sem pressa.</li>"+
+  "<li>5️⃣ <b>Registre o apoio:</b> "+rg+"</li></ol><div class=\"ma-back\"><button type=\"button\" class=\"ma-t\" aria-label=\"Voltar ao jogo\">Voltar ao jogo</button></div>"}
+ if(!card){card=document.createElement("div");card.id="medAjuda";card.className="pw-inst pw-ori med-ajuda";card.setAttribute("role","status");card.setAttribute("aria-live","polite");document.body.appendChild(card)}
+ card.innerHTML=html;card.classList.toggle("ma-open",open);bd(open);place()}
+document.addEventListener("click",function(e){if(e.target&&e.target.id==="medAjudaBd"){e.preventDefault();e.stopPropagation();if(cur){cur.open=false;showCard(cur.it,"",null)}else closeCard();return}
+ var t=e.target&&e.target.closest?e.target.closest("#medAjuda button"):null;if(!t)return;
+ e.preventDefault();e.stopPropagation();
+ if(t.classList.contains("ma-x")){closeCard();return}
+ if(t.classList.contains("ma-t")){if(cur){cur.open=!cur.open;showCard(cur.it,"",null)}return}
+ var lv=t.getAttribute("data-lv");if(!cur||!lv)return;
+ if(lv==="d")cur.lvl="d";else if(cur.lvl!=="d")cur.lvl="p";
+ showCard(cur.it,"",null)},true);
+/* ---------- registro ---------- */
+function commit(it,lvl,errs){
+ var p=P();if(!p||!it.key)return;var a=store(p,true),id=it.k+"|"+it.key,r=a.m[id]||(a.m[id]={e:0,p:0,d:0,a:0,s:0,n0:a.n,t:0});
+ r.e+=errs;r.t=Date.now();r.n0=a.n;
+ if(lvl==="d"){r.d++;r.s=0}else if(lvl==="p"){r.p++;r.s=0}else if(errs>0){r.a++;r.s=0}else{r.a++;r.s++}
+ a.l.push([new Date().toISOString(),it.k,it.key,lvl,errs]);if(a.l.length>LOGN)a.l=a.l.slice(-LOGN);
+ var ks=Object.keys(a.m);if(ks.length>CAP){ks.sort(function(x,y){return a.m[x].t-a.m[y].t});for(var i=0;i<ks.length-CAP;i++)delete a.m[ks[i]]}
+ save()}
+function skipRec(){try{if(typeof CFG!=="undefined"&&CFG&&CFG.skip)return true}catch(e){}try{if(typeof runModo==="function"&&runModo()==="demonstrativo")return true}catch(e){}return false}
+function onWrong(el){
+ var it=curItem(),msg="";if(it.k==="?")return;var f=document.getElementById("abFb")||document.getElementById("feedback");if(f)msg=f.textContent;
+ var id=it.k+"|"+it.key;
+ if(!cur||cur.id!==id)cur={id:id,it:it,e:0,lvl:null};
+ cur.e++;showCard(it,msg,el)}
+var lastC={id:"",t:0};
+function onRight(kw){
+ var it=curItem();if(it.k==="?")return;if(kw){it.k="pw";it.key=norm(kw)}var id=it.k+"|"+it.key;if(lastC.id===id&&Date.now()-lastC.t<2000)return;lastC={id:id,t:Date.now()};var c=(cur&&cur.id===id)?cur:{e:0,lvl:null};
+ commit(it,c.lvl||"a",c.e);cur=null;
+ if(card){clearTimeout(hideT);hideT=setTimeout(closeCard,2200)}}
+function flush(){flushT=0;var es=ev;ev=[];if(!es.length)return;
+ if(Date.now()-lastTap>2500||skipRec())return;
+ var w=null,r=false;for(var i=0;i<es.length;i++){if(es[i].k==="wrong"&&!w)w=es[i].el;if(es[i].k==="right")r=true}
+ if(r)onRight();else if(w)onWrong(w)}
+["pointerdown","click","keydown","touchstart"].forEach(function(n){document.addEventListener(n,function(){lastTap=Date.now()},true)});
+new MutationObserver(function(rs){
+ var any=false;
+ for(var i=0;i<rs.length;i++){var r=rs[i],t=r.target;if(!t||!t.classList||t.id==="medAjuda"||(t.closest&&t.closest("#medAjuda")))continue;
+  var old=r.oldValue||"",was=" "+old+" ";
+  if(t.classList.contains("wrong")&&was.indexOf(" wrong ")<0){ev.push({k:"wrong",el:t});any=true}
+  else if(t.classList.contains("right")&&was.indexOf(" right ")<0&&(t.classList.contains("ab-opt")||t.classList.contains("slot2")||t.tagName==="BUTTON")){ev.push({k:"right",el:t});any=true}}
+ if(any&&!flushT)flushT=setTimeout(flush,40);
+ if(card&&!document.getElementById("abFb")&&!document.getElementById("feedback"))closeCard()
+}).observe(document.body,{attributes:true,attributeFilter:["class"],attributeOldValue:true,subtree:true,childList:false});
+window.addEventListener("resize",place);
+/* ---------- contexto das engines ---------- */
+function syncCard(){if(cur){var it=curItem();if(it.k+"|"+it.key!==cur.id){cur=null;closeCard()}}}
+function wrapCtx(name,c,fn){var o=window[name];if(typeof o!=="function"||o.__med)return;var f=function(){ctx=c;if(fn)fn.apply(null,arguments);var r=o.apply(this,arguments);syncCard();return r};f.__med=1;window[name]=f}
+wrapCtx("abCacaRound","ab");wrapCtx("abInicialRound","ab");wrapCtx("sgRound","sg");
+wrapCtx("flRender","fl");wrapCtx("flQuiz","fl",function(qi){flq=qi||0});
+["dsRender","lgRender","mtScreen","lgGroup","abLevels","fnLevels","fnBlocks","abSoundMenu","abSoundMode","flTexts","flTextList","renderStudentMenu"].forEach(function(n){wrapCtx(n,"")});
+/* acerto na trilha de palavras (a ordem das sílabas não marca a tela): usa o mesmo registro do app, só quando a resposta é da criança */
+(function(){var o=window.stgInc;if(typeof o!=="function"||o.__med)return;var f=function(st,k){var r=o.apply(this,arguments);try{if(k==="correct"&&!document.getElementById("abFb")&&typeof recMode==="function"&&recMode()==="auto")onRight()}catch(e){}return r};f.__med=1;window.stgInc=f})();
+/* trilha Sílabas e palavras (código interno do app): chamada por rec(palavra,{...}); só conta resposta da criança, não a demonstração */
+var PW=null;
+window.medPwRec=function(w,x){
+ if(typeof w!=="string"||!x||typeof recMode!=="function"||recMode()!=="auto"||document.getElementById("abFb"))return;
+ if(x.help){var id="pw|"+norm(w);if(!cur||cur.id!==id)cur={id:id,it:{k:"pw",key:norm(w),eng:"pw",lbl:""},e:0,lvl:null};if(cur.lvl!=="d")cur.lvl="p"}
+ if(x.ok)onRight(w)};
+/* ---------- revisão cumulativa ---------- */
+function diff(r){return (r.e||0)+2*(r.p||0)+3*(r.d||0)}
+function dueNow(r,n){var s=r.s||0;if(diff(r)<=0||s>=STREAK_END)return false;return (n-(r.n0||0))>=GAP[Math.min(s,GAP.length-1)]}
+/* dificuldade já registrada pelo app antes deste módulo: palavras da trilha (erros e ajudas) e letras do Caça-letras (erros) */
+function legacy(p,kind,k){try{
+ if(kind==="pw"&&PW){var w=PW.D(p).w;var d=w&&(w[k]||w[String(k).toLowerCase()]);if(d&&((d.err||0)>0||(d.help||0)>0))return{e:d.err||0,p:d.help||0,d:0,a:d.ok||0,s:0,n0:0}}
+ if(kind==="ab:caca"){var l=abAlpha(p).let,x=l&&l[k];if(x&&(x.e||0)>0)return{e:x.e,p:0,d:0,a:x.o||0,s:0,n0:0}}
+ }catch(e){}return null}
+function pickDue(kind,cands,exclude,max){
+ var p=P(),a=store(p,true);if(!a||max<1)return[];var seen={},out=[];
+ cands.forEach(function(q){var k=keyOfQ(q);if(!k||exclude[k]||seen[k])return;var r=a.m[kind+"|"+k]||legacy(p,kind,k);if(!r||!dueNow(r,a.n))return;seen[k]=1;out.push({q:q,r:r,k:k})});
+ out.sort(function(x,y){return diff(y.r)-diff(x.r)||(x.r.n0||0)-(y.r.n0||0)});return out.slice(0,max)}
+function insertAt(arr,items,positions){var o=0;items.forEach(function(x,i){var at=Math.min(arr.length,(positions[i]!=null?positions[i]:positions[positions.length-1])+o);arr.splice(at,0,x);o++})}
+function mixFN(S){
+ try{
+  var p=P(),a=store(p,true);a.n++;
+  if(!S||!S.qs||S.qs.length<4||S.k>=100)return;
+  var kind="fn:"+S.et,cands=[];
+  for(var j=1;j<S.k;j++){var L=null;
+   try{L=S.et==="rimas"?(FN_B[j-1]||[]).slice():S.et==="silabas"?fnSilQs(j):S.et==="inicial"?fnIniQs(j):S.et==="ditado"?fnDitQs(j):S.et==="caixas"?fnCxQs(j):S.et==="igual"?fnIgQs(j):S.et==="troca"?fnTrQs(j):fnJunQs(j)}catch(e){L=null}
+   if(L)cands=cands.concat(L)}
+  var ex={};S.qs.forEach(function(q){ex[keyOfQ(q)]=1});
+  var picks=pickDue(kind,cands,ex,S.qs.length>=7?2:1);
+  if(picks.length){S.rev=picks.map(function(x){return x.k});insertAt(S.qs,picks.map(function(x){return Object.assign({},x.q,{_rev:1})}),[2,5])}
+ }catch(e){console.error("Revisão (FN)",e)}}
+function mixAB(S){
+ try{
+  var p=P(),a=store(p,true);a.n++;
+  if(!S||!S.queue||S.queue.length<4)return;
+  var al=abAlpha(p),done=(al[S.game]&&al[S.game][S.level])||[],caca=S.game==="caca",kind="ab:"+S.game;
+  var pool=caca?AB_LET.slice():AB_POOL.filter(function(w){return done.indexOf(w.w)>=0});
+  if(caca)pool=pool.filter(function(x){return done.indexOf(x)>=0});
+  var ex={};S.queue.forEach(function(q){ex[keyOfQ(q)]=1});
+  var picks=pickDue(kind,pool,ex,Math.floor(S.queue.length/4));
+  if(!picks.length)return;
+  /* a revisão ocupa o lugar de 1 ou 2 itens do fim da fila (primeiro os já concluídos e sem dificuldade); o item novo não se perde: continua pendente e volta na próxima vez */
+  var removed=0,pass,i,q,k,dn,r;
+  for(pass=0;pass<2&&removed<picks.length;pass++){
+   for(i=S.queue.length-1;i>=2&&removed<picks.length;i--){q=S.queue[i];k=keyOfQ(q);dn=done.indexOf(caca?q:q.w)>=0;r=a.m[kind+"|"+k];
+    if(r&&diff(r)>0)continue;if(pass===0&&!dn)continue;S.queue.splice(i,1);removed++}}
+  picks=picks.slice(0,removed);if(!picks.length)return;
+  S.rev=picks.map(function(x){return x.k});insertAt(S.queue,picks.map(function(x){return x.q}),[2,5])
+ }catch(e){console.error("Revisão (AB)",e)}}
+window.medPwMix=function(S,api){
+ try{
+  PW=api;var p=P(),a=store(p,true);a.n++;
+  if(!S||!S.list||S.list.length<4)return;
+  var ex={};S.list.forEach(function(x){ex[keyOfQ(x)]=1});
+  var cands=api.bank().filter(function(x){return !x.p&&x.lv<S.lv&&api.isDone(p,x)});
+  var picks=pickDue("pw",cands,ex,S.list.length>=10?2:1);
+  if(picks.length){S.rev=picks.map(function(x){return x.k});insertAt(S.list,picks.map(function(x){return x.q}),[S.i+3,S.i+8])}
+ }catch(e){console.error("Revisão (trilha)",e)}};
+function wrapRound(name,get,fn){var o=window[name];if(typeof o!=="function"||o.__med)return;
+ var f=function(){var S=get();if(S&&!S._mx){S._mx=1;fn(S)}return o.apply(this,arguments)};f.__med=1;window[name]=f}
+wrapCtx("fnRound","fn",function(){if(typeof FN!=="undefined"&&FN&&!FN._mx){FN._mx=1;mixFN(FN)}});
+wrapRound("abRound",function(){return typeof AB!=="undefined"?AB:null},mixAB);
+/* ---------- relatório ---------- */
+var NM={"fn:rimas":"Rimas","fn:silabas":"Sílabas","fn:inicial":"Som inicial","fn:ditado":"Ditado","fn:caixas":"Sons da palavra","fn:igual":"Igual ou diferente","fn:troca":"Troca de sons","fn:juntar":"Juntar sons","ab:caca":"Caça-letras","ab:inicial":"Letra inicial","pw":"Sílabas e palavras","fl:texto":"Compreensão de texto"};
+function keyLbl(k,w){if(k==="fl:texto"){var m=/^(.+)#(\d+)$/.exec(w);if(m){var t=null;try{t=(typeof FL_TEXTS!=="undefined"?FL_TEXTS:[]).find(function(x){return String(x.id).toUpperCase()===m[1]})}catch(e){}return (t&&t.t?t.t:"Texto "+m[1].toLowerCase())+" · pergunta "+m[2]}}return w}
+function nmOf(k){if(NM[k])return NM[k];if(k.indexOf("sg:")===0)return"Sons e letras";return k}
+window.medApoioResumo=function(p){var a=store(p,false);if(!a)return null;var s={a:0,c:0,p:0,d:0,e:0},ks=Object.keys(a.m),rows=[];
+ ks.forEach(function(id){var r=a.m[id];s.d+=r.d||0;s.p+=r.p||0;s.e+=r.e||0;var ac=(r.a||0);s.a+=ac;
+  if(diff(r)>0){var i=id.indexOf("|");rows.push({k:id.slice(0,i),w:id.slice(i+1),r:r})}});
+ rows.sort(function(x,y){return diff(y.r)-diff(x.r)});return{s:s,rows:rows,n:ks.length,log:a.l}};
+function relApoio(p){
+ var R=window.medApoioResumo(p);if(!R||!R.n)return"";
+ var pl=function(n,a,b){return n+(n===1?a:b)};
+ var open=R.rows.filter(function(x){return(x.r.s||0)<STREAK_END}),done=R.rows.length-open.length;
+ var li=open.slice(0,12).map(function(x){var r=x.r,t=[];if(r.e)t.push(pl(r.e," erro"," erros"));if(r.p)t.push(pl(r.p," com pista"," com pista"));if(r.d)t.push(pl(r.d," após demonstração"," após demonstração"));
+  t.push((r.s||0)>0?"melhorando: "+pl(r.s," acerto seguido"," acertos seguidos"):"retomar");
+  return relLi("<b>"+E(keyLbl(x.k,x.w))+"</b> • "+E(nmOf(x.k)),t.join(" · "))});
+ var hasFl=open.some(function(x){return x.k==="fl:texto"});
+ var body="<p class=\"small\">Respostas registradas: <b>"+R.s.a+"</b> independentes (inclui as de primeira) · <b>"+R.s.p+"</b> com pista · <b>"+R.s.d+"</b> após demonstração · <b>"+R.s.e+"</b> erros.</p>"+
+  (li.length?"<p class=\"small\"><b>Itens para retomar</b> (voltam aos poucos, misturados a conteúdo novo, em Sílabas e palavras, Alfabeto e Consciência fonológica):</p>"+relUl(li,12)+(hasFl?"<p class=\"small muted\">Perguntas de compreensão de texto não voltam sozinhas: releia o texto com a criança quando achar oportuno.</p>":""):"<p class=\"small\">Nenhum item aguardando retomada.</p>")+
+  (done?"<p class=\"small muted\">Já retomados com acertos seguidos: "+pl(done," item"," itens")+" (a frequência de revisão diminui conforme a melhora).</p>":"");
+ return relSec("🤝 Mediação e revisão","Registro feito a partir do apoio informado pelo(a) mediador(a). Não é nota nem diagnóstico: serve para planejar o que retomar.",body)}
+(function(){var o=window.relBlocos;if(typeof o!=="function"||o.__med)return;var f=function(p){var h=o.apply(this,arguments);try{h+=relApoio(p)}catch(e){console.error("Relatório (apoio)",e)}return h};f.__med=1;window.relBlocos=f})();
 })();
 </script>
 <script id="cfg-barra">
