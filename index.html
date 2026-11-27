@@ -1959,7 +1959,7 @@ function renderRelatorio(p){
  m.innerHTML='<section class="panel rel"><div class="rel-print-head"><b>Relatório de '+esc(p.name)+'</b> · gerado em '+hoje+' · registros: '+relPerTxt()+'</div><div class="topline"><div><h1>📊 Relatório de '+esc(p.name)+'</h1><p class="muted">'+(gc?'Última atividade: '+esc(gc.label)+' · '+esc(relFmt(gc.at)):'Ainda sem atividades registradas.')+'</p></div><div class="topline-actions no-print"><button class="secondary" id="relPrint" type="button">🖨️ Imprimir / PDF</button><button class="secondary" id="relSave" type="button">⬇️ Baixar</button><button class="secondary" id="relBack" type="button">← Voltar</button></div></div>'
   +'<p class="muted small rel-note no-print">O arquivo baixado contém dados da criança: guarde-o com cuidado.</p>'
   +'<h2>Progresso</h2>'+(prog||'<p class="muted">Nenhuma atividade liberada.</p>')
-  +'<p class="muted small rel-note">Os registros abaixo são apresentados por bloco, sem somar nem comparar indicadores entre blocos.</p>'
+  +'<p class="muted small rel-note">Primeiro vem uma síntese que reúne os registros dos blocos; depois, os registros de cada bloco, sem somar nem comparar indicadores entre blocos.</p>'
   +'<div class="rel-perbar no-print" role="group" aria-label="Período dos registros"><span class="small"><b>Período:</b></span>'+per+'</div>'
   +relBlocos(p)+'</section>';
  $("#relBack").onclick=renderStudentMenu;
@@ -1967,7 +1967,7 @@ function renderRelatorio(p){
  $("#relPrint").onclick=()=>{const ds=[...m.querySelectorAll(".rel details")],st=ds.map(d=>d.open);ds.forEach(d=>d.open=true);const back=()=>{window.removeEventListener("afterprint",back);ds.forEach((d,i)=>{d.open=st[i]})};window.addEventListener("afterprint",back);window.print()};
  $("#relSave").onclick=()=>{
   const el=m.querySelector(".rel").cloneNode(true);el.querySelectorAll(".no-print").forEach(x=>x.remove());el.querySelectorAll("details").forEach(d=>d.setAttribute("open",""));
-  const css="body{font-family:system-ui,Arial,sans-serif;max-width:820px;margin:20px auto;padding:0 14px;color:#1c2150;line-height:1.45}.rel-print-head{display:block;margin-bottom:8px}.topline h1{margin:.2em 0}.rel-row{display:grid;grid-template-columns:1.5fr 1fr 1.3fr;gap:10px;border-bottom:1px solid #dfe6f4;padding:6px 0;align-items:center}.rel-bar{height:9px;background:#e5e8fb;border-radius:20px;overflow:hidden}.rel-bar i{display:block;height:100%;background:#34d399}.rel-x{text-align:right;font-size:.9rem;color:#5a6480}.rel-list{list-style:none;padding:0;margin:0}.rel-list li{padding:8px 0;border-bottom:1px solid #dfe6f4}.muted{color:#5a6480}.small{font-size:.9rem}.rel-warn{background:#fff6d6;border:2px solid #f3d98a;border-radius:12px;padding:8px 10px}.rel-per{background:#eef2ff;border-radius:10px;padding:6px 10px}h2{margin:22px 0 6px}.rel-h{margin:14px 0 6px}";
+  const css="body{font-family:system-ui,Arial,sans-serif;max-width:820px;margin:20px auto;padding:0 14px;color:#1c2150;line-height:1.45}.rel-print-head{display:block;margin-bottom:8px}.topline h1{margin:.2em 0}.rel-row{display:grid;grid-template-columns:1.5fr 1fr 1.3fr;gap:10px;border-bottom:1px solid #dfe6f4;padding:6px 0;align-items:center}.rel-bar{height:9px;background:#e5e8fb;border-radius:20px;overflow:hidden}.rel-bar i{display:block;height:100%;background:#34d399}.rel-x{text-align:right;font-size:.9rem;color:#5a6480}.rel-list{list-style:none;padding:0;margin:0}.rel-list li{padding:8px 0;border-bottom:1px solid #dfe6f4}.muted{color:#5a6480}.small{font-size:.9rem}.rel-warn{background:#fff6d6;border:2px solid #f3d98a;border-radius:12px;padding:8px 10px}.rel-per{background:#eef2ff;border-radius:10px;padding:6px 10px}h2{margin:22px 0 6px}.rel-h{margin:14px 0 6px}.rel-tabw{overflow-x:auto}.rel-tab{border-collapse:collapse;width:100%;font-size:.92rem}.rel-tab th,.rel-tab td{border:1px solid #dfe6f4;padding:6px 8px;text-align:left;vertical-align:top}.rel-tab thead th{background:#eef2ff}.rel-tab td{text-align:center}";
   const html='<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Relatório - '+esc(p.name)+'</title><style>'+css+'</style></head><body>'+el.outerHTML+'</body></html>';
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([html],{type:"text/html;charset=utf-8"}));a.download="relatorio-"+relFile(p.name)+"-"+new Date().toISOString().slice(0,10)+".html";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},800)}
 }
@@ -2662,7 +2662,7 @@ function renderStage(){
    const correct=chosen.map(c=>c.s).join("")===w.w;
    if(currentRun){stgInc(currentRun.stages.build,"attempts");stgInc(currentRun.stages.build,correct?"correct":"errors");currentRun.updated=new Date().toISOString();saveProfiles()}
    if(correct){commitStageClock();stageDone.build=true;celebrateDone();renderStage();setFb(isMontar()?"✅ Muito bem! Sílabas na ordem certa. Aperte Concluir.":"✅ Muito bem! Sílabas na ordem certa. Aperte Próxima etapa.");autoNext()}
-   else{lockInput=true;renderStage();document.querySelectorAll(".slot2").forEach(x=>x.classList.add("wrong"));setFb("❌ Ops! Essa ordem não está certa. Tente de novo!");setTimeout(()=>{if(stage!=="build")return;lockInput=false;chosen=[];renderStage();setFb("Vamos tentar de novo! Toque nas sílabas na ordem certa.")},900)}
+   else{lockInput=true;renderStage();document.querySelectorAll(".slot2").forEach(x=>x.classList.add("wrong"));setFb("❌ Ainda não. O(A) MEDIADOR(A) DEVE REPETIR A PALAVRA, SÍLABA POR SÍLABA. Vamos montar de novo.");setTimeout(()=>{if(stage!=="build")return;lockInput=false;chosen=[];renderStage();setFb("Toque nas sílabas na ordem da palavra.")},900)}
   });
   body.querySelectorAll("[data-slot]").forEach(b=>b.onclick=()=>{const i=Number(b.dataset.slot);if(lockInput||stageDone.build||!chosen[i])return;chosen.length=i;renderStage()});
  }else if(stage==="picture"){
@@ -2678,7 +2678,7 @@ function renderStage(){
     setFb("⭐ Acertou!");setTimeout(()=>{lockInput=false;finishWord()},800);
    }else{
     if(currentRun){stgInc(currentRun.stages.picture,"errors");currentRun.updated=new Date().toISOString();saveProfiles()}
-    b.classList.add("wrong");b.disabled=true;setFb("Tente outra figurinha.");
+    b.classList.add("wrong");b.disabled=true;setFb("Quase! O(A) MEDIADOR(A) DEVE REPETIR A PALAVRA. Olhe as figuras e tente outra.");
     setTimeout(()=>{b.classList.remove("wrong");b.disabled=false;if(!lockInput&&stage==="picture")setFb(defaultMsg())},650);
    }
   });
@@ -3542,7 +3542,7 @@ function escPunctR(q){const S=FN,tok=abTok+1,exp=q.p,A=escNew(exp),NM={".":"pont
  const bs=[...document.querySelectorAll(".esc-reco .ab-opt")];
  bs.forEach(b=>b.onclick=()=>{if(!abAlive(tok)||solved||b.disabled)return;const o=b.dataset.s;A.seq.push(o);
   if(o===exp){solved=true;A.ms=Date.now()-A.t0;b.classList.add("right");bs.forEach(x=>{if(x!==b){if(!x.classList.contains("wrong"))x.classList.add("dim");x.disabled=true}});$("#escPt").textContent=exp;$("#escPt").classList.add("ok");escRec(S.k,A,escModo(A));fnOk(tok,`${fnPraise()} A frase termina com ${NM[exp]}. Agora leia a frase inteira.`,q.s)}
-  else{A.er++;A.ge.push({e:exp,x:o});b.disabled=true;b.classList.add("wrong");fnBad("Quase! Pense: a frase conta, pergunta ou exclama? Tente outro sinal.")}});
+  else{A.er++;A.ge.push({e:exp,x:o});b.disabled=true;b.classList.add("wrong");fnBad("Quase! O(A) MEDIADOR(A) DEVE LER A FRASE COM A ENTONAÇÃO. Conta, pergunta ou exclama? Tente outro sinal.")}});
  if(CFG.skip)setTimeout(()=>{if(abAlive(tok)&&!solved){const r=bs.find(x=>x.dataset.s===exp);if(r)asAuto(()=>r.click())}},900)}
 /* ---- 5. Junte os Sons: síntese fonêmica ---- */
 function fnJunR(){
@@ -3904,7 +3904,7 @@ function flQuiz(qi){
    {const qz=$("#flQz");if(qz)qz.classList.add("fin")}flHideOri();flAdvance();autoClick("#abNext");
   }else{
    FL.qErr++;abTick(false);b.classList.add("wrong");setTimeout(()=>b.classList.remove("wrong"),900);
-   abMsg("Ops! Essa resposta não está correta. Leia a pergunta de novo e tente outra vez. 💪");
+   abMsg("Quase! Releiam juntos a pergunta e o trecho do texto. Tente outra resposta. 💪");
   }
  };
  bs.forEach(b=>b.onclick=()=>pick(b));
@@ -5416,42 +5416,19 @@ window.pwRefresh=function(){var r=typeof orig==="function"?orig.apply(this,argum
 applyMode();sync();
 })();
 </script>
-<style id="mediacao-ajuda-css">
-#medAjuda.med-ajuda{position:fixed!important;left:50%;transform:translateX(-50%);bottom:72px;z-index:60;width:min(98vw,800px);max-height:46vh;overflow:auto;box-sizing:border-box;margin:0!important;padding:.3em .6em;border-radius:14px;border:2px solid #cfd4e6!important;text-align:left;line-height:1.22;box-shadow:0 4px 14px rgba(31,42,90,.2);font-size:clamp(.7rem,2.05vh,.9rem)!important}
-#medAjuda .ma-h{display:flex;align-items:center;gap:.4em;flex-wrap:wrap}
-#medAjuda .ma-s{flex:1 1 260px;min-width:0}
-#medAjuda .ma-c{white-space:normal}
-#medAjuda .ma-c.ma-now{background:#e9e4ff;border-radius:6px;padding:0 .2em;outline:1px solid #a88be8}
-#medAjuda .ma-n{font-size:.9em;opacity:.8}
-#medAjuda button{filter:none;cursor:pointer;font-family:inherit}
-#medAjuda .ma-t,#medAjuda .ma-x{flex:0 0 auto;min-width:44px;min-height:44px;border:0;background:transparent;font-size:1.15em;color:#5b3fb8}
-#medAjuda .ma-r{display:inline-flex;gap:.35em;flex:0 0 auto}
-#medAjuda .ma-r button{min-height:44px;padding:.15em .7em;border-radius:12px;border:2px solid #a88be8;background:#fff;color:#2b3358;font-weight:800;font-size:1em}
-#medAjuda .ma-r button[aria-pressed="true"]{background:#5b3fb8;border-color:#5b3fb8;color:#fff}
-#medAjuda ol{list-style:none;margin:.2em 0 0;padding:0}
-#medAjuda li{margin:.14em 0;padding:.08em .3em;border-radius:8px}
-#medAjuda li.ma-dim{opacity:.62}
-#medAjuda li.ma-now{background:#e9e4ff;outline:1px solid #a88be8}
-@media(orientation:landscape) and (max-height:520px){#medAjuda.med-ajuda{bottom:56px;max-height:50vh;width:min(94vw,800px);padding:.15em .5em;font-size:clamp(.6rem,2.5vh,.78rem)!important}#medAjuda .ma-r button,#medAjuda .ma-t,#medAjuda .ma-x{min-height:40px}#medAjuda.med-ajuda.ma-open{width:min(92vw,560px);max-height:92vh;font-size:clamp(.62rem,2.6vh,.8rem)!important}}
-#medAjuda.med-ajuda.ma-open{top:50%!important;bottom:auto!important;transform:translate(-50%,-50%);width:min(94vw,560px);max-height:88vh;padding:.5em .8em;font-size:clamp(.78rem,2.4vh,1rem)!important}
-#medAjudaBd{position:fixed;inset:0;z-index:59;background:rgba(31,42,90,.38)}
-#medAjuda .ma-back{text-align:center;margin-top:.3em}
-#medAjuda .ma-back .ma-t{min-width:0;padding:.2em 1.2em;border:2px solid #a88be8;border-radius:12px;background:#fff;font-size:1em;font-weight:800}
-@media print{#medAjuda.med-ajuda,#medAjudaBd{display:none!important}}
-</style>
 <script id="mediacao-ajuda">
-/* Mediação e revisão cumulativa.
-   1) Ao errar, mostra ao(à) mediador(a) passos curtos (reapresentar → demonstrar se preciso → repetir/observar → nova chance → registrar) e guarda o nível de apoio (independente, com pista, após demonstração).
+/* Registro silencioso e revisão cumulativa (nada aparece na tela da criança).
+   1) Guarda, em segundo plano, erros, acertos e o apoio da trilha (💡), além das trocas de letras, para o relatório e para a revisão.
    2) Usa esse registro (p.apoio, somente acréscimo) para intercalar, com baixa frequência, itens já vistos que deram dificuldade nas atividades de Consciência fonológica e do Alfabeto.
    Não grava áudio, não pontua e não bloqueia a criança. */
 (function(){
 "use strict";
 if(window.__medAjuda)return;window.__medAjuda=1;
 var CAP=500,LOGN=40,GAP=[0,1,2,3],STREAK_END=4;
-var ctx="",cur=null,lastTap=0,card=null,hideT=0,flushT=0,ev=[];
+var ctx="",cur=null,lastTap=0,flushT=0,ev=[];
 function P(){try{return typeof active==="function"?active():null}catch(e){return null}}
 function E(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
-function store(p,create){if(!p)return null;if(!p.apoio){if(!create)return null;p.apoio={v:1,n:0,m:{},l:[]}}var a=p.apoio;a.m=a.m||{};a.l=a.l||[];a.n=a.n||0;return a}
+function store(p,create){if(!p)return null;if(!p.apoio){if(!create)return null;p.apoio={v:1,n:0,m:{},l:[]}}var a=p.apoio;a.m=a.m||{};a.l=[];a.n=a.n||0;return a}
 function save(){try{if(typeof saveProfiles==="function")saveProfiles()}catch(e){}}
 function norm(k){return String(k==null?"":k).trim().toUpperCase().replace(/\s+/g," ").replace(/[.\/\\\[\]*`~]/g,"_")}
 function keyOfQ(q){if(q==null)return"";if(typeof q==="string")return norm(q);
@@ -5469,68 +5446,38 @@ function curItem(){
    return{k:"?",key:"",eng:"?",lbl:""}
   }
  }catch(e){}
- var hl=document.querySelector(".pw-ori:not(.med-ajuda) .pw-hl"),key=hl?norm(hl.textContent).replace(/[-\s]/g,""):"";
+ var hl=document.querySelector(".pw-ori .pw-hl"),key=hl?norm(hl.textContent).replace(/[-\s]/g,""):"";
  return{k:"pw",key:key,eng:"pw",lbl:""}}
-var KT={"fn:rimas":{n:"a palavra que rima",o:"as palavras, destacando o finalzinho (a rima)"},"fn:silabas":{n:"as sílabas",o:"a palavra batendo palmas a cada sílaba"},"fn:inicial":{n:"o primeiro som",o:"a palavra, prolongando o primeiro som"},"fn:ditado":{n:"a palavra",o:"a palavra devagar, som por som"},"fn:caixas":{n:"os sons",o:"a palavra devagar, um som de cada vez"},"fn:igual":{n:"o que é igual ou diferente",o:"as duas palavras, devagar, uma de cada vez"},"fn:troca":{n:"o som que mudou",o:"a palavra e o som que muda"},"fn:juntar":{n:"a palavra formada",o:"os sons, um a um, e depois junte"},"ab:inicial":{n:"o primeiro som",o:"a palavra, destacando o primeiro som"},"ab:caca":{n:"a letra",o:"o nome ou o som da letra"},"fl:texto":{n:"a resposta",o:"o trecho do texto, relendo juntos"}};
-function kindTxt(it,msg,el){
- var m=String(msg||"").toUpperCase();
- if(KT[it.k]){var z=KT[it.k];return{n:z.n,o:z.o,t:it.lbl}}
- if(el&&el.closest&&el.closest(".slot2")||/ORDEM/.test(m))return{n:"a ordem das sílabas",o:"a palavra inteira, devagar",t:"ordem"};
- if(/S[ÍI]LABA/.test(m))return{n:"a sílaba",o:"a sílaba, em voz alta",t:"sílaba"};
- if(/SOM/.test(m))return{n:"o som",o:"o som (não o nome da letra)",t:"som"};
- if(/LETRA/.test(m)||it.eng==="sg"||it.lbl==="caca")return{n:"a letra",o:"o nome ou o som da letra",t:"letra"};
- if(/PERGUNTA|LEIA/.test(m)||el&&el.closest&&el.closest(".fl-q,[data-q]"))return{n:"a pergunta",o:"o trecho do texto, relendo juntos",t:"texto"};
- return{n:"a palavra",o:"a palavra, devagar, por sílabas",t:"palavra"}}
-/* ---------- cartão do mediador ---------- */
-function anchor(){var b=document.querySelector(".bottom")||(document.getElementById("abFb")&&document.getElementById("abFb").parentElement);return b}
-function place(){if(!card)return;var b=anchor(),r=b&&b.getBoundingClientRect?b.getBoundingClientRect():null;
- var bt=r&&r.height>0?Math.max(8,window.innerHeight-r.top+6):72;card.style.bottom=Math.min(bt,window.innerHeight*.5)+"px"}
-function bd(on){var b=document.getElementById("medAjudaBd");if(on&&!b){b=document.createElement("div");b.id="medAjudaBd";b.setAttribute("aria-hidden","true");document.body.appendChild(b)}else if(!on&&b&&b.parentNode)b.parentNode.removeChild(b)}
-function closeCard(){clearTimeout(hideT);if(card&&card.parentNode)card.parentNode.removeChild(card);card=null;bd(false)}
-function showCard(it,msg,el){
- var kt=kindTxt(it,msg,el),n=cur.e,demoNow=n>=2||cur.lvl==="d",open=!!cur.open;
- var an=it.noans?"":(it.ans||it.key),hlTxt=an?" <b class=\"pw-hl\">"+E(an)+"</b>":"";
- var rg="<span class=\"ma-r\"><button type=\"button\" data-lv=\"p\" aria-pressed=\""+(cur.lvl==="p"?"true":"false")+"\">💡 Pista</button><button type=\"button\" data-lv=\"d\" aria-pressed=\""+(cur.lvl==="d"?"true":"false")+"\">👩‍🏫 Demonstrei</button></span>";
- var tg="<button type=\"button\" class=\"ma-t\" aria-expanded=\""+(open?"true":"false")+"\" aria-label=\"Ver os passos\">"+(open?"▴":"▾")+"</button><button type=\"button\" class=\"ma-x\" aria-label=\"Fechar\">✕</button>";
- var html;
- if(!open){
-  html="<div class=\"ma-h\"><span class=\"ma-s\">🧭 <b>Mediador:</b> <span class=\"ma-c\">1 Mostre de novo</span> · <span class=\"ma-c"+(demoNow?" ma-now":"")+"\">2 "+(demoNow?"Demonstre agora"+hlTxt:"Demonstre se precisar")+"</span> · <span class=\"ma-c\">3 Peça que repita</span> · <span class=\"ma-c\">4 Nova chance</span></span>"+rg+tg+"</div>"
- }else{
-  html="<div class=\"ma-h\"><span class=\"ma-s\">🧭 <b>Passos do mediador</b> <span class=\"ma-n\">"+(n===1?"(1 erro neste item)":"("+n+" erros neste item)")+"</span></span>"+tg+"</div><ol>"+
-  "<li>1️⃣ <b>Mostre de novo:</b> fale "+kt.o+", apontando para o que a criança vê.</li>"+
-  "<li class=\""+(demoNow?"ma-now":"ma-dim")+"\">2️⃣ <b>Demonstre"+(demoNow?"":" (se precisar)")+":</b> "+(it.noans?"releia o trecho e mostre onde está a resposta":"mostre "+(demoNow?"a resposta":"a resposta certa")+hlTxt+" e diga como você sabe")+".</li>"+
-  "<li>3️⃣ <b>Peça que repita ou observe:</b> a criança fala "+kt.n+" ou aponta olhando.</li>"+
-  "<li>4️⃣ <b>Nova chance:</b> ela responde de novo, sem pressa.</li>"+
-  "<li>5️⃣ <b>Registre o apoio:</b> "+rg+"</li></ol><div class=\"ma-back\"><button type=\"button\" class=\"ma-t\" aria-label=\"Voltar ao jogo\">Voltar ao jogo</button></div>"}
- if(!card){card=document.createElement("div");card.id="medAjuda";card.className="pw-inst pw-ori med-ajuda";card.setAttribute("role","status");card.setAttribute("aria-live","polite");document.body.appendChild(card)}
- card.innerHTML=html;card.classList.toggle("ma-open",open);bd(open);place()}
-document.addEventListener("click",function(e){if(e.target&&e.target.id==="medAjudaBd"){e.preventDefault();e.stopPropagation();if(cur){cur.open=false;showCard(cur.it,"",null)}else closeCard();return}
- var t=e.target&&e.target.closest?e.target.closest("#medAjuda button"):null;if(!t)return;
- e.preventDefault();e.stopPropagation();
- if(t.classList.contains("ma-x")){closeCard();return}
- if(t.classList.contains("ma-t")){if(cur){cur.open=!cur.open;showCard(cur.it,"",null)}return}
- var lv=t.getAttribute("data-lv");if(!cur||!lv)return;
- if(lv==="d")cur.lvl="d";else if(cur.lvl!=="d")cur.lvl="p";
- showCard(cur.it,"",null)},true);
 /* ---------- registro ---------- */
 function commit(it,lvl,errs){
  var p=P();if(!p||!it.key)return;var a=store(p,true),id=it.k+"|"+it.key,r=a.m[id]||(a.m[id]={e:0,p:0,d:0,a:0,s:0,n0:a.n,t:0});
  r.e+=errs;r.t=Date.now();r.n0=a.n;
  if(lvl==="d"){r.d++;r.s=0}else if(lvl==="p"){r.p++;r.s=0}else if(errs>0){r.a++;r.s=0}else{r.a++;r.s++}
- a.l.push([new Date().toISOString(),it.k,it.key,lvl,errs]);if(a.l.length>LOGN)a.l=a.l.slice(-LOGN);
  var ks=Object.keys(a.m);if(ks.length>CAP){ks.sort(function(x,y){return a.m[x].t-a.m[y].t});for(var i=0;i<ks.length-CAP;i++)delete a.m[ks[i]]}
  save()}
 function skipRec(){try{if(typeof CFG!=="undefined"&&CFG&&CFG.skip)return true}catch(e){}try{if(typeof runModo==="function"&&runModo()==="demonstrativo")return true}catch(e){}return false}
+function oneL(s){s=String(s==null?"":s).trim();var u=s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();return/^[A-Z]$/.test(u)?u:""}
+/* pares "letra esperada > letra escolhida": base para dizer, com evidência, que houve troca entre duas letras */
+function pairCap(it,el){
+ var got=oneL(el&&((el.dataset&&(el.dataset.ch||el.dataset.l))||el.textContent)),exp="";
+ if(it.k==="ab:inicial")exp=oneL(AB.queue[AB.i]&&AB.queue[AB.i].c);
+ else if(it.k==="ab:caca")exp=oneL(AB.queue[AB.i]);
+ else if(it.eng==="sg")exp=oneL(SG.queue[SG.i]);
+ if(!exp||!got||exp===got)return;
+ var a=store(P(),true);a.c=a.c||{};var k=exp+">"+got,r=a.c[k]=a.c[k]||{n:0,t:0};r.n++;r.t=Date.now();
+ var ks=Object.keys(a.c);if(ks.length>150){ks.sort(function(x,y){return a.c[x].t-a.c[y].t});for(var i=0;i<ks.length-150;i++)delete a.c[ks[i]]}
+ save()}
 function onWrong(el){
- var it=curItem(),msg="";if(it.k==="?")return;var f=document.getElementById("abFb")||document.getElementById("feedback");if(f)msg=f.textContent;
+ var it=curItem(),msg="";if(it.k==="?")return;try{pairCap(it,el)}catch(e){}var f=document.getElementById("abFb")||document.getElementById("feedback");if(f)msg=f.textContent;
  var id=it.k+"|"+it.key;
  if(!cur||cur.id!==id)cur={id:id,it:it,e:0,lvl:null};
- cur.e++;showCard(it,msg,el)}
+ cur.e++}
 var lastC={id:"",t:0};
 function onRight(kw){
- var it=curItem();if(it.k==="?")return;if(kw){it.k="pw";it.key=norm(kw)}var id=it.k+"|"+it.key;if(lastC.id===id&&Date.now()-lastC.t<2000)return;lastC={id:id,t:Date.now()};var c=(cur&&cur.id===id)?cur:{e:0,lvl:null};
+ var it=curItem();if(it.k==="?")return;
+ if(it.k==="ab:caca"&&typeof AB!=="undefined"&&AB&&AB.found<AB.nT)return;/* Caça-letras: a rodada só conta quando todas as letras foram achadas */if(kw){it.k="pw";it.key=norm(kw)}var id=it.k+"|"+it.key;if(lastC.id===id&&Date.now()-lastC.t<2000)return;lastC={id:id,t:Date.now()};var c=(cur&&cur.id===id)?cur:{e:0,lvl:null};
  commit(it,c.lvl||"a",c.e);cur=null;
- if(card){clearTimeout(hideT);hideT=setTimeout(closeCard,2200)}}
+}
 function flush(){flushT=0;var es=ev;ev=[];if(!es.length)return;
  if(Date.now()-lastTap>2500||skipRec())return;
  var w=null,r=false;for(var i=0;i<es.length;i++){if(es[i].k==="wrong"&&!w)w=es[i].el;if(es[i].k==="right")r=true}
@@ -5538,16 +5485,20 @@ function flush(){flushT=0;var es=ev;ev=[];if(!es.length)return;
 ["pointerdown","click","keydown","touchstart"].forEach(function(n){document.addEventListener(n,function(){lastTap=Date.now()},true)});
 new MutationObserver(function(rs){
  var any=false;
- for(var i=0;i<rs.length;i++){var r=rs[i],t=r.target;if(!t||!t.classList||t.id==="medAjuda"||(t.closest&&t.closest("#medAjuda")))continue;
+ for(var i=0;i<rs.length;i++){var r=rs[i],t=r.target;if(!t||!t.classList)continue;
   var old=r.oldValue||"",was=" "+old+" ";
   if(t.classList.contains("wrong")&&was.indexOf(" wrong ")<0){ev.push({k:"wrong",el:t});any=true}
+  else if(t.classList.contains("shake")&&t.classList.contains("ab-tile")&&was.indexOf(" shake ")<0){ev.push({k:"wrong",el:t});any=true}/* Caça-letras: erro marcado com "shake" */
+  else if(t.classList.contains("found")&&t.classList.contains("ab-tile")&&was.indexOf(" found ")<0){ev.push({k:"right",el:t});any=true}
   else if(t.classList.contains("right")&&was.indexOf(" right ")<0&&(t.classList.contains("ab-opt")||t.classList.contains("slot2")||t.tagName==="BUTTON")){ev.push({k:"right",el:t});any=true}}
  if(any&&!flushT)flushT=setTimeout(flush,40);
- if(card&&!document.getElementById("abFb")&&!document.getElementById("feedback"))closeCard()
+
 }).observe(document.body,{attributes:true,attributeFilter:["class"],attributeOldValue:true,subtree:true,childList:false});
-window.addEventListener("resize",place);
+/* Firestore não aceita lista dentro de lista. Versões anteriores gravavam p.apoio.l assim e isso impedia o envio de TODOS os participantes. Antes de cada envio, o registro antigo é esvaziado (não é usado em nenhum relatório). */
+function fixNested(list){(list||[]).forEach(function(p){var a=p&&p.apoio;if(a&&Array.isArray(a.l)&&a.l.length)a.l=[]})}
+(function(){var o=window.flushCloud;if(typeof o!=="function"||o.__med)return;var f=function(){try{if(typeof allProfiles!=="undefined")fixNested(allProfiles);if(typeof profiles!=="undefined")fixNested(profiles)}catch(e){}return o.apply(this,arguments)};f.__med=1;window.flushCloud=f})();
 /* ---------- contexto das engines ---------- */
-function syncCard(){if(cur){var it=curItem();if(it.k+"|"+it.key!==cur.id){cur=null;closeCard()}}}
+function syncCard(){if(cur){var it=curItem();if(it.k+"|"+it.key!==cur.id){cur=null}}}
 function wrapCtx(name,c,fn){var o=window[name];if(typeof o!=="function"||o.__med)return;var f=function(){ctx=c;if(fn)fn.apply(null,arguments);var r=o.apply(this,arguments);syncCard();return r};f.__med=1;window[name]=f}
 wrapCtx("abCacaRound","ab");wrapCtx("abInicialRound","ab");wrapCtx("sgRound","sg");
 wrapCtx("flRender","fl");wrapCtx("flQuiz","fl",function(qi){flq=qi||0});
@@ -5636,7 +5587,176 @@ function relApoio(p){
   (li.length?"<p class=\"small\"><b>Itens para retomar</b> (voltam aos poucos, misturados a conteúdo novo, em Sílabas e palavras, Alfabeto e Consciência fonológica):</p>"+relUl(li,12)+(hasFl?"<p class=\"small muted\">Perguntas de compreensão de texto não voltam sozinhas: releia o texto com a criança quando achar oportuno.</p>":""):"<p class=\"small\">Nenhum item aguardando retomada.</p>")+
   (done?"<p class=\"small muted\">Já retomados com acertos seguidos: "+pl(done," item"," itens")+" (a frequência de revisão diminui conforme a melhora).</p>":"");
  return relSec("🤝 Mediação e revisão","Registro feito a partir do apoio informado pelo(a) mediador(a). Não é nota nem diagnóstico: serve para planejar o que retomar.",body)}
-(function(){var o=window.relBlocos;if(typeof o!=="function"||o.__med)return;var f=function(p){var h=o.apply(this,arguments);try{h+=relApoio(p)}catch(e){console.error("Relatório (apoio)",e)}return h};f.__med=1;window.relBlocos=f})();
+
+})();
+</script>
+<style id="relint-css">
+.rel-tabw{overflow-x:auto;max-width:100%}
+.rel-tab{border-collapse:collapse;width:100%;font-size:.92rem}
+.rel-tab th,.rel-tab td{border:1px solid #dfe6f4;padding:6px 8px;vertical-align:top;text-align:left}
+.rel-tab thead th{background:#eef2ff;position:sticky;top:0}
+.rel-tab td{text-align:center;min-width:4.2em}
+.rel-tab .rel-nd{color:#8a93b2}
+@media print{.rel-tabw{overflow:visible}.rel-tab thead th{position:static}}
+</style>
+<script id="relatorio-integrado">
+/* Relatório integrado (individual e do grupo).
+   Lê os registros que cada bloco já guarda e os reúne em uma síntese. Não grava nada, não pontua e não classifica a criança.
+   Regras: (1) cada número vem do contador do próprio bloco, sem contar a mesma resposta duas vezes; (2) padrões (troca de letras, dígrafos,
+   encontros consonantais) só são afirmados com ocorrências suficientes; abaixo disso ficam como hipótese a verificar; (3) reconhecer figuras,
+   escolher alternativas e concluir atividades não indicam leitura fluente: a fluência é avaliada pelo professor ou mediador. */
+(function(){
+"use strict";
+if(window.__relInt)return;window.__relInt=1;
+var MIN_PAR=3,MIN_F_N=4,MIN_F_DIF=3,MIN_F_TX=.5,MIN_F_GAP=.25,STREAK=4;
+var NM={"fn:rimas":"Rimas","fn:silabas":"Sílabas","fn:inicial":"Som inicial","fn:ditado":"Ditado","fn:caixas":"Sons da palavra","fn:igual":"Iguais ou diferentes","fn:troca":"Troca de sons","fn:juntar":"Juntar sons","ab:caca":"Caça-letras","ab:inicial":"Letra inicial","pw":"Sílabas e palavras","fl:texto":"Compreensão de texto"};
+function X(s){return typeof esc==="function"?esc(s):String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function pl(n,a,b){return n+(n===1?a:b)}
+function nz(v){return+v||0}
+function nmK(k){return NM[k]||(k.indexOf("sg:")===0?"Sons e letras":k)}
+function up(s){return String(s==null?"":s).toUpperCase().replace(/-/g,"")}
+function strip(s){return String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
+function oneL(s){var u=strip(String(s==null?"":s).trim()).toUpperCase();return/^[A-Z]$/.test(u)?u:""}
+function diffPos(a,b){a=strip(up(a));b=strip(up(b));if(a.length!==b.length||a.length<2)return null;var d=-1;for(var i=0;i<a.length;i++){if(a[i]!==b[i]){if(d>=0)return null;d=i}}return d<0?null:[a[d],b[d]]}
+var SURDO_SONORO={"B>P":1,"P>B":1,"T>D":1,"D>T":1,"F>V":1,"V>F":1,"C>G":1,"G>C":1,"S>Z":1,"Z>S":1,"X>J":1,"J>X":1,"Q>G":1,"G>Q":1};
+var ESPELHO={"B>D":1,"D>B":1,"P>Q":1,"Q>P":1,"M>N":1,"N>M":1,"U>N":1,"N>U":1};
+/* ---------- características das palavras (só para procurar padrões nos itens registrados) ---------- */
+var FEAT=[["dig","dígrafos (LH, NH, CH, RR, SS, QU, GU)",function(w){return/LH|NH|CH|RR|SS|QU|GU/.test(w)},"retome o dígrafo em sílabas isoladas (por ex. LHA, NHO, CHA) e só depois em palavras"],
+ ["enc","encontros consonantais (BR, PL, TR, FL...)",function(w){return/[BCDFGPTV][LR]/.test(w)},"treine a sílaba com encontro (por ex. BRA, PLA, TRO) falando os dois sons em sequência, antes da palavra inteira"],
+ ["til","sílabas com til, acento ou nasal (Ã, Õ, AM, EN, ON...)",function(w){return/[ÃÕÂÊÔÁÉÍÓÚ]|[AEIOU][MN][BPCDFGTVQSZRJ]/.test(w)},"mostre a marca gráfica (til, acento) e compare pares como MÃO/MAO ou LÃ/LA, falando devagar"]];
+/* ---------- coleta ---------- */
+function apoio(p){var a=p&&p.apoio;return a&&a.m?a:null}
+function escGroups(F){
+ var E=F&&F.esc;if(!E||!E.k)return[];
+ var G=[["Ditado: reconhecer a sílaba",function(k){return k===101},1],["Ditado: copiar sílabas",function(k){return k===102||k===103},1],["Ditado: completar sílabas e palavras",function(k){return k===201||k===202}],["Ditado: ditado de sílabas",function(k){return k===301||k===302}],["Ditado: palavras",function(k){return k<100}],["Ditado: frases curtas",function(k){return k>=500}]],F6=["n","aut","cor","ajd","dem","err"],out=[];
+ function sum(src,f){var a={n:0,aut:0,cor:0,ajd:0,dem:0,err:0};Object.keys(src||{}).forEach(function(k){if(!f(+k))return;var r=src[k]||{};F6.forEach(function(x){a[x]+=nz(r[x])})});return a}
+ G.forEach(function(g){var T=sum(E.k,g[1]);if(!T.n)return;
+  if(!g[2]){out.push({nome:g[0],a:T});return}
+  var S=sum(E.sm,g[1]);
+  if(!S.n){out.push({nome:g[0]+" (com modelo)",a:T});return}
+  var C={};F6.forEach(function(x){C[x]=Math.max(0,T[x]-S[x])});
+  out.push({nome:g[0]+" (com modelo)",a:C});out.push({nome:g[0]+" (sem modelo)",a:S})});
+ return out}
+function blocos(p){
+ var rows=[],al=null;
+ /* Alfabeto: sessões com acertos, erros e demonstração */
+ try{al=p.alpha&&Array.isArray(p.alpha.sessoes)?p.alpha.sessoes.filter(function(x){return x&&x.jogo}):[]}catch(e){al=[]}
+ if(al.length){var i=0,e=0,d=0;al.forEach(function(x){i+=nz(x.acertos);e+=nz(x.erros);var y=x.demo||{};d+=nz(y.ac)+nz(y.er)});
+  rows.push({nome:"Alfabeto e Sons das letras",hab:"reconhecer letras e relacionar letra e som",i:i,a:null,d:d,e:e,t:i+e,nota:pl(al.length," sessão"," sessões")+"; este bloco não registra ajuda (💡)"})}
+ /* Consciência fonológica: usa o registro de mediação (inclui pista e demonstração); contadores antigos ficam na nota */
+ var A=apoio(p),F=p.fono||null;
+ if(A){var s={a:0,p:0,d:0,e:0,n:0};Object.keys(A.m).forEach(function(id){var k=id.slice(0,id.indexOf("|"));if(k.indexOf("fn:")!==0||k==="fn:ditado"||k==="fn:caixas")return;var r=A.m[id];s.a+=nz(r.a);s.p+=nz(r.p);s.d+=nz(r.d);s.e+=nz(r.e);s.n++});
+  if(s.n){var old="";if(F&&F.h){var h=0;Object.keys(F.h).forEach(function(k){h+=nz(F.h[k])});if(h)old="; contadores anteriores a este registro: "+pl(h," acerto de primeira"," acertos de primeira")+" (não somados)"}
+   rows.push({nome:"Consciência fonológica (rimas, sílabas, sons)",hab:"perceber rimas, sílabas e sons das palavras",i:s.a,a:s.p>0?s.p:null,d:s.d>0?s.d:null,e:s.e,t:s.a+s.p+s.d+s.e,nota:pl(s.n," item"," itens")+" com registro de erros e acertos; pista e demonstração não são registradas nesses jogos"+old})}}
+ if(F&&F.cx){var ca=0,ce=0,cj=0,cd=0,cw=0;Object.keys(F.cx).forEach(function(k){var r=F.cx[k]||{};ca+=nz(r.acertos);ce+=nz(r.erros);cj+=nz(r.ajudas);cd+=nz(r.demo);cw+=nz(r.palavras)});
+  if(ca+ce+cj+cd)rows.push({nome:"Sons da palavra (caixas de sons)",hab:"separar os sons de uma palavra",i:ca,a:cj,d:cd,e:ce,t:ca+ce,nota:pl(cw," palavra"," palavras")})}
+ /* Ditado com letras */
+ escGroups(F).forEach(function(g){var a=g.a;rows.push({nome:g.nome,hab:"relacionar sons e letras na escrita assistida na tela",i:a.aut+a.cor,a:a.ajd,d:a.dem,e:a.err,t:a.n+a.err,nota:pl(a.n," item"," itens")+(a.cor?"; "+a.cor+" com autocorreção":"")+"; erros = peças erradas"})});
+ /* Trilha de sílabas e palavras (montar palavras) */
+ var W=(p.pw&&p.pw.w)||null;
+ if(W){var pi=0,pa=0,pe=0,pt=0,pn=0;Object.keys(W).forEach(function(w){var r=W[w]||{};if(!nz(r.att)&&!nz(r.ok))return;pn++;var au=nz(r.au),ok=nz(r.ok);pi+=au;pa+=Math.max(0,ok-au);pe+=nz(r.err);pt+=nz(r.att)});
+  if(pn)rows.push({nome:"Sílabas e palavras (montar e identificar)",hab:"juntar sílabas e identificar palavras com apoio de figura",i:pi,a:pa,d:null,e:pe,t:pt,nota:pl(pn," palavra"," palavras")+"; ajuda = resposta certa depois de usar o 💡; demonstração fica à parte, no relatório do bloco"})}
+ /* Famílias silábicas (registro por atividade) */
+ try{var AL=Array.isArray(p.activityLog)?p.activityLog.filter(function(r){return r&&r.started&&r.stages&&runIsFam(r)}):[];
+  if(AL.length){var fo=0,fe=0,fd=0,fa=0;AL.forEach(function(r){var v=runVerif(r);fo+=v.ok;fe+=v.err;var st=r.stages||{};Object.keys(st).forEach(function(k){var y=(st[k]&&st[k].demo)||{};fd+=nz(y.correct)+nz(y.errors)});if(r.modoFinal==="ajuda")fa++});
+   rows.push({nome:"Famílias silábicas",hab:"reconhecer sílabas das famílias e formar palavras",i:fo,a:null,d:fd,e:fe,t:fo+fe,nota:pl(AL.length," atividade"," atividades")+(fa?"; "+pl(fa," com ajuda"," com ajuda"):"")+"; só etapas conferidas pelo jogo"})}}catch(e){}
+ /* Textos: perguntas conferidas pelo jogo */
+ var T=(p.fluencia&&p.fluencia.textos)||null;
+ if(T){var qo=0,qe=0,qd=0,nt=0;Object.keys(T).forEach(function(id){var r=T[id]||{};qo+=nz(r.qOk);qe+=nz(r.qErr);var na=r.qNA||{};qd+=nz(na.demo);if(nz(r.n)>0)nt++});
+  if(qo+qe+qd)rows.push({nome:"Leitura de textos: perguntas",hab:"localizar informações no texto (conferido pelo jogo)",i:qo,a:null,d:qd,e:qe,t:qo+qe,nota:pl(nt," texto concluído"," textos concluídos")+"; não mede fluência"})}
+ return rows}
+/* itens com dificuldade registrada, de qualquer bloco, sem repetir a mesma resposta */
+function itens(p){
+ var M={};
+ function add(key,src,e,pi,d,n){key=up(key);if(!key)return;var o=M[key]||(M[key]={key:key,e:0,p:0,d:0,n:0,s:{},ind:0});o.e+=e;o.p+=pi;o.d+=d;o.n+=n;o.s[src]=1}
+ var W=(p.pw&&p.pw.w)||{};Object.keys(W).forEach(function(w){var r=W[w]||{};if(!nz(r.att)&&!nz(r.ok))return;add(w,"pw",nz(r.err),Math.max(0,nz(r.ok)-nz(r.au)),0,1);if(nz(r.err)===0&&nz(r.ok)-nz(r.au)<=0&&nz(r.au)>=2)M[up(w)].ind=nz(r.au)});
+ var E=p.fono&&p.fono.esc&&p.fono.esc.k;if(E)Object.keys(E).forEach(function(k){var w=(E[k]||{}).w||{};Object.keys(w).forEach(function(t){var r=w[t]||{};add(t,"fn:ditado",nz(r.err),nz(r.ajd),nz(r.dem),1)})});
+ var A=apoio(p);if(A)Object.keys(A.m).forEach(function(id){var i=id.indexOf("|"),k=id.slice(0,i),w=id.slice(i+1);if(k==="pw"||k==="fn:ditado"||k==="fl:texto"||k.indexOf("sg:")===0||k==="ab:caca")return;var r=A.m[id];add(w,k,nz(r.e),nz(r.p),nz(r.d),1);if(nz(r.s)>=STREAK)M[up(w)].ind=Math.max(M[up(w)].ind,nz(r.s))});
+ return M}
+function letras(p){/* letras com mais erros que acertos no Alfabeto (contador por letra do próprio bloco) e no registro de mediação */
+ var o={},L=p.alpha&&p.alpha.let;if(L)Object.keys(L).forEach(function(l){var r=L[l]||{};if(nz(r.e)>0)o[l]={e:nz(r.e),o:nz(r.o)}});
+ return o}
+function pares(p){
+ var P={};function add(a,b,n,src){if(!a||!b||a===b||n<=0)return;var k=a+">"+b,o=P[k]||(P[k]={n:0,s:{}});o.n+=n;o.s[src]=1}
+ var A=apoio(p);if(A&&A.c)Object.keys(A.c).forEach(function(k){var x=k.split(">");add(x[0],x[1],nz(A.c[k].n),"Alfabeto")});
+ var E=p.fono&&p.fono.esc&&p.fono.esc.k;if(E)Object.keys(E).forEach(function(k){var g=(E[k]||{}).g||{};Object.keys(g).forEach(function(e){var xs=g[e].x||{};Object.keys(xs).forEach(function(c){var n=nz(xs[c]),a=oneL(e),b=oneL(c);if(a&&b)add(a,b,n,"Ditado");else{var d=diffPos(e,c);if(d)add(d[0],d[1],n,"Ditado")}})})});
+ return P}
+function pares2(P){/* junta as duas direções (B>D e D>B) */
+ var U={};Object.keys(P).forEach(function(k){var x=k.split(">"),a=x[0],b=x[1],key=a<b?a+"/"+b:b+"/"+a,o=U[key]||(U[key]={n:0,ab:0,ba:0,s:{},k:key});if(a<b)o.ab+=P[k].n;else o.ba+=P[k].n;o.n+=P[k].n;Object.keys(P[k].s).forEach(function(s){o.s[s]=1})});
+ return Object.keys(U).map(function(k){return U[k]}).sort(function(x,y){return y.n-x.n})}
+function feats(M){
+ var out=[],ks=Object.keys(M);
+ FEAT.forEach(function(f){var com=[],sem=[];ks.forEach(function(k){var o=M[k];if(k.length<2)return;(f[2](k)?com:sem).push(o)});
+  var dc=com.filter(function(o){return o.e+o.p+o.d>0}),ds=sem.filter(function(o){return o.e+o.p+o.d>0});
+  var tc=com.length?dc.length/com.length:0,ts=sem.length?ds.length/sem.length:null;
+  var sup=com.length>=MIN_F_N&&dc.length>=MIN_F_DIF&&tc>=MIN_F_TX&&(ts===null||tc-ts>=MIN_F_GAP);
+  if(dc.length)out.push({id:f[0],nome:f[1],cond:f[3],n:com.length,dif:dc.length,ex:dc.sort(function(x,y){return(y.e+2*y.p+3*y.d)-(x.e+2*x.p+3*x.d)}).slice(0,5).map(function(o){return o.key}),sup:sup,tc:tc,ts:ts,nsem:sem.length})});
+ return out}
+/* ---------- modelo do participante ---------- */
+function modelo(p){
+ var M=itens(p),rows=blocos(p),P=pares(p),U=pares2(P),Ft=feats(M),L=letras(p);
+ var dif=Object.keys(M).map(function(k){return M[k]}).filter(function(o){return o.e+o.p+o.d>0}).map(function(o){o.sc=o.e+2*o.p+3*o.d;return o}).sort(function(x,y){return y.sc-x.sc});
+ var dem=Object.keys(M).map(function(k){return M[k]}).filter(function(o){return o.ind>=2&&o.e+o.p+o.d===0||o.ind>=STREAK}).sort(function(x,y){return y.ind-x.ind});
+ var ind=0,aj=0,de=0,er=0,tt=0;rows.forEach(function(r){ind+=r.i||0;aj+=r.a||0;de+=r.d||0;er+=r.e||0;tt+=r.t||0});
+ return{rows:rows,M:M,dif:dif,dem:dem,U:U,F:Ft,L:L,tot:{i:ind,a:aj,d:de,e:er,t:tt}}}
+function pairSup(u){return u.n>=MIN_PAR}
+function pairTxt(u){var a=u.k.split("/"),ab=a[0]+" → "+a[1]+": "+u.ab+"×",ba=a[1]+" → "+a[0]+": "+u.ba+"×";return a[0]+" e "+a[1]+" ("+u.n+" ocorrências; "+(u.ab?ab:"")+(u.ab&&u.ba?"; ":"")+(u.ba?ba:"")+")"}
+function pairHip(u){var d1=u.k.replace("/",">"),d2=u.k.split("/").reverse().join(">");if(ESPELHO[d1]||ESPELHO[d2])return"letras de forma parecida (uma é o espelho ou a rotação da outra)";if(SURDO_SONORO[d1]||SURDO_SONORO[d2])return"sons parecidos, que diferem pela vibração das cordas vocais";return""}
+/* ---------- sugestões objetivas, cada uma com a base no registro ---------- */
+function sugestoes(m,nome){
+ var S=[];
+ m.U.filter(pairSup).slice(0,2).forEach(function(u){var a=u.k.split("/");S.push({t:"Contraste "+a[0]+" / "+a[1]+": fale o som de cada letra e mostre a diferença no traçado; use uma palavra-chave para cada uma; depois trabalhe só com essas letras no jogo da letra inicial.",b:"registro: "+pairTxt(u)})});
+ m.F.filter(function(f){return f.sup}).slice(0,2).forEach(function(f){S.push({t:"Retome "+f.nome.split(" (")[0]+": "+f.cond+". Itens registrados: "+f.ex.join(", ")+".",b:"registro: "+f.dif+" de "+pl(f.n," item"," itens")+" com esse padrão tiveram erro ou apoio"})});
+ var top=m.dif.slice(0,6);
+ if(top.length)S.push({t:"Retome estes itens, de poucos em poucos: "+top.map(function(o){return o.key}).join(", ")+". Eles voltam misturados a conteúdo novo; vale também escrevê-los no papel e ler em voz alta com o mediador.",b:"registro: erros, pista ou demonstração nesses itens"});
+ m.rows.forEach(function(r){var base=(r.i||0)+(r.a||0)+(r.d||0);if(r.d!=null&&base>=6&&r.d/base>=.3)S.push({t:"Em "+r.nome+" houve muitas respostas após demonstração: repita o conteúdo com menos itens, dê uma pista antes de demonstrar e volte à etapa anterior se o erro persistir.",b:"registro: "+r.d+" de "+base+" respostas após demonstração"})});
+ var sm=m.rows.filter(function(r){return/\(sem modelo\)/.test(r.nome)}),cm=m.rows.filter(function(r){return/\(com modelo\)/.test(r.nome)&&/reconhecer|copiar/.test(r.nome)});
+ sm.forEach(function(r){if(r.t>=5&&r.i/Math.max(1,r.t)>=.8)S.push({t:"Os registros sem modelo estão consistentes em «"+r.nome.replace(/ \(sem modelo\)/,"")+"»: o mediador pode considerar a etapa seguinte.",b:"registro: "+r.i+" respostas independentes em "+r.t+" tentativas"})});
+ if(!sm.length&&cm.some(function(r){return r.t>=8&&r.i/Math.max(1,r.t)>=.8}))S.push({t:"Os registros com modelo estão consistentes: o mediador pode experimentar a versão sem modelo (⚙️) nas etapas de reconhecer e copiar.",b:"registro: respostas independentes altas com o modelo na tela"});
+ S.push({t:"Complemente com leitura em voz alta e escrita com lápis e papel, e avalie por observação precisão, ritmo, entonação, continuidade e compreensão.",b:"orientação geral: o aplicativo não avalia a fluência"});
+ return S}
+var AVISO='<p class="rel-warn small"><b>Como ler esta síntese.</b> Os números vêm dos contadores de cada bloco, sem contar a mesma resposta duas vezes, e não formam nota nem classificação. <b>Reconhecer figuras, escolher alternativas e concluir atividades não indicam leitura fluente.</b> O aplicativo não determina a fluência leitora: precisão, ritmo, entonação, continuidade e compreensão são avaliados pelo professor ou mediador, por observação. Esta síntese usa o histórico acumulado e não muda com o período escolhido.</p>';
+function cel(v){return v==null?'<td class="rel-nd" title="este bloco não registra">—</td>':"<td>"+v+"</td>"}
+function tabela(m){
+ if(!m.rows.length)return'<p class="muted">Ainda não há registros para reunir.</p>';
+ var h='<div class="rel-tabw"><table class="rel-tab"><thead><tr><th>Bloco e habilidade</th><th>Independentes</th><th>Com pista ou ajuda</th><th>Após demonstração</th><th>Erros</th><th>Tentativas</th></tr></thead><tbody>';
+ m.rows.forEach(function(r){h+="<tr><th scope=\"row\"><b>"+X(r.nome)+"</b><br><span class=\"muted small\">"+X(r.hab)+(r.nota?" · "+X(r.nota):"")+"</span></th>"+cel(r.i)+cel(r.a)+cel(r.d)+cel(r.e)+cel(r.t)+"</tr>"});
+ return h+'</tbody></table></div><p class="muted small">Cada linha usa só o contador do próprio bloco; por isso as linhas não são somadas. «—» significa que o bloco não registra aquele dado, o que é diferente de zero. «Independentes» inclui respostas certas após autocorreção, sem pista nem demonstração registradas.</p>'}
+function dificuldades(m){
+ var h="",any=false;
+ var itensL=m.dif.slice(0,10).map(function(o){var t=[];if(o.e)t.push(pl(o.e," erro"," erros"));if(o.p)t.push(pl(o.p," com pista ou ajuda"," com pista ou ajuda"));if(o.d)t.push(pl(o.d," após demonstração"," após demonstração"));return relLi("<b>"+X(o.key)+"</b>",X(t.join(" · ")+" · em: "+Object.keys(o.s).map(nmK).join(", ")))});
+ if(itensL.length){any=true;h+='<p class="small"><b>Palavras, sílabas e letras com maior dificuldade registrada</b></p>'+relUl(itensL,10)}
+ var lt=Object.keys(m.L).map(function(l){return{l:l,e:m.L[l].e,o:m.L[l].o}}).filter(function(x){return x.e>x.o}).sort(function(a,b){return b.e-a.e}).slice(0,8);
+ if(lt.length){any=true;h+='<p class="small"><b>Letras com mais erros do que acertos no Alfabeto:</b> '+lt.map(function(x){return"<b>"+X(x.l)+"</b> ("+pl(x.e," erro"," erros")+", "+pl(x.o," acerto"," acertos")+")"}).join(", ")+'.</p>'}
+ var ps=m.U.filter(pairSup);
+ if(ps.length){any=true;h+='<p class="small"><b>Trocas entre letras sustentadas pelos registros</b> (a partir de '+MIN_PAR+' ocorrências):</p><ul class="rel-list">'+ps.map(function(u){return relLi("<b>"+X(pairTxt(u))+"</b>","registrado em: "+X(Object.keys(u.s).join(", ")))}).join("")+"</ul>"}
+ var fs=m.F.filter(function(f){return f.sup});
+ if(fs.length){any=true;h+='<p class="small"><b>Padrões sustentados pelos registros:</b></p><ul class="rel-list">'+fs.map(function(f){return relLi("<b>"+X(f.nome)+"</b>",f.dif+" de "+pl(f.n," item"," itens")+" com esse padrão tiveram erro ou apoio"+(f.ts!=null?"; nos demais itens: "+Math.round(f.ts*100)+"%":"")+" · itens: "+X(f.ex.join(", ")))}).join("")+"</ul>"}
+ return any?h:'<p class="muted">Nenhuma dificuldade registrada até agora.</p>'}
+function hipoteses(m){
+ var H=[];
+ m.U.filter(function(u){return!pairSup(u)&&u.n>=2}).forEach(function(u){H.push("Troca entre "+u.k.replace("/"," e ")+" apareceu "+u.n+" vezes: ainda é pouco para afirmar um padrão. Vale observar.")});
+ m.U.filter(pairSup).forEach(function(u){var z=pairHip(u);if(z)H.push("Sobre "+u.k.replace("/"," e ")+": a troca está registrada, mas o registro não mostra o motivo. Uma possibilidade a verificar com o mediador é tratar-se de "+z+".")});
+ m.F.filter(function(f){return!f.sup}).forEach(function(f){H.push("Em "+f.nome.split(" (")[0]+" houve dificuldade em "+f.dif+" de "+pl(f.n," item"," itens")+" ("+f.ex.join(", ")+"): amostra pequena demais para concluir um padrão. Vale observar.")});
+ if(!H.length)return'<p class="muted">Nenhuma hipótese a destacar com os registros atuais.</p>';
+ return'<p class="muted small">Estas são possibilidades para observação: os registros não as confirmam.</p><ul class="rel-list">'+H.slice(0,8).map(function(x){return"<li>"+X(x)+"</li>"}).join("")+"</ul>"}
+function demonstradas(m){
+ var d=m.dem.slice(0,12).map(function(o){return"<b>"+X(o.key)+"</b>"}),r=m.dif.filter(function(o){return(o.ind||0)<STREAK}).slice(0,12).map(function(o){return"<b>"+X(o.key)+"</b>"});
+ var h='<p class="small"><b>Respondidos de forma independente e repetida</b> (ao menos 2 respostas independentes sem erro nem apoio, ou 4 acertos seguidos sem apoio): '+(d.length?d.join(", ")+".":"ainda sem itens nesse critério.")+'</p>';
+ h+='<p class="small"><b>A retomar</b> (com erro, pista ou demonstração e ainda sem acertos independentes seguidos): '+(r.length?r.join(", ")+".":"nenhum item pendente nos registros.")+"</p>";
+ return h+'<p class="muted small">Responder de forma independente mostra o que a criança fez sozinha na atividade. Não é avaliação de leitura fluente.</p>'}
+window.relIntegra=function(p){
+ var m=modelo(p);if(!m.rows.length&&!m.dif.length)return"";
+ var sg=sugestoes(m);
+ return'<h2>🧭 Síntese integrada dos registros</h2>'+AVISO
+  +'<h3 class="rel-h">Conteúdos e habilidades trabalhados, e como as respostas aconteceram</h3>'+tabela(m)
+  +'<h3 class="rel-h">Dificuldades efetivamente registradas</h3>'+dificuldades(m)
+  +'<h3 class="rel-h">Hipóteses pedagógicas (a verificar)</h3>'+hipoteses(m)
+  +'<h3 class="rel-h">Habilidades demonstradas e conteúdo a retomar</h3>'+demonstradas(m)
+  +'<h3 class="rel-h">Sugestões de intervenção</h3><ul class="rel-list">'+sg.map(function(s){return relLi(X(s.t),X(s.b))}).join("")+"</ul>"
+  +'<h2>Registros por bloco</h2><p class="muted small rel-note">Abaixo, cada bloco mostra os próprios registros, com data quando existe.</p>'};
+(function(){var o=window.relBlocos;if(typeof o!=="function"||o.__ri)return;var f=function(p){var h="";try{h=window.relIntegra(p)}catch(e){console.error("Relatório integrado",e)}return h+o.apply(this,arguments)};f.__ri=1;window.relBlocos=f})();
+window.__relIntModelo=modelo;window.__relIntSug=sugestoes;window.__relIntAviso=AVISO;window.__relIntPairTxt=pairTxt;window.__relIntPairSup=pairSup;
 })();
 </script>
 <script id="cfg-barra">
@@ -6486,9 +6606,9 @@ function decorateStudent(){
       var nx=nextOf(S),b=document.createElement("div");b.className="grp-bar";
       b.innerHTML='<span>👥 <b>Atendimento em grupo</b> · vez de <b>'+X(first(p.name))+'</b>'+(nx?' · próxima: <b>'+X(first(P(nx).name))+'</b>':"")+'</span><span class="grp-sp"></span>'
        +(hasCont(p)?'<button class="primary" data-g="cont" type="button">▶ Continuar de onde parou</button>':"")
-       +'<button class="secondary" data-g="next" type="button" '+(nx?"":"disabled")+'>Próxima criança ▶</button><button class="secondary" data-g="sw" type="button">Trocar criança</button><button class="ghost" data-g="panel" type="button">Painel</button>';
+       +'<button class="secondary" data-g="next" type="button" '+(nx?"":"disabled")+'>Próxima criança ▶</button><button class="secondary" data-g="sw" type="button">Trocar criança</button><button class="ghost" data-g="panel" type="button">Painel</button><button class="ghost" data-g="end" type="button">✔ Encerrar atendimento</button>';
       pn.insertBefore(b,pn.firstChild);
-      qa("[data-g]",b).forEach(function(x){x.onclick=function(){var a=x.dataset.g;if(a==="cont")resumeCont(p);else if(a==="next")grpNext();else if(a==="sw")openOv();else grpManager()}});
+      qa("[data-g]",b).forEach(function(x){x.onclick=function(){var a=x.dataset.g;if(a==="cont")resumeCont(p);else if(a==="next")grpNext();else if(a==="sw")openOv();else if(a==="end"){if(confirm("Encerrar o atendimento em grupo? A síntese do atendimento será gerada e todas as crianças saem da sessão."))grpFinish()}else grpManager()}});
     }
     var cs=q("#changeStudent");if(cs)cs.onclick=grpManager;
   }
@@ -6567,7 +6687,9 @@ finW("fnFinish","fn");finW("abFinish","ab");finW("sgFinish","sg");finW("flComple
 
 /* observação das telas: registra o ponto de continuidade e mantém o atalho no cabeçalho/na barra dos jogos */
 var sched=false;
-function tick(){sched=false;try{capture()}catch(e){console.warn(e)}injectUI();if(dirty&&Date.now()-lastFlush>15000)flush()}
+/* Os atalhos do atendimento em grupo também precisam aparecer quando uma tela é aberta por um botão que guardou a função original (ex.: menu Início): por isso a decoração é conferida pelo que está na tela, e não só pelas chamadas encaixadas acima. Cada decoração só é criada uma vez. */
+function ensureDecor(){try{if(q("#classSelectHome"))decorateHome();if(q("#resetStudentProgress"))decorateStudent();if(q("#currentClassTitle"))decorateClass()}catch(e){console.warn("Atendimento em grupo: decoração",e)}}
+function tick(){sched=false;try{capture()}catch(e){console.warn(e)}ensureDecor();injectUI();if(dirty&&Date.now()-lastFlush>15000)flush()}
 var main=document.getElementById("appMain");
 if(main&&window.MutationObserver)new MutationObserver(function(){if(!sched){sched=true;setTimeout(tick,350)}}).observe(main,{childList:true,subtree:true});
 document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden"){try{capture()}catch(e){}flush()}});
