@@ -5080,25 +5080,156 @@ $("#profileBtn").onclick=()=>renderProfile();
 $("#logoutBtn").onclick=()=>{if(confirm("Deseja sair da conta do responsável?"))logoutTeacher("Você saiu da conta. Entre novamente para acessar seus participantes.")};
 /* ===== Firebase: login do responsável (Google) + grupos e participantes no Firestore ===== */
 const IMPORT_KEY="jogoLeituraImportFirebaseV1";
-let cloudSnap={classes:new Map(),profiles:new Map()},cloudTimer=null,cloudBusy=false,cloudAgain=false,cloudRetry=null,loggingOutMsg="";
+let cloudSnap={turmas:new Map(),alunos:new Map()},cloudTimer=null,cloudBusy=false,cloudAgain=false,cloudRetry=null,loggingOutMsg="";
 function plain(o){return JSON.parse(JSON.stringify(o))}
 function setSync(t){const b=$("#syncBadge");if(b)b.textContent=(t&&t.indexOf("⚠")===0)?t:""}
 function showLoading(text){const m=$("#appMain");if(m)m.innerHTML=`<section class="panel auth-panel"><div class="auth-hero"><p>${esc(text)}</p></div></section>`}
-function markSynced(){cloudSnap={classes:new Map(classes.map(c=>[c.id,JSON.stringify(plain(c))])),profiles:new Map(allProfiles.map(p=>[p.id,JSON.stringify(plain(p))]))}}
+function markSynced(){cloudSnap={turmas:new Map(classes.map(c=>[c.id,plain(c)])),alunos:new Map(allProfiles.map(p=>[p.id,plain(p)]))};syncSent.clear()}
 function cloudSyncSoon(){if(!activeTeacherId||!window.fbApi)return;setSync("⏳ Salvando…");clearTimeout(cloudTimer);cloudTimer=setTimeout(flushCloud,700)}
+/* ===== Sincronização entre aparelhos =====
+   cloudSnap = último estado da nuvem conhecido por este aparelho. Ao salvar, cada registro é lido na nuvem e recebe
+   SOMENTE o que mudou aqui desde esse estado (transação); o que outro aparelho gravou é mantido.
+   syncSent = envios ainda sem confirmação; o campo "_s" do documento identifica os já gravados (evita somar duas vezes). */
+const SYNC_COLS=["turmas","alunos"],syncSent=new Map(),SYNC_TAB=makeId();let syncStop=[];
+try{navigator.locks.request("jl_tab_"+SYNC_TAB,()=>new Promise(()=>{}))}catch(e){}
+/* contadores: acréscimos feitos em aparelhos diferentes são somados */
+const SYNC_COUNT=[/^stageTimes\./,/^activityLog\.\[\]\.stages\./,/^pw\.(w|q)\./,/^alpha\.(acertos|erros)$/,/^alpha\.exec\./,/^alpha\.let\.[^.]+\.(o|e)$/,/^reg\./,
+ /^fono\.(n|h|hna|cx)\./,/^fono\.esc\.(k|sm)\./,/^fluencia\.textos\.[^.]+\.(n|nm|qOk|qErr)$/,/^fluencia\.textos\.[^.]+\.qNA\./,/^leitura\.u\.[^.]+\.(n|nd)$/,
+ /^apoio\.n$/,/^apoio\.m\.[^.]+\.(e|p|d|a|rv)$/,/^apoio\.c\.[^.]+\.n$/];
+/* blocos que só fazem sentido inteiros (ponto de retomada, última atividade, sessão de grupo, escolhas): vale o mais recente */
+const SYNC_WHOLE=/^(games|ag|cont\.it\.[^.]+|famCfg\.g\.[^.]+)$|(^|\.)(last|comp|custom)$/;
+const syncCounter=path=>SYNC_COUNT.some(r=>r.test(path));
+const syncPath=(path,k)=>(path?path+".":"")+String(k).replace(/\./g,"_");
+const syncCopy=o=>o===undefined?undefined:JSON.parse(JSON.stringify(o));
+const syncObj=v=>v!==null&&typeof v==="object"&&!Array.isArray(v);
+function syncEq(a,b){if(a===b)return true;if(!a||!b||typeof a!=="object"||typeof b!=="object"||Array.isArray(a)!==Array.isArray(b))return false;
+ const k=Object.keys(a).filter(x=>a[x]!==undefined);return k.length===Object.keys(b).filter(x=>b[x]!==undefined).length&&k.every(x=>syncEq(a[x],b[x]))}
+const syncText=v=>JSON.stringify(v,(k,x)=>syncObj(x)?Object.keys(x).sort().reduce((o,i)=>(o[i]=x[i],o),{}):x);
+/* itens de lista identificados pelo id; sem id, pelo próprio conteúdo */
+function syncList(a){const n=new Map();return (Array.isArray(a)?a:[]).map(x=>{const k=syncObj(x)&&x.id!==undefined?"id:"+x.id:syncText(x),i=n.get(k)||0;n.set(k,i+1);return [k+"#"+i,x]})}
+/* três versões: b = base comum, l = deste aparelho, r = da nuvem */
+function syncMerge(b,l,r,path=""){
+ if(syncEq(l,b))return r;
+ if(syncEq(r,b))return l;
+ if(path==="_s")return r;
+ if(path==="alpha"&&b&&!b.exec&&l&&l.exec&&r&&r.exec){/* dados antigos: os dois aparelhos criaram a contagem a partir das mesmas sessões */
+  const exec={};(b.sessoes||[]).forEach(x=>{const k=x.jogo+"|"+x.nivel;exec[k]=(exec[k]||0)+1});b={...b,exec}}
+ if(SYNC_WHOLE.test(path)){const when=x=>String(x&&(x.up||x.at||x.quando)||"");return l&&r&&when(r)>when(l)?r:l}
+ if(typeof l==="number"&&(typeof r==="number"||r==null)&&syncCounter(path))return Math.max(0,(r||0)+l-(typeof b==="number"?b:0));
+ if(l===undefined||l===null)return l;/* apagado ou reiniciado neste aparelho */
+ if(Array.isArray(l)){
+  if(!Array.isArray(r))return r==null&&Array.isArray(b)?syncAfterReset(b,l,path):l;
+  const B=new Map(syncList(b)),L=new Map(syncList(l)),R=new Map(syncList(r)),out=[];
+  R.forEach((v,k)=>{if(L.has(k))out.push(syncEq(L.get(k),v)?v:syncMerge(B.get(k),L.get(k),v,syncPath(path,"[]")));else if(!B.has(k))out.push(v)});
+  L.forEach((v,k)=>{if(!R.has(k)&&!B.has(k))out.push(v)});
+  const f=["quando","q","at","started","criado"].find(f=>out.every(x=>x&&typeof x[f]==="string"));
+  return f?out.sort((x,y)=>x[f]<y[f]?-1:x[f]>y[f]?1:0):out}
+ if(syncObj(l)){
+  if(!syncObj(r))return r==null&&syncObj(b)?syncAfterReset(b,l,path):l;
+  const o={};new Set([...Object.keys(r),...Object.keys(l)]).forEach(k=>{const v=syncMerge(syncObj(b)?b[k]:undefined,l[k],r[k],syncPath(path,k));if(v!==undefined)o[k]=v});return o}
+ return l}
+/* o outro aparelho reiniciou este bloco: fica apenas o que foi feito depois, neste aparelho */
+function syncAfterReset(b,l,path){
+ if(typeof l==="number"&&syncCounter(path))return Math.max(0,l-(typeof b==="number"?b:0));
+ if(Array.isArray(l)){const old=new Set(syncList(b).map(x=>x[0]));return syncList(l).filter(x=>!old.has(x[0])).map(x=>x[1])}
+ if(!syncObj(l))return l;
+ const o={};Object.keys(l).forEach(k=>{const bk=b?b[k]:undefined;if(syncObj(l[k])&&syncEq(l[k],bk))return;o[k]=syncAfterReset(bk,l[k],syncPath(path,k))});return o}
+/* atualiza o objeto que as telas já usam, sem trocar as referências */
+function syncPatch(t,v){
+ if(Array.isArray(t)){const old=new Map(syncList(t)),next=syncList(v).map(([k,x])=>{const o=old.get(k);return o&&typeof o==="object"?syncPatch(o,x):x});t.splice(0,t.length,...next);return t}
+ Object.keys(t).forEach(k=>{if(!(k in v))delete t[k]});
+ Object.keys(v).forEach(k=>{const a=t[k],x=v[k];if(a&&x&&typeof a==="object"&&typeof x==="object"&&Array.isArray(a)===Array.isArray(x))syncPatch(a,x);else t[k]=x});return t}
+function syncLive(col,id){if(col==="turmas")return classes.find(c=>c.id===id&&c.teacherId===activeTeacherId);return profiles.find(p=>p.id===id)||allProfiles.find(p=>p.id===id&&p.teacherId===activeTeacherId)}
+function syncLink(col,obj){if(col==="turmas"){if(!classes.includes(obj))classes.push(obj);return}
+ [allProfiles,profiles].forEach(a=>{const i=a.findIndex(p=>p.id===obj.id);if(i>=0)a[i]=obj;else a.push(obj)})}
+function syncDrop(col,id){if(col==="turmas")classes=classes.filter(c=>c.id!==id);else{profiles=profiles.filter(p=>p.id!==id);allProfiles=allProfiles.filter(p=>!(p.teacherId===activeTeacherId&&p.id===id))}}
+const syncNorm=(uid,id,d)=>({...d,id,teacherId:uid});
+/* chegou uma versão da nuvem (r): junta com o que ainda não foi enviado daqui */
+function syncReceive(col,id,r){
+ const sent=syncSent.get(col+"/"+id)||[],marks=r._s||[];let base=cloudSnap[col].get(id),hit=-1;
+ sent.forEach((s,i)=>{if(marks.includes(s.id))hit=i});
+ if(hit>=0){base=sent[hit].doc;sent.splice(0,hit+1)}
+ sent.forEach(s=>{s.doc=syncCopy(syncMerge(base,s.doc,r))});
+ const live=syncLive(col,id);cloudSnap[col].set(id,syncCopy(r));
+ if(!live){if(base)return false;/* excluído aqui, aguardando envio */syncLink(col,syncCopy(r));return true}
+ const before=plain(live),merged=syncCopy(syncMerge(base,before,r));
+ if(syncEq(before,merged))return false;
+ syncPatch(live,merged);syncLink(col,live);return !syncEq({...before,_s:0},{...merged,_s:0})}/* só a marca "_s" não muda a tela */
+/* excluído em outro aparelho: a exclusão prevalece */
+function syncRemoved(col,id){
+ const had=!!syncLive(col,id);cloudSnap[col].delete(id);syncSent.delete(col+"/"+id);syncDrop(col,id);
+ if(had&&col==="alunos"&&id===activeId){activeId=null;currentRun=null;clearTimeout(autoTimer);document.body.classList.remove("game-mode");renderClassDashboard();alert("Este participante foi excluído em outro aparelho.")}
+ return had}
+/* atualiza a tela apenas em listas e menus, quando ninguém está digitando ou com uma janela aberta */
+function syncRefresh(){
+ const a=document.activeElement;
+ if(document.querySelector(".cfg-ov,dialog[open]")||(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))||[...document.querySelectorAll("#appMain input")].some(i=>i.type==="text"&&i.value.trim()))return;
+ const y=window.scrollY,m=$("#appMain"),my=m?m.scrollTop:0;
+ if(stage==="home")renderHome();else if(stage==="classes")renderClassDashboard();else if(stage==="student-menu"&&active())renderStudentMenu();else return;
+ window.scrollTo(0,y);if(m)m.scrollTop=my}
+function syncPending(uid){
+ const out=[];SYNC_COLS.forEach(col=>{const seen=new Set();
+  (col==="turmas"?classes:allProfiles).filter(x=>x.teacherId===uid).forEach(x=>{seen.add(x.id);const d=plain(syncLive(col,x.id));if(!syncEq(d,cloudSnap[col].get(x.id)))out.push({col,id:x.id,local:d})});
+  cloudSnap[col].forEach((b,id)=>{if(!seen.has(id))out.push({col,id,local:null})})});
+ return out}
+/* o que ainda não chegou à nuvem fica guardado neste aparelho (sobrevive a fechar o app sem internet) */
+function syncPersist(uid){
+ const key="jl_pend_"+uid+"_"+SYNC_TAB;
+ try{const items=syncPending(uid).map(o=>({col:o.col,id:o.id,l:o.local,b:cloudSnap[o.col].get(o.id)||null,s:syncSent.get(o.col+"/"+o.id)||[]}));
+  if(items.length)localStorage.setItem(key,JSON.stringify(items));else localStorage.removeItem(key);return true}
+ catch(e){console.warn("Pendências não puderam ser guardadas neste aparelho",e);return false}}
+function syncApplyPending(it){
+ const col=it.col,id=it.id,key=col+"/"+id,cloud=cloudSnap[col].get(id),live=syncLive(col,id),sent=it.s||[];
+ if(!it.l){syncDrop(col,id);if(!cloud&&it.b)cloudSnap[col].set(id,it.b);return}
+ if(!cloud&&!live){syncLink(col,syncCopy(it.l));if(it.b)cloudSnap[col].set(id,it.b);syncSent.set(key,sent);return}
+ if(!live)return;/* excluído por uma pendência mais recente */
+ let base=it.b||undefined,hit=-1;const marks=(cloud&&cloud._s)||[];
+ sent.forEach((s,i)=>{if(marks.includes(s.id))hit=i});if(hit>=0)base=sent[hit].doc;
+ syncPatch(live,syncCopy(syncMerge(base,it.l,plain(live))));syncLink(col,live);
+ syncSent.set(key,(syncSent.get(key)||[]).concat(sent.slice(hit+1).map(s=>({id:s.id,doc:syncCopy(syncMerge(base,s.doc,cloud))}))))}
+/* ao entrar: retoma as pendências deste navegador (menos as de outra aba que continua aberta) */
+async function syncRestore(uid){
+ const run=async()=>{
+  const prefix="jl_pend_"+uid+"_";let held=new Set();
+  try{held=new Set((await navigator.locks.query()).held.map(l=>l.name))}catch(e){}
+  try{const keys=Object.keys(localStorage).filter(k=>k.startsWith(prefix)&&(k===prefix+SYNC_TAB||!held.has("jl_tab_"+k.slice(prefix.length))));
+   keys.forEach(k=>{try{JSON.parse(localStorage.getItem(k)||"[]").forEach(syncApplyPending)}catch(e){console.warn("Pendência ilegível",e)}});
+   if(keys.length&&syncPersist(uid))keys.forEach(k=>{if(k!==prefix+SYNC_TAB)localStorage.removeItem(k)})}
+  catch(e){console.warn("Pendências não puderam ser lidas",e)}};
+ return navigator.locks?navigator.locks.request("jl_restore_"+uid,run):run()}
+async function syncPush(uid,col,id){
+ const key=col+"/"+id,live=syncLive(col,id),base=cloudSnap[col].get(id);
+ if(!live){if(!base)return;await window.fbApi.merge(uid,col,id,()=>null);
+  if(uid===activeTeacherId&&!syncLive(col,id)){cloudSnap[col].delete(id);syncSent.delete(key)}return}
+ const local=plain(live);if(syncEq(local,base))return;
+ const sent=syncSent.get(key)||[],last=sent[sent.length-1],again=!!last&&syncEq(last.doc,local),old=syncCopy(sent);
+ const mark=again?last.id:SYNC_TAB+"|"+makeId();
+ if(!again)syncSent.set(key,[...sent,{id:mark,doc:local}].slice(-12));
+ syncPersist(uid);let reached=false,saved;
+ try{saved=await window.fbApi.merge(uid,col,id,data=>{
+  reached=true;
+  if(!data)return base?undefined:{...local,_s:[mark]};/* tinha base e sumiu da nuvem: foi excluído em outro aparelho */
+  const r=syncNorm(uid,id,data),marks=r._s||[];let b=base;old.forEach(s=>{if(marks.includes(s.id))b=s.doc});
+  const m=syncCopy(syncMerge(b,local,r));
+  m._s=marks.filter(x=>!x.startsWith(SYNC_TAB+"|")).concat(mark).slice(-40);return m})}/* uma marca por aparelho aberto */
+ catch(e){/* nem chegou a ler a nuvem: com certeza não gravou. Caso contrário o envio pode ter sido gravado e fica registrado */
+  if(!reached&&!again)syncSent.set(key,(syncSent.get(key)||[]).filter(s=>s.id!==mark));throw e}
+ if(uid!==activeTeacherId)return;
+ if(saved===undefined){if(syncRemoved(col,id))syncRefresh();return}
+ if((syncSent.get(key)||[]).some(s=>s.id===mark)&&syncReceive(col,id,saved))syncRefresh();
+ syncPersist(uid)}
 async function flushCloud(){
  clearTimeout(cloudTimer);clearTimeout(cloudRetry);
  const uid=activeTeacherId;if(!uid||!window.fbApi)return;
+ syncPersist(uid);
  if(cloudBusy){cloudAgain=true;return}
+ if(navigator.onLine===false){if(syncPending(uid).length){setSync("⚠️ Sem internet — guardado neste aparelho");cloudRetry=setTimeout(flushCloud,5000)}return}
  cloudBusy=true;
  try{
-  const ops=[],nextC=new Map(),nextP=new Map();
-  classes.filter(c=>c.teacherId===uid).forEach(c=>{const d=plain(c),s=JSON.stringify(d);nextC.set(c.id,s);if(cloudSnap.classes.get(c.id)!==s)ops.push({col:"turmas",id:c.id,data:d})});
-  allProfiles.filter(p=>p.teacherId===uid).forEach(p=>{const d=plain(p),s=JSON.stringify(d);nextP.set(p.id,s);if(cloudSnap.profiles.get(p.id)!==s)ops.push({col:"alunos",id:p.id,data:d})});
-  cloudSnap.classes.forEach((s,id)=>{if(!nextC.has(id))ops.push({col:"turmas",id,del:true})});
-  cloudSnap.profiles.forEach((s,id)=>{if(!nextP.has(id))ops.push({col:"alunos",id,del:true})});
-  if(ops.length)await window.fbApi.commit(uid,ops);
-  if(uid===activeTeacherId){cloudSnap={classes:nextC,profiles:nextP};setSync("☁️ Salvo")}
+  let failed=null;
+  for(const o of syncPending(uid)){if(uid!==activeTeacherId)break;try{await syncPush(uid,o.col,o.id)}catch(e){failed=e}}
+  if(failed)throw failed;
+  if(uid===activeTeacherId){syncPersist(uid);setSync("☁️ Salvo")}
  }catch(e){
   console.error("Falha ao salvar na nuvem",e);setSync("⚠️ Sem salvar — tentando novamente");
   cloudRetry=setTimeout(flushCloud,5000);
@@ -5107,6 +5238,19 @@ async function flushCloud(){
   if(cloudAgain){cloudAgain=false;cloudTimer=setTimeout(flushCloud,300)}
  }
 }
+/* atualização em tempo real */
+function syncUnlisten(){syncStop.forEach(f=>{try{f()}catch(e){}});syncStop=[]}
+async function syncOnCloud(uid,col,docs){
+ if(uid!==activeTeacherId)return;
+ let changed=false;const ids=new Set();
+ docs.forEach(d=>{ids.add(d.id);const r=syncNorm(uid,d.id,d);if(!syncEq(r,cloudSnap[col].get(d.id)))changed=syncReceive(col,d.id,r)||changed});
+ for(const id of [...cloudSnap[col].keys()].filter(i=>!ids.has(i))){
+  try{if(await window.fbApi.exists(uid,col,id))continue}catch(e){continue}/* confirma a exclusão no servidor */
+  if(uid!==activeTeacherId)return;if(cloudSnap[col].has(id))changed=syncRemoved(col,id)||changed}
+ if(changed)syncRefresh();
+ if(syncPending(uid).length)cloudSyncSoon()}
+function syncListen(uid){syncUnlisten();syncStop=SYNC_COLS.map(col=>window.fbApi.watch(uid,col,docs=>syncOnCloud(uid,col,docs).catch(e=>console.error("Atualização da nuvem",e))))}
+window.addEventListener("online",()=>flushCloud());
 window.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")flushCloud()});
 window.addEventListener("pagehide",()=>{commitStageClock();flushCloud()});
 
@@ -5142,12 +5286,12 @@ function logoutTeacher(msg){
  commitStageClock();clearTimeout(autoTimer);
  const finish=()=>{};
  loggingOutMsg=msg||"";
- flushCloud().finally(()=>{
+ Promise.race([flushCloud(),new Promise(r=>setTimeout(r,5000))]).finally(()=>{
   if(window.fbApi)window.fbApi.signOut().catch(()=>renderGate(loggingOutMsg));else renderGate(loggingOutMsg);
  });
 }
 async function handleAuthUser(user){
- if(!user){const msg=loggingOutMsg;loggingOutMsg="";renderGate(msg);return}
+ if(!user){syncUnlisten();syncSent.clear();const msg=loggingOutMsg;loggingOutMsg="";renderGate(msg);return}
  if(activeTeacherId===user.uid&&teachers.length)return;
  showLoading("Carregando seus grupos e participantes…");
  try{
@@ -5168,8 +5312,10 @@ async function handleAuthUser(user){
   allProfiles=data.profiles.map(p=>({...p,teacherId:user.uid}));
   markSynced();
   activeTeacherId=user.uid;
+  await syncRestore(user.uid);
   maybeImportLegacy(t);
   enterTeacher(t);
+  syncListen(user.uid);
   setSync("☁️ Conectado");
   cloudSyncSoon();
  }catch(e){
@@ -6867,13 +7013,14 @@ window.AtendGrupo={abrir:grpManager,iniciar:grpSetup,sessao:function(){var S=ses
     const [cs,ps]=await Promise.all([F.getDocs(col(uid,"turmas")),F.getDocs(col(uid,"alunos"))]);
     return {classes:cs.docs.map(d=>({...d.data(),id:d.id})),profiles:ps.docs.map(d=>({...d.data(),id:d.id}))};
    },
-   async commit(uid,ops){
-    for(let i=0;i<ops.length;i+=400){
-     const b=F.writeBatch(db);
-     ops.slice(i,i+400).forEach(o=>{const ref=F.doc(db,"professores",uid,o.col,o.id);if(o.del)b.delete(ref);else b.set(ref,o.data)});
-     await b.commit();
-    }
-   }
+   async merge(uid,name,id,resolve){
+    await F.waitForPendingWrites(db);
+    const ref=F.doc(db,"professores",uid,name,id);let out;
+    await F.runTransaction(db,async tx=>{const s=await tx.get(ref);out=resolve(s.exists()?s.data():null);if(out===null)tx.delete(ref);else if(out!==undefined)tx.set(ref,out)});
+    return out;
+   },
+   async exists(uid,name,id){return (await F.getDocFromServer(F.doc(db,"professores",uid,name,id))).exists()},
+   watch(uid,name,cb){return F.onSnapshot(col(uid,name),{includeMetadataChanges:true},s=>{if(!s.metadata.fromCache&&!s.metadata.hasPendingWrites)cb(s.docs.map(d=>({...d.data(),id:d.id})))},e=>console.warn("Atualização em tempo real interrompida",e))}
   };
   window.dispatchEvent(new Event("fb-ready"));
  }catch(e){
